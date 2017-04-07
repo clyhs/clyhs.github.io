@@ -26,3 +26,4 @@ tags: go
 # ./helloweb
 ```
 通过浏览器访问http://localhost:8080
+![](https://github.com/clyhs/clyhs.github.io/blob/master/images/go/go_02.png?raw=true)
