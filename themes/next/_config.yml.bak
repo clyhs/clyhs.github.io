@@ -334,7 +334,7 @@ changyan:
 
 #Share
 sharesdk: true
-shareSDKappkey: appkey
+shareSDKappkey: 1ccac48aa5a00
 
 # Google Webmaster tools verification setting
 # See: https://www.google.com/webmasters/
