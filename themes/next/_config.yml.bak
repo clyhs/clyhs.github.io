@@ -293,8 +293,8 @@ mathjax:
 
 # Disqus
 disqus:
-  enable: false
-  shortname:
+  enable: true
+  shortname: clyhs
   count: true
 
 # Hypercomments
@@ -458,7 +458,7 @@ algolia_search:
 
 # Local search
 local_search:
-  enable: false
+  enable: true
 
 # External URL with BASE64 encrypt & decrypt
 # Usage: {% exturl text url "title" %}
