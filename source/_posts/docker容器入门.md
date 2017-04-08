@@ -1,7 +1,7 @@
 ---
 title: docker容器入门
 date: 2017-04-08 10:52:59
-categories: docker
+category: docker
 tags: docker
 ---
 # Docker容器入门

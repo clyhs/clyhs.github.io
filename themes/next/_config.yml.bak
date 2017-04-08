@@ -41,9 +41,9 @@ menu:
   categories: /categories
   about: /about
   archives: /archives
-  tags: /tags
+  tags: https://clyhs.github.io/tags
   sitemap: /sitemap.xml
-  #commonweal: /404.html
+  commonweal: /404.html
 
 
 # Enable/Disable menu icons.
@@ -333,7 +333,7 @@ youyan_uid: 2130330
 #duoshuo_share: true
 
 #Share
-sharesdk: false
+sharesdk: true
 shareSDKappkey: 1ccac48aa5a00
 
 # Google Webmaster tools verification setting

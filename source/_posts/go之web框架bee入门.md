@@ -2,7 +2,7 @@
 title: go之web框架bee入门
 date: 2017-04-07 19:22:31
 category: "go"
-tags: go
+tags: "go"
 ---
 ### 从GIT上获取bee包
 ```
