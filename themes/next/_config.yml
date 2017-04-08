@@ -43,7 +43,7 @@ menu:
   archives: /archives
   tags: /tags
   sitemap: /sitemap.xml
-  commonweal: /404.html
+  #commonweal: /404.html
 
 
 # Enable/Disable menu icons.
@@ -293,7 +293,7 @@ mathjax:
 
 # Disqus
 disqus:
-  enable: true
+  enable: false
   shortname: clyhs
   count: true
 
@@ -311,7 +311,7 @@ changyan:
 
 # Support for youyan comments system.
 # You can get your uid from http://www.uyan.cc
-#youyan_uid: your uid
+youyan_uid: 2130330
 
 # Support for LiveRe comments system.
 # You can get your uid from https://livere.com/insight/myCode (General web site)
@@ -327,7 +327,7 @@ changyan:
 # Share
 #jiathis:
 # Warning: JiaThis does not support https.
-#add_this_id:
+#add_this_id: 2130330
 
 # Share
 #duoshuo_share: true
