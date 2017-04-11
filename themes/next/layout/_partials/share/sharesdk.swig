@@ -15,4 +15,4 @@
     <div class="-mob-share-close">取消</div>
 </div>
 <div class="-mob-share-ui-bg"></div>
-<script id="-mob-share" src="http://f1.webshare.mob.com/code/mob-share.js?appkey={{ theme.shareSDKappkey }}"></script>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey={{ theme.shareSDKappkey }}"></script>
