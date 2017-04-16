@@ -20,7 +20,7 @@ _ _ _
 [19:20:24] CLI version 3.9.1
 
 ```
-## 新建 package.json
+### 新建 package.json
 ```
 # npm init
 {
@@ -35,11 +35,8 @@ _ _ _
   "license": "ISC"
 }
 ```
-## 新建gulpfile.js文件
-手动创建就可以
-修改`package.json`的`"main":"gulpfile.js"`
 
-## 安装semantic.json
+## 安装semantic
 ```
 # npm install semantic-ui
 
@@ -50,4 +47,17 @@ _ _ _
 选择一项按回车键安装semantic
 在目录下生成`semantic.json`与`semantic`目录
 
+### 把`semantic`的`gulpfile.js`文件 移到上层static目录下
+修改gulpfile.js 
+把所有
+`./tasks/*` => `./semantic/tasks/*`
+
+修改`package.json`的`"main":"gulpfile.js"`
+
+###生成semantic.js
+```
+# cd semantic
+# gulp build
+```
+在semantic目录生成dist目录
 
