@@ -35,10 +35,31 @@ _ _ _
   "license": "ISC"
 }
 ```
+运行
+```
+# npm install gulp --save
+```
+package.json
+```
+{
+  "name": "helloweb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "gulp": "^3.9.1"
+  }
+}
 
+```
 ## 安装semantic
 ```
-# npm install semantic-ui
+# npm install semantic-ui --save
 
 > Automatic (Use defaults locations and all components)
   Express (Set components and output folder)
