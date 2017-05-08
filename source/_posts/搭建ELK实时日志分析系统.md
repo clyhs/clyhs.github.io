@@ -97,7 +97,7 @@ $ openssl req -subj '/CN=centoss1.pascloud.com/' -x509 -days 3650 -batch -nodes 
 cat > /etc/logstash/conf.d/01-logstash-initial.conf << EOF
 input {
   beats {
-    port => 5000
+    port => 5044
     ssl => true
     type => "logs"
     ssl_certificate => "/etc/pki/tls/certs/logstash-forwarder.crt"
