@@ -8,3 +8,6 @@ tags: go
 
 ![img](/images/go/goweb.png)
 
+
+
+[^]: https://www.zhihu.com/question/27370112
