@@ -72,7 +72,7 @@ sitemap:
   path: sitemap.xml
 
 ## Themes: https://hexo.io/themes/
-theme: gstyle
+theme: maupassant
 
 
 
