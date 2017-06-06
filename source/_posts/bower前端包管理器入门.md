@@ -30,7 +30,7 @@ Additional error details:
 Note that you can manually force an interactive shell with --config.interactive
 ```
 记得切换到win的`CMD`命令下执行`bower init`
-![img](/images/js/bower01.png)
+![img](https://clyhs.github.io/images/js/bower01.png)
 些时目录下生成`bower.json`
 ```
 {

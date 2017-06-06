@@ -6,7 +6,7 @@ tags: go
 ---
 总结一下GO的WEB框架，如下图：
 
-![img](/images/go/goweb.png)
+![img](https://clyhs.github.io/images/go/goweb.png)
 
 
 

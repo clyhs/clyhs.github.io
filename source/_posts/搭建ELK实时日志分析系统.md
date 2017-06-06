@@ -167,4 +167,4 @@ $ systemctl start filebeat
 
 ```
 访问http://192.168.0.16:5601
-![img](/images/elk/elk01.png)
+![img](https://clyhs.github.io/images/elk/elk01.png)

@@ -8,11 +8,11 @@ tags: zookeeper
 ## zookeeper简介
 ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务，是Google的Chubby一个开源的实现，它是集群的管理者，监视着集群中各个节点的状态根据节点提交的反馈进行下一步合理操作。最终，将简单易用的接口和性能高效、功能稳定的系统提供给用户  
 ### Zookpeeper的基本架构
-![img](/images/zookeeper/zookeeper01.jpg )
+![img](https://clyhs.github.io/images/zookeeper/zookeeper01.jpg )
 ### Zookeeper数据模型
 ZooKeeper数据模型的结构与Unix文件系统很类似，整体上可以看作是一棵树，每个节点称做一个ZNode。每个ZNode都可以通过其路径唯一标识，比如上图中第三层的第一个ZNode, 它的路径是/app1/c1。在每个ZNode上可存储少量数据。如图：
 
-<img src="/images/zookeeper/zookeeper-tree.jpg" width="400px" />
+<img src="https://clyhs.github.io/images/zookeeper/zookeeper-tree.jpg" width="400px" />
 
 ### Zookeeper 特点
  * 顺序一致性：按照客户端发送请求的顺序更新数据。
