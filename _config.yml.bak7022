@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 大鱼的博客
-subtitle: clyhs's blog
-description: record my life
+title: big fish
+subtitle: big fish's blog & record my life
+description: 
 author: clyhs
-language: zh-Hans
+language: zh-CN
 timezone: 
 
 # URL
@@ -34,7 +34,7 @@ titlecase: false # Transform title into titlecase
 external_link: true # Open external links in new tab
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 highlight:
@@ -72,7 +72,7 @@ sitemap:
   path: sitemap.xml
 
 ## Themes: https://hexo.io/themes/
-theme: next
+theme: maupassant
 
 
 
