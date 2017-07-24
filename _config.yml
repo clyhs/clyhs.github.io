@@ -4,9 +4,9 @@
 
 # Site
 title: 大鱼的博客
-subtitle: clyhs's blog
+subtitle: bigfish's blog
 description: record my life
-author: clyhs
+author: bigfish
 language: zh-Hans
 timezone: 
 
@@ -73,6 +73,7 @@ sitemap:
 
 ## Themes: https://hexo.io/themes/
 theme: next
+
 
 
 

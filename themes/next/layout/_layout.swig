@@ -11,6 +11,7 @@
   <title>{% block title %}{% endblock %}</title>
 </head>
 
+
 <body itemscope itemtype="http://schema.org/WebPage" lang="{{ page.lang || page.language || config.language }}">
 
   {% include '_third-party/analytics/index.swig' %}
@@ -77,5 +78,7 @@
   {% include '_third-party/seo/baidu-push.swig' %}
   {% include '_third-party/mathjax.swig' %}
   {% include '_third-party/exturl.swig' %}
+
+
 </body>
 </html>
