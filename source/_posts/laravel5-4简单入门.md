@@ -35,20 +35,20 @@ export PATH=$PATH:/root/.composer/vendor/bin
 composer create-project laravel/laravel=5.4.* laravelweb 
 ```
 
-###demo
+### demo
 
 #### 注册登录
 php artisan make:auth 
 php artisan migrate:refresh --seed 
 
-####建立文章后台
+#### 建立文章后台
 
-#####建立model
+##### 建立model
 
 php artisan make:model Article
 
 model文件目录是（基于Laravel5.4）app。目前简单例子中并不会在model中写点什么，但是没它不行。
-#####建立数据表
+##### 建立数据表
 ```shell
 php artisan make:migration create_article_table
 ```
@@ -75,7 +75,7 @@ php artisan migrate
 ```
 数据库中会出现article表了。
 
-#####建立controller
+##### 建立controller
 ```shell
 php artisan make:controller ArticleController
 ```
