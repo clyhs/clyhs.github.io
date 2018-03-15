@@ -6,13 +6,15 @@ tags: [nginx,lvs,keepalived]
 ---
 
 ### 准备环境
-| 服务 | 地址 |
+| 服务 | 地址 |环境|
 |--------|--------|
-|   nginx1     |    192.168.0.7:80    |
-|nginx2|192.168.0.16:80|
-|master|192.168.0.100|
-|backup|192.168.0.101|
-|VIP|192.168.0.80|
+|   nginx1     |    192.168.0.7:80    |tomcat,nginx,realserver.sh|
+|nginx2|192.168.0.16:80|tomcat,nginx,realserver.sh|
+|master|192.168.0.100|keepalived|
+|backup|192.168.0.101|keepalived|
+
+
+VIP:192.168.0.80
 
 两台服务器都是centos7
 
@@ -192,7 +194,7 @@ virtual_server 192.168.0.80 80 {
 
 ```
 
-### 为100与101两台服务器添加VIP
+### 为07与16两台服务器添加VIP
 脚本(realserver.sh)如下：
 ```
 #!/bin/bash
