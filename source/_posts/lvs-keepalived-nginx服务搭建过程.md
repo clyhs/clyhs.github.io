@@ -10,6 +10,8 @@ tags: [nginx,lvs,keepalived]
 |--------|--------|
 |   nginx1     |    192.168.0.7:80    |
 |nginx2|192.168.0.16:80|
+|master|192.168.0.100|
+|backup|192.168.0.101|
 |VIP|192.168.0.80|
 
 两台服务器都是centos7
@@ -45,7 +47,7 @@ yum install –y libnfnetlink-devel   (libnfnetlink-devel-1.0.1-4.el7.x86_64.rpm
 ./configure --sysconf=/etc --with-kernel-dir=/usr/src/kernels/2.6.32-504.23.4.el6.x86_64
 
 ### 配置keepalived的主从文件
-* 192.168.0.16(MASTER)
+* 192.168.0.100(MASTER)
 
 ```
 ! Configuration File for keepalived
@@ -119,7 +121,7 @@ virtual_server 192.168.0.80 80 {
     }
 }
 ```
-* 192.168.0.7(BACKUP)
+* 192.168.0.101(BACKUP)
 
 ```
 ! Configuration File for keepalived
@@ -190,7 +192,7 @@ virtual_server 192.168.0.80 80 {
 
 ```
 
-### 为16与07两台服务器添加VIP
+### 为100与101两台服务器添加VIP
 脚本(realserver.sh)如下：
 ```
 #!/bin/bash
