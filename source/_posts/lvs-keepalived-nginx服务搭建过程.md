@@ -8,15 +8,15 @@ tags: [nginx,lvs,keepalived]
 ### 准备环境
 | 服务 | 地址 |环境|
 |--------|--------|
-|   nginx1     |    192.168.0.7:80    |tomcat,nginx,realserver.sh|
-|nginx2|192.168.0.16:80|tomcat,nginx,realserver.sh|
+|   web服务器1|    192.168.0.7:80    |tomcat,nginx,realserver.sh|
+|web服务器2|192.168.0.16:80|tomcat,nginx,realserver.sh|
 |master|192.168.0.100|keepalived|
 |backup|192.168.0.101|keepalived|
 
 
-VIP:192.168.0.80
-
-两台服务器都是centos7
+* VIP:192.168.0.80
+* 这里用的是keepalived的DR模式
+* 两台服务器都是centos7虚拟机
 
 ### 分别安装环境,ipvsadm,keepalived 
 1、安装环境依赖包,两台服务器都安装
@@ -58,13 +58,6 @@ global_defs {
    router_id MASTER
 }
 
-vrrp_script chk_nginx {  #检测nginx服务是否在运行有很多方式，比如进程，用脚本检测等等
-   script "killall -0 nginx"  #用shell命令检查nginx服务是否存在
-   interval 1  #时间间隔为1秒检测一次
-   weight -2   #当nginx的服务不存在了，就把当前的权重-2
-   fall 2      #测试失败的次数
-   rise 1      #测试成功的次数
-}
 
 vrrp_instance VI_1 {
     state MASTER
@@ -79,9 +72,6 @@ vrrp_instance VI_1 {
     virtual_ipaddress {
         192.168.0.80
     }
-    track_script {
-        chk_nginx   #引用上面的vrrp_script定义的脚本名称
-    }
 }
 
 virtual_server 192.168.0.80 80 {
@@ -94,11 +84,6 @@ virtual_server 192.168.0.80 80 {
 
     real_server 192.168.0.16 80 {
         weight 1
-        #HTTP_GET {
-        #    url {
-        #      path /
-        #  status_code 200
-        #    }
         TCP_CHECK {
             connect_timeout 3
             nb_get_retry 3
@@ -109,11 +94,6 @@ virtual_server 192.168.0.80 80 {
 
     real_server 192.168.0.7 80 {
         weight 1
-        #HTTP_GET {
-        #    url {
-        #      path /
-        #  status_code 200
-        #    }
         TCP_CHECK {    
             connect_timeout 3
             nb_get_retry 3
@@ -131,14 +111,6 @@ virtual_server 192.168.0.80 80 {
 global_defs {
    router_id BACKUP
 }
-vrrp_script chk_nginx {  #检测nginx服务是否在运行有很多方式，比如进程，用脚本检测等等
-   script "killall -0 nginx"  #用shell命令检查nginx服务是否存在
-   interval 1  #时间间隔为1秒检测一次
-   weight -2   #当nginx的服务不存在了，就把当前的权重-2
-   fall 2      #测试失败的次数
-   rise 1      #测试成功的次数
-}
-
 vrrp_instance VI_1 {
     state BACKUP
     interface ens160
@@ -152,9 +124,6 @@ vrrp_instance VI_1 {
     virtual_ipaddress {
         192.168.0.80
     }
-    track_script {
-        chk_nginx   #引用上面的vrrp_script定义的脚本名称
-    }
 }
 
 virtual_server 192.168.0.80 80 {
@@ -167,11 +136,6 @@ virtual_server 192.168.0.80 80 {
 
     real_server 192.168.0.16 80 {
         weight 1
-        #HTTP_GET {
-        #    url {
-        #      path /
-        #  status_code 200
-        #    }
         TCP_CHECK {
             connect_timeout 3
             nb_get_retry 3
@@ -260,41 +224,4 @@ TCP  192.168.0.80:80 rr persistent 5
 http://192.168.0.80
 
 5、关掉两台服务器中的一个nginx
-比如关掉16
-日志如下
-```
-Mar 13 08:42:14 centoss1 Keepalived_vrrp[16789]: VRRP_Instance(VI_1) Effective priority = 98
-Mar 13 08:42:14 centoss1 Keepalived_vrrp[16789]: pid 17221 exited with status 1
-Mar 13 08:42:15 centoss1 Keepalived_vrrp[16789]: pid 17223 exited with status 1
-Mar 13 08:42:16 centoss1 Keepalived_vrrp[16789]: pid 17225 exited with status 1
-Mar 13 08:42:17 centoss1 Keepalived_vrrp[16789]: pid 17227 exited with status 1
-Mar 13 08:42:17 centoss1 Keepalived_healthcheckers[16788]: Error connecting server [192.168.0.16]:80.
-Mar 13 08:42:18 centoss1 Keepalived_vrrp[16789]: pid 17229 exited with status 1
-Mar 13 08:42:19 centoss1 Keepalived_vrrp[16789]: pid 17231 exited with status 1
-Mar 13 08:42:20 centoss1 Keepalived_vrrp[16789]: pid 17233 exited with status 1
-Mar 13 08:42:20 centoss1 Keepalived_healthcheckers[16788]: Error connecting server [192.168.0.16]:80.
-Mar 13 08:42:21 centoss1 Keepalived_vrrp[16789]: pid 17235 exited with status 1
-Mar 13 08:42:22 centoss1 Keepalived_vrrp[16789]: pid 17237 exited with status 1
-Mar 13 08:42:23 centoss1 Keepalived_vrrp[16789]: pid 17239 exited with status 1
-Mar 13 08:42:23 centoss1 Keepalived_healthcheckers[16788]: Error connecting server [192.168.0.16]:80.
-Mar 13 08:42:24 centoss1 Keepalived_vrrp[16789]: pid 17241 exited with status 1
-Mar 13 08:42:25 centoss1 Keepalived_vrrp[16789]: pid 17243 exited with status 1
-Mar 13 08:42:26 centoss1 Keepalived_vrrp[16789]: pid 17245 exited with status 1
-Mar 13 08:42:26 centoss1 Keepalived_healthcheckers[16788]: Error connecting server [192.168.0.16]:80.
-Mar 13 08:42:26 centoss1 Keepalived_healthcheckers[16788]: Check on service [192.168.0.16]:80 failed after 3 retry.
-Mar 13 08:42:26 centoss1 Keepalived_healthcheckers[16788]: Removing service [192.168.0.16]:80 from VS [192.168.0.80]:80
-Mar 13 08:42:27 centoss1 Keepalived_vrrp[16789]: pid 17247 exited with status 1
-Mar 13 08:42:28 centoss1 Keepalived_vrrp[16789]: pid 17249 exited with status 1
-Mar 13 08:42:29 centoss1 Keepalived_vrrp[16789]: pid 17251 exited with status 1
-Mar 13 08:42:30 centoss1 Keepalived_vrrp[16789]: pid 17253 exited with status 1
-Mar 13 08:42:31 centoss1 systemd: Starting nginx - high performance web server...
-Mar 13 08:42:31 centoss1 nginx: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-Mar 13 08:42:31 centoss1 nginx: nginx: configuration file /etc/nginx/nginx.conf test is successful
-Mar 13 08:42:31 centoss1 systemd: Started nginx - high performance web server.
-Mar 13 08:42:31 centoss1 Keepalived_vrrp[16789]: VRRP_Script(chk_nginx) succeeded
-Mar 13 08:42:32 centoss1 Keepalived_vrrp[16789]: VRRP_Instance(VI_1) Effective priority = 100
-Mar 13 08:42:32 centoss1 Keepalived_healthcheckers[16788]: HTTP status code success to [192.168.0.16]:80 url(1).
-Mar 13 08:42:32 centoss1 Keepalived_healthcheckers[16788]: Remote Web server [192.168.0.16]:80 succeed on service.
-Mar 13 08:42:32 centoss1 Keepalived_healthcheckers[16788]: Adding service [192.168.0.16]:80 to VS [192.168.0.80]:80
-
-```
+比如关掉16测试
