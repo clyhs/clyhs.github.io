@@ -46,6 +46,8 @@ docker run -it --name redis-slave2 --network host -d redis --appendonly yes --po
 
 ### 搭建sentinel环境
 
+#### 配置文件
+
 通过网络下载sentinel.conf文件
 
 ```
@@ -108,7 +110,9 @@ sentinel parallel-syncs mymaster 1
 sentinel failover-timeout mymaster 180000
 ```
 
-#### 搭建sentinel主节点
+#### 方法一
+
+##### 搭建sentinel主节点
 
 在192.168.0.7上运行
 
@@ -116,6 +120,8 @@ sentinel failover-timeout mymaster 180000
 docker run -it --name redis-sentinel1 --network host -v /app/app/sentinel1.conf:/usr/local/etc/redis/sentinel.conf -d redis /bin/bash
 
 ```
+
+##### 搭建sentinel从节点
 
 在192.168.0.16上运行
 
@@ -135,7 +141,33 @@ redis-sentinel /usr/local/etc/redis/sentinel.conf
 redis-server /usr/local/etc/redis/sentinel.conf --sentinel
 ```
 
-查询是否成功
+#### 方法二
+
+也可以一步完成，在/app/app/建目录sentinel01,sentinel02,sentinel03,目录结构如*
+
+```
+sentinel01/data
+          /conf/sentinel1.conf
+sentinel02/data
+          /conf/sentinel2.conf
+sentinel03/data
+          /conf/sentinel3.conf
+```
+
+*然后依次执行*
+
+```
+docker run -d --network host --name sentinel1 \
+-v /app/app/sentinel01/data:/var/redis/data \
+-v /app/app/sentinel01/conf:/usr/local/etc/redis/sentinel.conf \
+redis \ 
+/usr/local/etc/redis/sentinel.conf --sentinel
+
+```
+
+
+
+#### 查询是否成功
 
 在192.168.0.7或192.168.0.16上执行
 
@@ -191,7 +223,7 @@ sentinel master mymaster或sentinel slaves mymaster
 
 
 
-
+*参考：https://blog.csdn.net/OneZhous/article/details/80679352*
 
 
 
