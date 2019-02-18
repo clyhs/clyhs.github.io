@@ -59,6 +59,15 @@ tags: [shiro,redis]
     <property name="password" value="123456" />
 </bean>
 -->
+
+<!--分布式-->
+<!--
+<bean id="redisManager" class="org.crazycake.shiro.RedisClusterManager">
+    <property name="host" value="192.168.0.16:8001,192.168.0.16:8002,192.168.0.16:8003,192.168.0.7:8004,192.168.0.7:8005,192.168.0.7:8006"/>
+    <property name="password" value="123456" />
+</bean>
+-->
+
 <!--高可用-->
 <bean id="redisManager" class="org.crazycake.shiro.RedisSentinelManager">
     <property name="host" value="192.168.0.7:26000,192.168.0.16:26001,192.168.0.16:26002"/>
