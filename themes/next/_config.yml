@@ -305,13 +305,13 @@ disqus:
 
 # changyan
 changyan:
-  enable: false
-  appid:
-  appkey:
+  enable: true
+  appid: cyu62R7Sk
+  appkey: prod_11a9614406319b6bc77cd441897fab7f
 
 # Support for youyan comments system.
 # You can get your uid from http://www.uyan.cc
-youyan_uid: 2130330
+#youyan_uid: 2130330
 
 # Support for LiveRe comments system.
 # You can get your uid from https://livere.com/insight/myCode (General web site)
