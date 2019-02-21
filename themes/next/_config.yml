@@ -307,7 +307,7 @@ disqus:
 changyan:
   enable: true
   appid: cyu62R7Sk
-  appkey: prod_11a9614406319b6bc77cd441897fab7f
+  appkey: 1ddb5cdb2e688908ef5cc060ea346a6b
 
 # Support for youyan comments system.
 # You can get your uid from http://www.uyan.cc
