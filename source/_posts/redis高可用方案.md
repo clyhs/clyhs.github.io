@@ -1,5 +1,5 @@
 ---
-title: window redis 高可用部署
+title: redis 高可用方案
 date: 2019-02-28 15:38:44
 category: redis
 tags: redis
