@@ -101,7 +101,7 @@
 <meta property="og:image" content="https://clyhs.github.io/images/tomcat/dump03.png">
 <meta property="og:image" content="https://clyhs.github.io/images/tomcat/dump04.png">
 <meta property="og:image" content="https://clyhs.github.io/images/tomcat/dump01.png">
-<meta property="og:updated_time" content="2019-05-30T03:14:07.797Z">
+<meta property="og:updated_time" content="2019-05-30T06:34:49.768Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tomcat堆一直涨解决方法">
 <meta name="twitter:description" content="loadrunner压测tomcat在24小时压测过程中，发现tomcat的堆一直在涨，从2G到8G再到16G，压2小时过后，堆就满了，无法释放 方法一：tomcat参数调优tomcat的优化如下：  (1)采用cms垃圾回收  catalina.sh 1234567891011121314151617JAVA_OPTS=&quot;-server -showversion -Xms2g -Xmx16g -">
@@ -450,7 +450,7 @@
 <li>(2)采用G1回收</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:+UseG1GC -XX:InitiatingHeapOccupancyPercent=50 -XX:MaxGCPauseMillis=200"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2 -XX:NewRatio=2 -XX:SurvivorRatio=8"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:TargetSurvivorRatio=50 -XX:InitialTenuringThreshold=7 -XX:MaxTenuringThreshold=15"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:G1ReservePercent=10 -XX:GCTimeRatio=19 -XX:+UnlockDiagnosticVMOptions"</span><br></pre></td></tr></table></figure>
-<p><em>结果无语是cms还是g1都是2小时过后，堆就满了，可以定位系统内存泄漏，或者系统有问题，通过system.gc()方法强制回收是没有意义的，因为，用代码调用，只是通知jvm回收，但是jvm回不回收是自己决定，代码只起到通知作用而已。</em></p>
+<p><em>结果无论是cms回收还是g1回收都是2小时过后，堆就满了，可以定位系统内存泄漏，或者系统有问题，通过system.gc()方法强制回收是没有意义的，因为，用代码调用，只是通知jvm回收，但是jvm回不回收是自己决定，代码只起到通知作用而已。</em></p>
 <h4 id="方法二：分析堆内存"><a href="/2019/05/30/tomcat堆一直涨解决方法/#方法二：分析堆内存" class="headerlink" title="方法二：分析堆内存"></a>方法二：分析堆内存</h4><p>分析工具包括：jvisualvm.exe 和eclipse MAT等，eclipse MAT只需要在ecllipse装mat插件</p>
 <p>在linux通过jps查看tomcat的pid，如：10045</p>
 <p>导入堆文件命令：</p>
@@ -468,7 +468,7 @@
 <p>再看下tomcat的监控：</p>
 <p>如图：</p>
 <p><img src="https://clyhs.github.io/images/tomcat/dump01.png" alt="img"></p>
-<p>再用loadrunner压测，堆始终不增长。</p>
+<p>再用loadrunner压测，堆终于不增长。</p>
 
       
     </div>

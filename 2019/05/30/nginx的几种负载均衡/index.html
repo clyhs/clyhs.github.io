@@ -97,7 +97,7 @@
 <meta property="og:site_name" content="大鱼的博客">
 <meta property="og:description" content="nginx的几种负载均衡 （1）轮询(默认):每个请求按时间顺序逐一分配到不同的后端服务器; 1234upstream backend_tomcats &amp;#123;        server xx.x.x.x:8080 max_fails=3 weight=1 fail_timeout=30s;        server xx.x.x.x:8080 max_fails=3 weight=1 f">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-30T03:51:33.858Z">
+<meta property="og:updated_time" content="2019-05-30T06:32:57.514Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nginx的几种负载均衡">
 <meta name="twitter:description" content="nginx的几种负载均衡 （1）轮询(默认):每个请求按时间顺序逐一分配到不同的后端服务器; 1234upstream backend_tomcats &amp;#123;        server xx.x.x.x:8080 max_fails=3 weight=1 fail_timeout=30s;        server xx.x.x.x:8080 max_fails=3 weight=1 f">
@@ -462,6 +462,7 @@
 <h3 id="nginx1-12-1-tar-gz安装"><a href="/2019/05/30/nginx的几种负载均衡/#nginx1-12-1-tar-gz安装" class="headerlink" title="nginx1.12.1.tar.gz安装"></a>nginx1.12.1.tar.gz安装</h3><p>先安装如下包：</p>
 <p>cpp gcc gcc-c++ glibc-devel glibc-headers libstdc++ kernel-headers keyutils-lib-devel krb5-devel libmpc libselinux-devel libsepol-devel libverto-devel libcom_err-devel<br>zlib zlib-devel openssl openssl-devel pcre pcre-devel</p>
 <p>下载upstream-fair包地址：<a href="https://github.com/gnosek/nginx-upstream-fair" target="_blank" rel="noopener">https://github.com/gnosek/nginx-upstream-fair</a></p>
+<p>或者：链接: <a href="https://pan.baidu.com/s/1jT6LWM7nAyaswN1FUIJP7Q" target="_blank" rel="noopener">https://pan.baidu.com/s/1jT6LWM7nAyaswN1FUIJP7Q</a> 提取码: dhky </p>
 <p>更名为upstream放到/home目录下</p>
 <p>安装命令如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">./configure --prefix=/usr/local/nginx --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/lib/nginx/proxy --lock-path=/var/lock/nginx.lock --pid-path=/var/run/nginx.pid --with-debug --with-http_dav_module --with-http_flv_module --with-http_geoip_module --with-http_gzip_static_module --with-http_realip_module --with-http_stub_status_module --with-http_ssl_module --with-http_sub_module --with-ipv6 --with-mail --with-mail_ssl_module --add-module=/home/upstream/</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
