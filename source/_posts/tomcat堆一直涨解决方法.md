@@ -66,7 +66,7 @@ JAVA_OPTS="$JAVA_OPTS -XX:TargetSurvivorRatio=50 -XX:InitialTenuringThreshold=7 
 JAVA_OPTS="$JAVA_OPTS -XX:G1ReservePercent=10 -XX:GCTimeRatio=19 -XX:+UnlockDiagnosticVMOptions"
 ```
 
-*结果无语是cms还是g1都是2小时过后，堆就满了，可以定位系统内存泄漏，或者系统有问题，通过system.gc()方法强制回收是没有意义的，因为，用代码调用，只是通知jvm回收，但是jvm回不回收是自己决定，代码只起到通知作用而已。*
+*结果无论是cms回收还是g1回收都是2小时过后，堆就满了，可以定位系统内存泄漏，或者系统有问题，通过system.gc()方法强制回收是没有意义的，因为，用代码调用，只是通知jvm回收，但是jvm回不回收是自己决定，代码只起到通知作用而已。*
 
 #### 方法二：分析堆内存
 
@@ -117,7 +117,9 @@ jmap -dump:format=b,file=/home/heap.hprof  10045
 
 ![img](https://clyhs.github.io/images/tomcat/dump01.png)
 
-再用loadrunner压测，堆始终不增长。
+再用loadrunner压测，堆终于不增长。
+
+
 
 
 

@@ -87,6 +87,8 @@ zlib zlib-devel openssl openssl-devel pcre pcre-devel
 
 下载upstream-fair包地址：https://github.com/gnosek/nginx-upstream-fair
 
+或者：链接: https://pan.baidu.com/s/1jT6LWM7nAyaswN1FUIJP7Q 提取码: dhky 
+
 更名为upstream放到/home目录下
 
 安装命令如下：
