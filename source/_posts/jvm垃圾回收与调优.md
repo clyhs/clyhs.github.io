@@ -93,3 +93,8 @@ JVM堆内存被分为两部分**年轻代**（Young Generation）、**老年代*
 **-XX:SurvivorRatio=n** eden和survivor区域空间大小的比例，默认是8
 
 **-XX:MaxGCPauseMillis=n** 设置一个暂停时间期望目标，这是一个软目标，JVM会近可能的保证这个目标
+
+*参考 <http://www.importnew.com/14086.html>*
+
+
+
