@@ -98,7 +98,7 @@
 <meta property="og:description" content="jvm的模型JVM堆内存被分为两部分年轻代（Young Generation）、老年代（Old Generation）和永久保存区（Perm Generation）。  年轻代年轻代是所有新对象产生的地方。当年轻代内存空间被用完时，就会触发垃圾回收。这个垃圾回收叫做Minor GC。年轻代被分为3个部分Enden区和两个Survivor区。 年轻代空间的要点：  大多数新建的对象都位于Eden区。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://clyhs.github.io/images/java/jvm.png">
-<meta property="og:updated_time" content="2019-05-30T08:30:47.920Z">
+<meta property="og:updated_time" content="2019-05-30T08:36:14.369Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jvm垃圾回收与调优">
 <meta name="twitter:description" content="jvm的模型JVM堆内存被分为两部分年轻代（Young Generation）、老年代（Old Generation）和永久保存区（Perm Generation）。  年轻代年轻代是所有新对象产生的地方。当年轻代内存空间被用完时，就会触发垃圾回收。这个垃圾回收叫做Minor GC。年轻代被分为3个部分Enden区和两个Survivor区。 年轻代空间的要点：  大多数新建的对象都位于Eden区。">
@@ -481,6 +481,7 @@
 <p><strong>-XX:NewRatio=n</strong> 年轻代和老年代大小的比例，默认是2</p>
 <p><strong>-XX:SurvivorRatio=n</strong> eden和survivor区域空间大小的比例，默认是8</p>
 <p><strong>-XX:MaxGCPauseMillis=n</strong> 设置一个暂停时间期望目标，这是一个软目标，JVM会近可能的保证这个目标</p>
+<p><em>参考 <a href="http://www.importnew.com/14086.html" target="_blank" rel="noopener">http://www.importnew.com/14086.html</a></em></p>
 
       
     </div>
