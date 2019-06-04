@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://abigfish.net/2018/03/13/lvs-keepalived-nginx%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B/</loc>
+    
+    <lastmod>2019-06-04T00:54:23.603Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://abigfish.net/2019/05/30/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E4%B8%8E%E8%B0%83%E4%BC%98/</loc>
     
     <lastmod>2019-05-30T08:36:14.369Z</lastmod>
@@ -453,13 +460,6 @@
     <loc>http://abigfish.net/2017/07/19/GO%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E4%B8%89-Struct%E7%B1%BB%E5%9E%8B/</loc>
     
     <lastmod>2019-05-30T02:33:45.482Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://abigfish.net/2018/03/13/lvs-keepalived-nginx%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B/</loc>
-    
-    <lastmod>2019-05-30T02:33:45.417Z</lastmod>
     
   </url>
   

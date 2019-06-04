@@ -97,7 +97,7 @@
 <meta property="og:site_name" content="大鱼的博客">
 <meta property="og:description" content="准备环境   服务 地址 环境     web服务器1 192.168.0.7:80 tomcat,nginx,realserver.sh   web服务器2 192.168.0.16:80 tomcat,nginx,realserver.sh   master 192.168.0.100 keepalived   backup 192.168.0.101 keepalived     VIP:1">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-30T02:33:45.417Z">
+<meta property="og:updated_time" content="2019-06-04T00:54:23.603Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="lvs+keepalived+nginx服务搭建过程">
 <meta name="twitter:description" content="准备环境   服务 地址 环境     web服务器1 192.168.0.7:80 tomcat,nginx,realserver.sh   web服务器2 192.168.0.16:80 tomcat,nginx,realserver.sh   master 192.168.0.100 keepalived   backup 192.168.0.101 keepalived     VIP:1">
@@ -472,7 +472,7 @@
 <p>2、安装 ipvsadm<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># wget http://www.linuxvirtualserver.org/software/kernel-2.6/ipvsadm-1.26.tar.gz</span><br><span class="line"># tar zxf ipvsadm-1.26.tar.gz</span><br><span class="line"># cd ipvsadm-1.26</span><br><span class="line"># make ; make install</span><br></pre></td></tr></table></figure></p>
 <p>有系统有带的可以不安装<br>3、安装 keepalived<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># tar xf keepalived-1.2.12.tar.gz</span><br><span class="line"># cd keepalived-1.2.12</span><br><span class="line"># ./configure --sysconf=/etc --sbindir=/usr/sbin/</span><br><span class="line"># make &amp;&amp; make install</span><br><span class="line"># ln -s /usr/local/sbin/keepalived /sbin/keepalived</span><br><span class="line"># chkconfig --add keepalived</span><br><span class="line"># chkconfig --level 2345 keepalived on</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li>若/usr/src/kernel目录下没有内核目录，则需要安装内核开发包<br>yum install -y kernel-devel安装<br>yum install –y libnfnetlink-devel   (libnfnetlink-devel-1.0.1-4.el7.x86_64.rpm)</li>
+<li>若/usr/src/kernels目录下没有内核目录，则需要安装内核开发包<br>yum install -y kernel-devel kernel-headers安装<br>yum install –y libnfnetlink-devel   (libnfnetlink-devel-1.0.1-4.el7.x86_64.rpm)</li>
 <li>CentOS7跟CentOS6的头文件路径有差别，把最后一个参数去掉</li>
 <li>CentOS6下面编译<br>./configure –sysconf=/etc –with-kernel-dir=/usr/src/kernels/2.6.32-504.23.4.el6.x86_64</li>
 </ul>
