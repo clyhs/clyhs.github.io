@@ -21,7 +21,7 @@ tags: [nginx,lvs,keepalived]
 ### 分别安装环境,ipvsadm,keepalived 
 1、安装环境依赖包,两台服务器都安装
 ```
-# yum install -y gcc gcc-c++ makepcre pcre-devel kernel-devel openssl-devel libnl-devel popt-devel popt-static
+# yum install -y gcc gcc-c++ make pcre pcre-devel kernel-devel openssl-devel libnl-devel popt-devel popt-static
 ```
 2、安装 ipvsadm 
 ```
@@ -41,8 +41,8 @@ tags: [nginx,lvs,keepalived]
 # chkconfig --add keepalived
 # chkconfig --level 2345 keepalived on
 ```
-* 若/usr/src/kernel目录下没有内核目录，则需要安装内核开发包
-yum install -y kernel-devel安装
+* 若/usr/src/kernels目录下没有内核目录，则需要安装内核开发包
+yum install -y kernel-devel kernel-headers安装
 yum install –y libnfnetlink-devel   (libnfnetlink-devel-1.0.1-4.el7.x86_64.rpm)
 * CentOS7跟CentOS6的头文件路径有差别，把最后一个参数去掉
 * CentOS6下面编译
