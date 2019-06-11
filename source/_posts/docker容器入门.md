@@ -20,26 +20,35 @@ _ _ _
 ~~~
 ### 常用命令
 > 1、查看镜像。
-docker images 
-2、查看本机运行的镜像
-docker ps 
-3、从dockerhub上pull 镜像
-docker pull镜像名称
-4、查看docker 版本
-   docker version
-5、登陆docker Hub的账号
-   docker login
-6、运行容器
-docker run -it #启动docker容器在前端
-docker run -d #启动docker容器在后台
-7、保存镜像
-docker save –o xxx.tar.gz xxx/xxx:tag
-8、导入镜像
-docker load < /path/xxx.tar.gz
+> docker images 
+> 2、查看本机运行的镜像
+> docker ps 
+> 3、从dockerhub上pull 镜像
+> docker pull镜像名称
+> 4、查看docker 版本
+>    docker version
+> 5、登陆docker Hub的账号
+>    docker login
+> 6、运行容器
+> docker run -it #启动docker容器在前端
+> docker run -d #启动docker容器在后台
+> 7、保存镜像
+> docker save –o xxx.tar.gz xxx/xxx:tag
+> 8、导入镜像
+> docker load < /path/xxx.tar.gz
+>
+> 9、限制目录大小
+>
+> --log-opt max-size=100m --log-opt max-file=3
+>
+> 如：docker run -d --log-opt max-size=100m --log-opt max-file=3 --name pascloud_tomcat7 -p:8080:8080 -v /home/domains/pascloud/tomcat7:/home/domains/pascloud/tomcat7 -v /home/domains/pascloud/pas-cloud-service-demo:/home/domains/pascloud/pas-cloud-service-demo  pascloud/jdk7:v1.0  /home/domains/pascloud/tomcat7/bin/catalina.sh run 
+>
+> 10、从容器中复制文件,把docker容器里的文件xxx.log复制到/home/pascloud/
+>
+> docker cp containerId:/home/xxx.log /home/pascloud/xxx.log
 
-_ _ _
+#### 自己创建一个镜像
 
-### 自己创建一个镜像
 先网上拉下一个做为基础镜像
 ```
 # docker pull centos
@@ -76,5 +85,33 @@ CMD [ "/usr/local/apache-tomcat-7.0.29/bin/catalina.sh", "run" ]
 ```
 # docker run -d -p 8080:8080 tomcat/centos:latest
 ```
+
+#### 创建一个JDK镜像
+
+```shell
+FROM centos:7
+
+MAINTAINER  abigfish
+
+ENV  TIME_ZONE Asia/Shanghai
+
+#RUN rm -rf /etc/localtime && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime #修改时区
+RUN rm -rf /etc/localtime && ln -s /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime
+RUN echo "${TIME_ZONE}" >/etc/timezone
+
+#RUN yum -y install kde-l10n-Chinese && yum -y reinstall glibc-common
+RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 #配置显示中文
+ENV LC_ALL zh_CN.utf8 #设置环境变量
+
+ADD jdk-7u80-linux-x64.tar.gz /usr/local/
+
+ENV JAVA_HOME /usr/local/jdk1.7.0_80
+ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+ENV PATH $PATH:$JAVA_HOME/bin
+
+```
+
+
+
 
 
