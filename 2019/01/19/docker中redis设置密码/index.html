@@ -97,7 +97,7 @@
 <meta property="og:site_name" content="大鱼的博客">
 <meta property="og:description" content="redis启动1docker run -d --name redis_test -p 6378:6379 --restart=always redis:latest redis-server --appendonly yes --requirepass &amp;quot;123456&amp;quot; redis-server –appendonly yes在容器执行redis-server启动命令，并打开r">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-30T02:33:45.590Z">
+<meta property="og:updated_time" content="2019-06-11T07:50:08.903Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker中redis设置密码">
 <meta name="twitter:description" content="redis启动1docker run -d --name redis_test -p 6378:6379 --restart=always redis:latest redis-server --appendonly yes --requirepass &amp;quot;123456&amp;quot; redis-server –appendonly yes在容器执行redis-server启动命令，并打开r">
@@ -437,6 +437,13 @@
 <p>或者<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it c0de7caa5d1c redis-cli -h 127.0.0.1 -p 6378 -a &apos;123456&apos;</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; keys *</span><br><span class="line">(empty list or set)</span><br></pre></td></tr></table></figure>
 <p><em>c0de7caa5d1c为容器ID</em></p>
+<h3 id="redis挂载目录"><a href="/2019/01/19/docker中redis设置密码/#redis挂载目录" class="headerlink" title="redis挂载目录"></a>redis挂载目录</h3><ul>
+<li>/home/domains/pascloud/redis/redis.conf:/etc/redis/redis.conf</li>
+<li>/home/domains/pascloud/redis/data:/data<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --privileged=true -p 6379:6379 -v /home/domains/pascloud/redis/redis.conf:/etc/redis/redis.conf -v /home/domains/pascloud/redis/data:/data --name pascloud_redis redis:latest redis-server /etc/redis/redis.conf --appendonly yes</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>/etc/redis/redis.conf 关键配置，让redis以指定的配置文件启动，而不是默认无配置启动。</p>
+<p>–appendonly yes redis启动后开启数据持久化</p>
 
       
     </div>
@@ -585,7 +592,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">64</span>
+                <span class="site-state-item-count">66</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -649,7 +656,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis启动"><span class="nav-number">1.</span> <span class="nav-text">redis启动</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis启动"><span class="nav-number">1.</span> <span class="nav-text">redis启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis挂载目录"><span class="nav-number">2.</span> <span class="nav-text">redis挂载目录</span></a></li></ol></div>
             
 
           </div>

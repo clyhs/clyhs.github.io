@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[redis中过期key的maxmemory-policy回收策略]]></title>
+    <url>%2F2019%2F06%2F11%2Fredis%E4%B8%AD%E8%BF%87%E6%9C%9Fkey%E7%9A%84maxmemory-policy%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5%2F</url>
+    <content type="text"><![CDATA[redis内存问题Redis内存太大，会造成redis挂掉 最大内存maxmemorymaxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间 六种maxmemory-policy noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外） allkeys-lru: 尝试回收最少使用的键（LRU），使得新添加的数据有空间存放。 volatile-lru: 尝试回收最少使用的键（LRU），但仅限于在过期集合的键,使得新添加的数据有空间存放 allkeys-random: 回收随机的键使得新添加的数据有空间存放。 volatile-random: 回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合的键。 volatile-ttl: 回收在过期集合的键，并且优先回收存活时间（TTL）较短的键,使得新添加的数据有空间存放。 设置方式1config set maxmemory-policy volatile-lru]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[redis的持久化策略]]></title>
+    <url>%2F2019%2F06%2F11%2Fredis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E7%AD%96%E7%95%A5%2F</url>
+    <content type="text"><![CDATA[redis持久化Redis 有两种持久化方案，RDB （Redis DataBase）和 AOF （Append Only File） rdb方案RDB 是 Redis 默认的持久化方案。在指定的时间间隔内，执行指定次数的写操作，则会将内存中的数据写入到磁盘中。即在指定目录下生成一个dump.rdb文件。Redis 重启会通过加载dump.rdb文件恢复数据。 在redis.conf中 1234# save ""save 900 1save 300 10save 60 10000 上面的意思是： 900秒内有1个更改，300秒内有10个更改以及60秒内有10000个更改，则将内存中的数据快照写入磁盘。 若不想用RDB方案，可以把 save “” 的注释打开，下面三个注释。 RDB文件一般采用默认的 dump.rdb 在redis.conf中 12dbfilename dump.rdb #rdbcompression yes #配置存储至本地数据库时是否压缩数据，默认为yes redis的恢复 将dump.rdb 文件拷贝到redis的安装目录的bin目录下，重启redis服务即可。 优缺点： 优点：1 适合大规模的数据恢复。2 如果业务对数据完整性和一致性要求不高，RDB是很好的选择。 缺点：1 数据的完整性和一致性不高，因为RDB可能在最后一次备份时宕机了。2 备份时占用内存，因为Redis 在备份时会独立创建一个子进程，将数据写入到一个临时文件（此时内存中的数据是原来的两倍），最后再将临时文件替换之前的备份文件。所以Redis 的持久化和数据的恢复要选择在夜深人静的时候执行是比较合理的。 aof方案AOF ：Redis 默认不开启。它的出现是为了弥补RDB的不足（数据的不一致性），所以它采用日志的形式来记录每个写操作，并追加到文件中 12345678appendonly yes #开启需要手动把no改为yesappendfilename "appendonly.aof" #指定本地数据库文件名，默认值为 appendonly.aof# appendfsync alwaysappendfsync everysec #出厂默认推荐，每秒异步记录一次（默认值） # appendfsync no#配置重写触发机制auto-aof-rewrite-percentage 100auto-aof-rewrite-min-size 64mb 根据配置文件触发，可以是每次执行触发，可以是每秒触发，可以不同步。 数据恢复 将appendonly.aof 文件拷贝到redis的安装目录的bin目录下，重启redis服务即可。但在实际开发中，可能因为某些原因导致appendonly.aof 文件格式异常，从而导致数据还原失败，可以通过命令redis-check-aof –fix appendonly.aof 进行修复 如： 1redis-check-aof --fix appendonly.aof 优缺点： 优点：数据的完整性和一致性更高缺点：因为AOF记录的内容多，文件会越来越大，数据恢复也会越来越慢。 参考：https://www.cnblogs.com/itdragon/p/7906481.html]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[jvm垃圾回收与调优]]></title>
     <url>%2F2019%2F05%2F30%2Fjvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E4%B8%8E%E8%B0%83%E4%BC%98%2F</url>
     <content type="text"><![CDATA[jvm的模型JVM堆内存被分为两部分年轻代（Young Generation）、老年代（Old Generation）和永久保存区（Perm Generation）。 年轻代年轻代是所有新对象产生的地方。当年轻代内存空间被用完时，就会触发垃圾回收。这个垃圾回收叫做Minor GC。年轻代被分为3个部分Enden区和两个Survivor区。 年轻代空间的要点： 大多数新建的对象都位于Eden区。 当Eden区被对象填满时，就会执行Minor GC。并把所有存活下来的对象转移到其中一个survivor区。 Minor GC同样会检查存活下来的对象，并把它们转移到另一个survivor区。这样在一段时间内，总会有一个空的survivor区。 经过多次GC周期后，仍然存活下来的对象会被转移到年老代内存空间。通常这是在年轻代有资格提升到年老代前通过设定年龄阈值来完成的。 年老代年老代内存里包含了长期存活的对象和经过多次Minor GC后依然存活下来的对象。通常会在老年代内存被占满时进行垃圾回收。老年代的垃圾收集叫做Major GC。Major GC会花费更多的时间。 永久区用于存放“永久”对象。这些对象管理着运行于JVM中的类和方法。 jvm的垃圾回收 Serial GC -XX:+UseSerialGC：Serial GC使用简单的标记、清除、压缩方法对年轻代和年老代进行垃圾回收，即Minor GC和Major GC。Serial GC在client模式（客户端模式）很有用，比如在简单的独立应用和CPU配置较低的机器 Parallel GC -XX:+UseParallelGC：除了会产生N个线程来进行年轻代的垃圾收集外，Parallel GC和Serial GC几乎一样。这里的N是系统CPU的核数。我们可以使用 -XX:ParallelGCThreads=n 这个JVM选项来控制线程数量 CMS GC -XX:+UseConcMarkSweepGC：CMS收集器也被称为短暂停顿并发收集器。它是对年老代进行垃圾收集的。CMS收集器通过多线程并发进行垃圾回收，尽量减少垃圾收集造成的停顿。CMS收集器对年轻代进行垃圾回收使用的算法和Parallel收集器一样。这个垃圾收集器适用于不能忍受长时间停顿要求快速响应的应用。可使用 -XX:ParallelCMSThreads=n JVM选项来限制CMS收集器的线程数量。 G1 GC -XX:+UseG1GC) G1（Garbage First）：垃圾收集器是在Java 7后才可以使用的特性，它的长远目标时代替CMS收集器。G1收集器是一个并行的、并发的和增量式压缩短暂停顿的垃圾收集器。G1收集器和其他的收集器运行方式不一样，不区分年轻代和年老代空间。它把堆空间划分为多个大小相等的区域 一般用得最多是cms gc 和G1 gc GC的参数解释-XX:GCTimeRatio 垃圾收集时间占总时间的比率，如果把此参数设置为19，那允许的最大GC时间就占总时间的5%（即1/（1+19）），默认值为99，就是允许最大1%（即1/（1+99））的垃圾收集时间。 -XX:MaxTenuringThreshold 晋升老年代的最大年龄。默认为15，比如设为10，则对象在10次普通GC后将会被放入年老代 -XX:+UseConcMarkSweepGC 开启CMS垃圾回收器 -XX:CMSInitiatingOccupancyFraction 触发CMS收集器的内存比例。比如70%的意思就是说，当内存达到70%，就会开始进行CMS并发收集 -XX:CMSFullGCsBeforeCompaction 设置在几次CMS垃圾收集后，触发一次内存整理 -XX:+ExplicitGCInvokesConcurrent System.gc()可以与应用程序并发执行。 -XX:+UseCMSInitiatingOccupancyOnly 标志来命令JVM不基于运行时收集的数据来启动CMS垃圾收集周期。而是，当该标志被开启时，JVM通过CMSInitiatingOccupancyFraction的值进行每一次CMS收集，而不仅仅是第一次 -XX:+CMSClassUnloadingEnabled 相对于并行收集器，CMS收集器默认不会对永久代进行垃圾回收。如果希望对永久代进行垃圾回收，可用设置标志 -XX:+DisableExplicitGC 该标志将告诉JVM完全忽略系统的GC调用(system.gc())(不管使用的收集器是什么类型) -XX：+CMSConcurrentMTEnabled 当该标志被启用时，并发的CMS阶段将以多线程执行 -XX：ConcGCThreads 比如value=4意味着CMS周期的所有阶段都以4个线程来执行 -XX:SoftRefLRUPolicyMSPerMB=N 如果SoftReference引用对象的生存时长&lt;=空闲内存可保持软引用的最大时间范围，则不清除SoftReference所引用的对象；否则，则将其清除。soft reference 只会在垃圾回收时才会被清除，而垃圾回收并不总在发生。系统默认为一秒 -XX:+UseG1GC 开启g1收集器 -XX:InitiatingHeapOccupancyPercent=45 整个堆栈使用达到百分之多少的时候，启动GC周期. 基于整个堆，不仅仅是其中的某个代的占用情况，G1根据这个值来判断是否要触发GC周期, 0表示一直都在GC，默认值是45 -XX:G1ReservePercent=n 预留多少内存，防止晋升失败的情况，默认值是10 -XX:NewRatio=n 年轻代和老年代大小的比例，默认是2 -XX:SurvivorRatio=n eden和survivor区域空间大小的比例，默认是8 -XX:MaxGCPauseMillis=n 设置一个暂停时间期望目标，这是一个软目标，JVM会近可能的保证这个目标 参考 http://www.importnew.com/14086.html]]></content>
@@ -117,7 +139,7 @@
   <entry>
     <title><![CDATA[docker中redis设置密码]]></title>
     <url>%2F2019%2F01%2F19%2Fdocker%E4%B8%ADredis%E8%AE%BE%E7%BD%AE%E5%AF%86%E7%A0%81%2F</url>
-    <content type="text"><![CDATA[redis启动1docker run -d --name redis_test -p 6378:6379 --restart=always redis:latest redis-server --appendonly yes --requirepass &quot;123456&quot; redis-server –appendonly yes在容器执行redis-server启动命令，并打开redis持久化1、访问1docker exec -it c0de7caa5d1c redis-cli -a &apos;123456&apos; 或者1docker exec -it c0de7caa5d1c redis-cli -h 127.0.0.1 -p 6378 -a &apos;123456&apos; 12127.0.0.1:6379&gt; keys *(empty list or set) c0de7caa5d1c为容器ID]]></content>
+    <content type="text"><![CDATA[redis启动1docker run -d --name redis_test -p 6378:6379 --restart=always redis:latest redis-server --appendonly yes --requirepass &quot;123456&quot; redis-server –appendonly yes在容器执行redis-server启动命令，并打开redis持久化1、访问1docker exec -it c0de7caa5d1c redis-cli -a &apos;123456&apos; 或者1docker exec -it c0de7caa5d1c redis-cli -h 127.0.0.1 -p 6378 -a &apos;123456&apos; 12127.0.0.1:6379&gt; keys *(empty list or set) c0de7caa5d1c为容器ID redis挂载目录 /home/domains/pascloud/redis/redis.conf:/etc/redis/redis.conf /home/domains/pascloud/redis/data:/data1docker run -d --privileged=true -p 6379:6379 -v /home/domains/pascloud/redis/redis.conf:/etc/redis/redis.conf -v /home/domains/pascloud/redis/data:/data --name pascloud_redis redis:latest redis-server /etc/redis/redis.conf --appendonly yes /etc/redis/redis.conf 关键配置，让redis以指定的配置文件启动，而不是默认无配置启动。 –appendonly yes redis启动后开启数据持久化]]></content>
       <categories>
         <category>docker</category>
       </categories>

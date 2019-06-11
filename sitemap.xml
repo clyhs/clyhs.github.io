@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://abigfish.net/2019/06/11/redis%E4%B8%AD%E8%BF%87%E6%9C%9Fkey%E7%9A%84maxmemory-policy%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5/</loc>
+    
+    <lastmod>2019-06-11T08:25:49.870Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://abigfish.net/2019/06/11/redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E7%AD%96%E7%95%A5/</loc>
+    
+    <lastmod>2019-06-11T08:08:34.690Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://abigfish.net/2019/01/19/docker%E4%B8%ADredis%E8%AE%BE%E7%BD%AE%E5%AF%86%E7%A0%81/</loc>
+    
+    <lastmod>2019-06-11T07:50:08.903Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://abigfish.net/2018/03/13/lvs-keepalived-nginx%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B/</loc>
     
     <lastmod>2019-06-04T01:00:52.367Z</lastmod>
@@ -432,13 +453,6 @@
     <loc>http://abigfish.net/2017/04/22/%E8%B7%9F%E7%9D%80%E5%AE%9E%E4%BE%8B%E5%AD%A6%E4%B9%A0ZooKeeper%E7%9A%84%E7%94%A8%E6%B3%95%EF%BC%9A-%E8%AE%A1%E6%95%B0%E5%99%A8/</loc>
     
     <lastmod>2019-05-30T02:33:45.763Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://abigfish.net/2019/01/19/docker%E4%B8%ADredis%E8%AE%BE%E7%BD%AE%E5%AF%86%E7%A0%81/</loc>
-    
-    <lastmod>2019-05-30T02:33:45.590Z</lastmod>
     
   </url>
   
