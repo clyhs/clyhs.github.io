@@ -24,4 +24,13 @@ docker exec -it c0de7caa5d1c redis-cli -h 127.0.0.1 -p 6378 -a '123456'
 ```
 *c0de7caa5d1c为容器ID*
 
+### redis挂载目录
+* /home/domains/pascloud/redis/redis.conf:/etc/redis/redis.conf
+* /home/domains/pascloud/redis/data:/data
+```
+docker run -d --privileged=true -p 6379:6379 -v /home/domains/pascloud/redis/redis.conf:/etc/redis/redis.conf -v /home/domains/pascloud/redis/data:/data --name pascloud_redis redis:latest redis-server /etc/redis/redis.conf --appendonly yes
+```
 
+/etc/redis/redis.conf 关键配置，让redis以指定的配置文件启动，而不是默认无配置启动。
+
+--appendonly yes redis启动后开启数据持久化
