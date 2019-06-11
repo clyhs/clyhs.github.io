@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://abigfish.net/"/>
-  <updated>2019-06-11T08:25:49.870Z</updated>
+  <updated>2019-06-11T10:36:12.815Z</updated>
   <id>http://abigfish.net/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>redis内存分析工具rdb</title>
+    <link href="http://abigfish.net/2019/06/11/redis%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7rdb/"/>
+    <id>http://abigfish.net/2019/06/11/redis内存分析工具rdb/</id>
+    <published>2019-06-11T10:22:40.000Z</published>
+    <updated>2019-06-11T10:36:12.815Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="rdb"><a href="/2019/06/11/redis内存分析工具rdb/#rdb" class="headerlink" title="rdb"></a>rdb</h3><p>redis-rdb-tools是由Python写的用来分析Redis的rdb快照文件用的工具，它可以把rdb快照文件生成json文件或者生成报表用来分析Redis的使用详情、使用标准的diff工具比较两个dump文件，总之是比较实用的工具，至于安装可以通过Python的pip来安装</p><h4 id="安装"><a href="/2019/06/11/redis内存分析工具rdb/#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">yum -y install python-pip python-redis</span><br><span class="line"></span><br><span class="line">正在解决依赖关系</span><br><span class="line"><span class="meta">--&gt;</span> 正在检查事务</span><br><span class="line"><span class="meta">---&gt;</span> 软件包 python2-pip.noarch.0.8.1.2-8.el7 将被 安装</span><br><span class="line"><span class="meta">---&gt;</span> 软件包 python2-redis.noarch.0.2.10.6-1.el7 将被 安装</span><br><span class="line"></span><br><span class="line">pip install rdbtools</span><br></pre></td></tr></table></figure><p>rdb常用的几个参数：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">-h，--help                         显示此帮助信息并退出</span><br><span class="line">-c FILE, --command=FILE            要执行的命令，转出的类型。有效的命令是json(转成json)，diff（差异比对），justkeys（仅有key），justkeyvals（仅有value），memory（内存报告）， protocol（导成添加指令）</span><br><span class="line"></span><br><span class="line">-f FILE, --file=FILE               文件输出文件</span><br><span class="line">-n DBS, --db=DBS                   DBS数据库号码。可以提供多个数据库。如果未指定，则将包括所有数据库。</span><br><span class="line">-k KEYS, --key=KEYS                显示出的Redis的key。这可以是一个正则表达式</span><br><span class="line">-o NOT_KEYS, --not-key=NOT_KEYS    显示忽略的key。这可以是一个正则表达式</span><br><span class="line">-t TYPES, --type=TYPES             显示出数据类型，key的数据类型string(字符串)、list(链表)、set(集合)、zset(sorted set --有序集合)和hash（哈希类型），如果没有指定，全部数据类型将被返回</span><br><span class="line"></span><br><span class="line">-b BYTES, --bytes=BYTES            将内存输出限制为大于或等于的key，单位字节</span><br><span class="line">-l LARGEST, --largest=LARGEST      将内存输出限制为只有前N个key（按大小）</span><br><span class="line">-e ESCAPE, --escape=ESCAPE         将字符串转义为编码：raw（默认），print，utf8或base64。</span><br></pre></td></tr></table></figure><h4 id="运用"><a href="/2019/06/11/redis内存分析工具rdb/#运用" class="headerlink" title="运用"></a>运用</h4><p>把匹配到的key的key和value用json的格式打印</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Example : rdb --command json -k &quot;user.*&quot; /var/redis/6379/dump.rdb</span><br></pre></td></tr></table></figure><p>把Redis的rdb内存分析报告生成csv文件，可以使用awk等相关工具分析，也可以导入数据库用以分析</p><p>rdb -c memory dump.rdb &gt; memory.csv</p><p><strong>创建SQL</strong></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `memory` (</span><br><span class="line">  `database` int(128) DEFAULT NULL,</span><br><span class="line">  `type` varchar(128) DEFAULT NULL,</span><br><span class="line">  `KEY` varchar(128) DEFAULT NULL,</span><br><span class="line">  `size_in_bytes` bigint(20) DEFAULT NULL,</span><br><span class="line">  `encoding` varchar(128) DEFAULT NULL,</span><br><span class="line">  `num_elements` bigint(20) DEFAULT NULL,</span><br><span class="line">  `len_largest_element` varchar(128) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`KEY`)</span><br><span class="line">);</span><br></pre></td></tr></table></figure><p>将memory.csv导入数据库中，数据如下：</p><table><thead><tr><th>database</th><th>type</th><th>key</th><th>size_in_bytes</th><th>encoding</th><th>num_elements</th><th>len_largest_element</th><th>expiry</th></tr></thead><tbody><tr><td>0</td><td>string</td><td>dn1.jgyjhgl</td><td>41016</td><td>string</td><td>38035</td><td>38035</td><td></td></tr><tr><td>0</td><td>string</td><td>dn0.hydkjxgzhzcx</td><td>14400</td><td>string</td><td>12712</td><td>12712</td><td></td></tr><tr><td>0</td><td>string</td><td>dn0.zxllgl.para</td><td>16448</td><td>string</td><td>15143</td><td>15143</td><td></td></tr><tr><td>0</td><td>string</td><td>dn0.zhjstzdr2</td><td>16440</td><td>string</td><td>16081</td><td>16081</td><td></td></tr><tr><td>0</td><td>string</td><td>dn1.zhsthyrjrlye.para</td><td>10304</td><td>string</td><td>8365</td><td>8365</td><td></td></tr><tr><td>0</td><td>string</td><td>dn0.cdkqxlrfx</td><td>20536</td><td>string</td><td>19333</td><td>19333</td><td></td></tr><tr><td>0</td><td>string</td><td>dn1.eckhjxfpdr</td><td>14392</td><td>string</td><td>13945</td><td>13945</td><td></td></tr><tr><td>0</td><td>string</td><td>dn0.bldkqsjxcx.para</td><td>16448</td><td>string</td><td>14736</td><td>14736</td></tr></tbody></table>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;rdb&quot;&gt;&lt;a href=&quot;/2019/06/11/redis内存分析工具rdb/#rdb&quot; class=&quot;headerlink&quot; title=&quot;rdb&quot;&gt;&lt;/a&gt;rdb&lt;/h3&gt;&lt;p&gt;redis-rdb-tools是由Python写的用来分析Redis的rdb快
+      
+    
+    </summary>
+    
+      <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
+    
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+  </entry>
   
   <entry>
     <title>redis中过期key的maxmemory-policy回收策略</title>
@@ -238,9 +263,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -293,9 +318,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -347,9 +372,9 @@
       <category term="docker" scheme="http://abigfish.net/categories/docker/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -493,32 +518,6 @@
       
         &lt;p&gt;HBase 是一个NoSQL数据库，用于处理海量数据，可以支持10亿行百万列的大表，下面就了解一下数据是如何存放在HBase表中的&lt;/p&gt;
 &lt;h3 id=&quot;关系型数据库的表结构&quot;&gt;&lt;a href=&quot;/2018/03/27/Hbase建表例子/#关系型数据库的表结构&quot; cla
-      
-    
-    </summary>
-    
-      <category term="hbase" scheme="http://abigfish.net/categories/hbase/"/>
-    
-    
-      <category term="hbase" scheme="http://abigfish.net/tags/hbase/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hbase概念及表格设计</title>
-    <link href="http://abigfish.net/2018/03/27/Hbase%E6%A6%82%E5%BF%B5%E5%8F%8A%E8%A1%A8%E6%A0%BC%E8%AE%BE%E8%AE%A1/"/>
-    <id>http://abigfish.net/2018/03/27/Hbase概念及表格设计/</id>
-    <published>2018-03-27T02:50:55.000Z</published>
-    <updated>2019-05-30T02:33:46.672Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="1、概述"><a href="/2018/03/27/Hbase概念及表格设计/#1、概述" class="headerlink" title="1、概述"></a>1、概述</h3><ul><li>第一次看HBase, 可能看到以下描述会懵。“基于列存储”、“稀疏MAP”、“RowKey”、“ColumnFamily”。</li><li><p>其实没那么高深，我们需要分两步来理解HBase, 就能够理解为什么HBase能够“快速地”“分布式地”处理“大量数据”了。</p><ul><li>1.内存结构</li><li>2.文件存储结构</li></ul></li></ul><h3 id="2、名词概念以及内存结构"><a href="/2018/03/27/Hbase概念及表格设计/#2、名词概念以及内存结构" class="headerlink" title="2、名词概念以及内存结构"></a>2、名词概念以及内存结构</h3><p>假设我们有一张表（其中只有一条数据）：</p><table border="1" cellspacing="0" cellpadding="0" align="left"><tbody><tr><td rowspan="2" valign="top" width="86"><p class="c2"><span class="c1">RowKey</span></p></td><td colspan="2" valign="top" width="164"><p class="c2"><span class="c1">ColumnFamily : CF1</span></p></td><td colspan="2" valign="top" width="191"><p class="c2"><span class="c1">ColumnFamily : CF2</span></p></td><td rowspan="2" valign="top" width="87"><p class="c2"><span class="c1">TimeStamp</span></p></td></tr><tr><td valign="top" width="82"><p class="c2"><span class="c1">Column: C11</span></p></td><td valign="top" width="82"><p class="c2"><span class="c1">Column: C12</span></p></td><td valign="top" width="92"><p class="c2"><span class="c1">Column: C21</span></p></td><td valign="top" width="99"><p class="c2"><span class="c1">Column: C22</span></p></td></tr><tr><td valign="top" width="86"><p>“com.google”</p></td><td valign="top" width="82"><p>“C11 good”</p></td><td valign="top" width="82"><p>“C12 good”</p></td><td valign="top" width="92"><p>“C12 bad”</p></td><td valign="top" width="99"><p>“C12 bad”</p></td><td valign="top" width="87"><p>T1</p></td></tr></tbody></table><p><br></p><ul><li>1) RowKey: 行键，可理解成MySQL中的主键列。</li><li>2) Column: 列，可理解成MySQL列。</li><li>3) ColumnFamily: 列族, HBase引入的概念：</li></ul><p>将多个列聚合成一个列族。<br>可以理解成MySQL的垂直分区（将一张宽表，切分成几张不那么宽的表）。<br>此机制引入的原因，是因为HBase相信，查询可能并不需要将一整行的所有列数据全部返回。（就像我们往往在写SQL时不太会写select all一样）<br>对应到文件存储结构（不同的ColumnFamily会写入不同的文件）。</p><ul><li>4) TimeStamp：在每次跟新数据时，用以标识一行数据的不同版本（事实上，TimeStamp是与列绑定的。）<br>那我们为何会得到HBase的读写高性能呢？其实所有数据库操作如何得到高性能，答案几乎都是一致的，就是做索引。</li></ul><p>HBase的设计抛弃了传统RDBMS的行式数据模型，把索引和数据模型原生的集成在了一起。</p><p>以上图的表为例，表数据在HBase内部用Map实现，我们把它写成JSon的Object表述，即：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;com.google&quot;: &#123;</span><br><span class="line">    CF1: &#123;</span><br><span class="line">      C11:&#123;</span><br><span class="line">      T1: good</span><br><span class="line">      &#125;</span><br><span class="line">      C12:&#123;</span><br><span class="line">      T1: good</span><br><span class="line">      &#125;</span><br><span class="line">    CF2: &#123;</span><br><span class="line">      C21:&#123;</span><br><span class="line">      T1: bad</span><br><span class="line">      &#125;</span><br><span class="line">      C22:&#123;</span><br><span class="line">      T1: bad</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>由于Map本身可以通过B+树来实现，所以随机访问的速度大大加快（我们需要想象一下，表中有很多行的情况）。</p><p>现在我们在原来的表上修改一下（将Column: C22改为”good”）：</p><table border="1" cellspacing="0" cellpadding="0" align="left"><tbody><tr><td rowspan="2" valign="top" width="86"><p class="c2"><span class="c1">RowKey</span></p></td><td colspan="2" valign="top" width="164"><p class="c2"><span class="c1">ColumnFamily : CF1</span></p></td><td colspan="2" valign="top" width="191"><p class="c2"><span class="c1">ColumnFamily : CF2</span></p></td><td rowspan="2" valign="top" width="87"><p class="c2"><span class="c1">TimeStamp</span></p></td></tr><tr><td valign="top" width="82"><p class="c2"><span class="c1">Column: C11</span></p></td><td valign="top" width="82"><p class="c2"><span class="c1">Column: C12</span></p></td><td valign="top" width="92"><p class="c2"><span class="c1">Column: C21</span></p></td><td valign="top" width="99"><p class="c2"><span class="c1">Column: C22</span></p></td></tr><tr><td valign="top" width="86"><p>“com.google”</p></td><td valign="top" width="82"><p>“C11 good”</p></td><td valign="top" width="82"><p>“C12 good”</p></td><td valign="top" width="92"><p>“C12 bad”</p></td><td valign="top" width="99"><p>“C12 bad”</p></td><td valign="top" width="87"><p>T1</p></td></tr><tr><td valign="top" width="86"><p>“com.google”</p></td><td valign="top" width="82"><p>“C11 good”</p></td><td valign="top" width="82"><p>“C12 good”</p></td><td valign="top" width="92"><p>“C12 bad”</p></td><td valign="top" width="99"><p>“C12 good”</p></td><td valign="top" width="87"><p>T2</p></td></tr></tbody></table><p>于是MAP变为了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;com.google&quot;: &#123;</span><br><span class="line">    CF1: &#123;</span><br><span class="line">      C11:&#123;</span><br><span class="line">      T1: good</span><br><span class="line">      &#125;</span><br><span class="line">      C12:&#123;</span><br><span class="line">      T1: good</span><br><span class="line">      &#125;</span><br><span class="line">    CF2: &#123;</span><br><span class="line">      C21:&#123;</span><br><span class="line">      T1: bad</span><br><span class="line">      &#125;</span><br><span class="line">      C22:&#123;</span><br><span class="line">      T1: bad</span><br><span class="line">           T2:good</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>事实上，我们只需要在C22的object再加一个属性即可。如果我们把这个MAP翻译成表形状，也可以表示为：</p><table border="1" cellspacing="0" cellpadding="0" align="left"><tbody><tr><td rowspan="2" valign="top" width="86"><p class="c2"><span class="c1">RowKey</span></p></td><td colspan="2" valign="top" width="164"><p class="c2"><span class="c1">ColumnFamily : CF1</span></p></td><td colspan="2" valign="top" width="191"><p class="c2"><span class="c1">ColumnFamily : CF2</span></p></td><td rowspan="2" valign="top" width="87"><p class="c2"><span class="c1">TimeStamp</span></p></td></tr><tr><td valign="top" width="82"><p class="c2"><span class="c1">Column: C11</span></p></td><td valign="top" width="82"><p class="c2"><span class="c1">Column: C12</span></p></td><td valign="top" width="92"><p class="c2"><span class="c1">Column: C21</span></p></td><td valign="top" width="99"><p class="c2"><span class="c1">Column: C22</span></p></td></tr><tr><td valign="top" width="86"><p>“com.google”</p></td><td valign="top" width="82"><p>“C11 good”</p></td><td valign="top" width="82"><p>“C12 good”</p></td><td valign="top" width="92"><p>“C12 bad”</p></td><td valign="top" width="99"><p>“C12 bad”</p></td><td valign="top" width="87"><p>T1</p></td></tr><tr><td valign="top" width="86"><p>&nbsp;</p></td><td valign="top" width="82"><p>&nbsp;</p></td><td valign="top" width="82"><p>&nbsp;</p></td><td valign="top" width="92"><p>&nbsp;</p></td><td valign="top" width="99"><p>“C12 good”</p></td><td valign="top" width="87"><p>T2</p></td></tr></tbody></table><p>我们发现，这个表里很多列是没有value的。想象一下，如果再加入一行RowKey不同的数据，其中Column:C11内容为空，就可以在Json中省略该属性了。说明HBase是“稀疏的高阶MAP”。</p><p>为了查询效率，HBase内部对RowKey做了排序，以保证类似的或者相同的RowKey都集中在一起，于是HBase就变成了一张“稀疏的，有序的，高阶的MAP”。</p><h3 id="3-文件存储结构与进程模型"><a href="/2018/03/27/Hbase概念及表格设计/#3-文件存储结构与进程模型" class="headerlink" title="3.文件存储结构与进程模型"></a>3.文件存储结构与进程模型</h3><p>如上所述，HBase是一张“稀疏的，有序的，高阶的MAP”。</p><p>通常来说，MAP可以用B+树来实现。B+树对查询性能而言表现良好，但是对插入数据有些力不从心，尤其对于插入的数据需要持久化到磁盘的情况而言。</p><p>我们对RowKey做了排序，为了保证查询效率，我们希望将连续RowKey的数值保存在连续的磁道上，以避免大量的磁盘随机寻道。所以在插入数据时，对于B+树而言，就面临着大量的文件搬移工作。</p><p>HBase使用了LSM树实现了MAP，简单说来，就是将插入/修改操作缓存在内存中，当内存中积累足够的数据后，再以块的形式刷入到磁盘上。</p><p><img src="https://clyhs.github.io/images/hbase/hbase01.jpg" alt="img"></p><p>Region: 基于RowKey的分区，可理解成MySQL的水平切分。</p><p>每个Region Server就是Hadoop集群中一台机器上的一个进程。</p><p>比如我们的有1-300号的RowKey, 那么1-100号RowKey的行被分配到Region Server 1上，同样，101-200号分配到Region Server 2上， 201-300号分配到Region Server 3上。</p><p>在内存模型中，我们说RowKey保证了相邻RowKey的记录被连续地写入了磁盘。在这里，我们发现，RowKey决定了行操作（增，删，改，查）会被交与哪台Region Server操作。</p><p>让我们假设一下，如果我们的RowKey以记录的TimeStamp起始，从内存模型上说，这很合理，因为我们可能面临大量的用户流水记录查询，查询的条件会设置一个时间片段，我们希望一次性从磁盘中读取这些流水记录，从而避免频繁的磁盘寻道操作。</p><p>但是再另一方面，用户的流水记录查询会很频繁的出现“截至到至今”的查询条件，依照我们上面的进程模型，Region Server 3一定会被分配到（因为最近的记录排在最后），这样就可能造成Region Server 3的“过热”，而Region Server 1“过冷”的情况。</p><p>文件存储模型：<br><img src="https://clyhs.github.io/images/hbase/hbase02.jpg" alt="img"></p><p>在HDFS中，每张表对应一个目录，在表目录下，每个Region对应一个目录，在Region目录下，每个Store对应一个目录（一个Store对应一个ColumFamily）。结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">HBase</span><br><span class="line">  |</span><br><span class="line">  ---Table</span><br><span class="line">       |</span><br><span class="line">       ---XXXX(Region的hash)</span><br><span class="line">       |    |</span><br><span class="line">       |    ----ColumnFamily</span><br><span class="line">       |              |</span><br><span class="line">       |              ---文件</span><br><span class="line">       |</span><br><span class="line">       ---YYYYY(另一个Region的hash)</span><br></pre></td></tr></table></figure></p><p>我们的新发现是，不同的ColumnFamily对应不同的Store, 并且被写入了不同的目录, 这意味着：</p><ol><li><p>通过将一张表分解成了不同的ColumnFamily，HBase可以从磁盘一次读取更少的内容（IO操作往往是计算机系统中最慢的一环）。</p></li><li><p>我们不应该将需要一次查询出的列，分解在不同的ColumnFamily中，否则以为着HBase不得不读取两个文件来满足查询要求。</p></li></ol><p>另外，一个ColumnFamily中的每一列是连续存储的。即如果一个ColumnFamily中存在C1,C2两列，一段具有100行记录的存储格式是：</p><p>C1(1),C2(1),C1(2),C2(2),C1(3),C2(3)………….C1(100),C2(100)</p><p>与其说HBase是基于列的数据库，更不如说HBase是基于“列族”的数据库。</p><h3 id="4-理解"><a href="/2018/03/27/Hbase概念及表格设计/#4-理解" class="headerlink" title="4 理解:"></a>4 理解:</h3><p>基于以上的模型，大致的理解是：</p><ol><li><p>RowKey决定了行操作任务进入RegionServer的数量，我们应该尽量的让一次操作调用更多的Region Server，已达到分布式的目的。</p></li><li><p>RowKey决定了查询读取连续磁盘块的数量，最理想的情况是一次查询，在每个Region Server上，只读取一个磁盘块。</p></li><li><p>ColumnFamily决定了一次查询需要读取的文件数（不同的文件不仅意味着分散的磁盘块，还意味着多次的文件打开关闭操作）。我们应尽量将希望查询的结果集合并到一个ColumnFamily中。同时尽量去除该ColumnFamily中不需要的列。</p></li><li><p>HBase官方建议尽量的减少ColumnFamily的数量。</p></li></ol><p>再瞎总结一下：</p><ol><li><p>RowKey由查询条件决定。</p></li><li><p>ColumnFamily由查询结果决定。</p></li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;1、概述&quot;&gt;&lt;a href=&quot;/2018/03/27/Hbase概念及表格设计/#1、概述&quot; class=&quot;headerlink&quot; title=&quot;1、概述&quot;&gt;&lt;/a&gt;1、概述&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;第一次看HBase, 可能看到以下描述会懵。“基于列存储”、“
       
     
     </summary>
