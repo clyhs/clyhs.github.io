@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://abigfish.net/2019/06/11/redis%E4%B8%AD%E8%BF%87%E6%9C%9Fkey%E7%9A%84maxmemory-policy%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5/</loc>
+    
+    <lastmod>2019-06-14T08:00:55.219Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://abigfish.net/2019/06/11/redis%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7rdb/</loc>
     
     <lastmod>2019-06-11T10:36:12.815Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>http://abigfish.net/2017/04/08/docker%E5%AE%B9%E5%99%A8%E5%85%A5%E9%97%A8/</loc>
     
     <lastmod>2019-06-11T09:00:06.530Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://abigfish.net/2019/06/11/redis%E4%B8%AD%E8%BF%87%E6%9C%9Fkey%E7%9A%84maxmemory-policy%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5/</loc>
-    
-    <lastmod>2019-06-11T08:25:49.870Z</lastmod>
     
   </url>
   

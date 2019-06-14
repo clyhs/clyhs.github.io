@@ -46,9 +46,9 @@
     <link href="http://abigfish.net/2019/06/11/redis%E4%B8%AD%E8%BF%87%E6%9C%9Fkey%E7%9A%84maxmemory-policy%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5/"/>
     <id>http://abigfish.net/2019/06/11/redis中过期key的maxmemory-policy回收策略/</id>
     <published>2019-06-11T08:19:58.000Z</published>
-    <updated>2019-06-11T08:25:49.870Z</updated>
+    <updated>2019-06-14T08:00:55.219Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="redis内存问题"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#redis内存问题" class="headerlink" title="redis内存问题"></a>redis内存问题</h3><p>Redis内存太大，会造成redis挂掉</p><h4 id="最大内存maxmemory"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#最大内存maxmemory" class="headerlink" title="最大内存maxmemory"></a>最大内存maxmemory</h4><p>maxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间</p><h4 id="六种maxmemory-policy"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#六种maxmemory-policy" class="headerlink" title="六种maxmemory-policy"></a>六种maxmemory-policy</h4><ul><li>noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外）</li><li>allkeys-lru: 尝试回收最少使用的键（LRU），使得新添加的数据有空间存放。</li><li>volatile-lru: 尝试回收最少使用的键（LRU），但仅限于在过期集合的键,使得新添加的数据有空间存放</li><li>allkeys-random: 回收随机的键使得新添加的数据有空间存放。</li><li>volatile-random: 回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合的键。</li><li>volatile-ttl: 回收在过期集合的键，并且优先回收存活时间（TTL）较短的键,使得新添加的数据有空间存放。</li></ul><h4 id="设置方式"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#设置方式" class="headerlink" title="设置方式"></a>设置方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory-policy volatile-lru</span><br></pre></td></tr></table></figure>]]></content>
+    <content type="html"><![CDATA[<h3 id="redis内存问题"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#redis内存问题" class="headerlink" title="redis内存问题"></a>redis内存问题</h3><p>Redis内存太大，会造成redis挂掉</p><h4 id="最大内存maxmemory"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#最大内存maxmemory" class="headerlink" title="最大内存maxmemory"></a>最大内存maxmemory</h4><p>maxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间</p><h4 id="六种maxmemory-policy"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#六种maxmemory-policy" class="headerlink" title="六种maxmemory-policy"></a>六种maxmemory-policy</h4><ul><li>noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外）</li><li>allkeys-lru: 尝试回收最少使用的键（LRU），使得新添加的数据有空间存放。</li><li>volatile-lru: 尝试回收最少使用的键（LRU），但仅限于在过期集合的键,使得新添加的数据有空间存放</li><li>allkeys-random: 回收随机的键使得新添加的数据有空间存放。</li><li>volatile-random: 回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合的键。</li><li>volatile-ttl: 回收在过期集合的键，并且优先回收存活时间（TTL）较短的键,使得新添加的数据有空间存放。</li></ul><h4 id="设置方式"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#设置方式" class="headerlink" title="设置方式"></a>设置方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory-policy volatile-lru</span><br></pre></td></tr></table></figure><p>设置最大的内存<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory 12884901888  # 12*1024*1024*1024 12G</span><br><span class="line">CONFIG SET maxmemory 12288MB      # 12* 1024</span><br></pre></td></tr></table></figure></p>]]></content>
     
     <summary type="html">
     
@@ -263,9 +263,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
@@ -318,9 +318,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
@@ -372,9 +372,9 @@
       <category term="docker" scheme="http://abigfish.net/categories/docker/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
