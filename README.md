@@ -1,2 +1,1 @@
-### ´óÓãµÄ²©¿Í
-abigfish.net
+### abigfish.net
