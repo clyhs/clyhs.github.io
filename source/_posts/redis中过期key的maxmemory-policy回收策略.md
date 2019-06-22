@@ -32,7 +32,7 @@ config set maxmemory-policy volatile-lru
 设置最大的内存
 ```shell
 config set maxmemory 12884901888  # 12*1024*1024*1024 12G
-CONFIG SET maxmemory 12288MB      # 12* 1024
+CONFIG SET maxmemory 12288MB      # 12*1024
 ```
 
 
