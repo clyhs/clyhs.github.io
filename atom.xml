@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://abigfish.net/"/>
-  <updated>2019-06-22T01:25:13.893Z</updated>
+  <updated>2019-06-22T01:26:43.494Z</updated>
   <id>http://abigfish.net/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="http://abigfish.net/2019/06/18/rancher2%E5%AE%89%E8%A3%85/"/>
     <id>http://abigfish.net/2019/06/18/rancher2安装/</id>
     <published>2019-06-18T06:47:28.000Z</published>
-    <updated>2019-06-22T01:25:13.893Z</updated>
+    <updated>2019-06-22T01:26:43.494Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="rancher安装"><a href="/2019/06/18/rancher2安装/#rancher安装" class="headerlink" title="rancher安装"></a>rancher安装</h3><h4 id="服务器"><a href="/2019/06/18/rancher2安装/#服务器" class="headerlink" title="服务器"></a>服务器</h4><ul><li>主：192.168.137.101</li><li>agent：192.168.137.100</li></ul><h4 id="准备"><a href="/2019/06/18/rancher2安装/#准备" class="headerlink" title="准备"></a>准备</h4><p>关掉swap</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swapoff -a</span><br></pre></td></tr></table></figure><p>设置selinux</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setenforce 0</span><br></pre></td></tr></table></figure><p>或者/etc/selinux/config中设置为disabled</p><p>关掉防火墙</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl disable direwalld</span><br></pre></td></tr></table></figure><p>软件情况</p><p>docker:18+</p><p>rancher:2.2.4</p><h4 id="安装"><a href="/2019/06/18/rancher2安装/#安装" class="headerlink" title="安装"></a>安装</h4><p><strong>1、在192.168.137.101执行</strong>：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher</span><br></pre></td></tr></table></figure><p>成功后，在浏览器访问<a href="https://192.168.0.101，设置初始密码" target="_blank" rel="noopener">https://192.168.0.101，设置初始密码</a></p><p><img src="https://clyhs.github.io/images/rancher/01.png" alt="img"></p><p>下一步</p><p><img src="https://clyhs.github.io/images/rancher/02.png" alt="img"></p><p>下一步</p><p><img src="https://clyhs.github.io/images/rancher/03.png" alt="img"></p><p>选择右下角中文</p><p><img src="https://clyhs.github.io/images/rancher/04.png" alt="img"></p><p>添加集群，选择右下角custom，并滚动页面，在下面填定集群名称</p><p><img src="https://clyhs.github.io/images/rancher/05.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/06.png" alt="img"></p><p>下一步，勾选所有选项</p><p><img src="https://clyhs.github.io/images/rancher/07.png" alt="img"></p><p>并且可以看到以下：</p><p>复制以下命令在主机的SSH终端运行。这个是在agent执行的命令</p><p><strong>2、在192.168.137.100执行</strong>：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.2.4 --server https://192.168.137.101 --token jpbmr8k27l7r7hxps5q9p6lxhzjpjk8sspqvx9flbb2rxlpslgcsg9 --ca-checksum ccba9db8ad0f6e204968ec2dc5f87de5fea16c05032f6f1c19e141b03f8edcf5 --etcd --controlplane --worker</span><br></pre></td></tr></table></figure><p><img src="https://clyhs.github.io/images/rancher/07.png" alt="img"></p><p>红色字体提示没有rancher/hyperkube:v1.13.5-rancher1镜像，连网不成功。</p><p>最好192.168.137.100是连网状态，因为加上agent节点，会从网上拉下镜像。</p><p>添加成功后如下：</p><p><img src="https://clyhs.github.io/images/rancher/10.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/11.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/12.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/13.png" alt="img"></p>]]></content>
+    <content type="html"><![CDATA[<h3 id="rancher安装"><a href="/2019/06/18/rancher2安装/#rancher安装" class="headerlink" title="rancher安装"></a>rancher安装</h3><h4 id="服务器"><a href="/2019/06/18/rancher2安装/#服务器" class="headerlink" title="服务器"></a>服务器</h4><ul><li>主：192.168.137.101</li><li>agent：192.168.137.100</li></ul><h4 id="准备"><a href="/2019/06/18/rancher2安装/#准备" class="headerlink" title="准备"></a>准备</h4><p>关掉swap</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swapoff -a</span><br></pre></td></tr></table></figure><p>设置selinux</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setenforce 0</span><br></pre></td></tr></table></figure><p>或者/etc/selinux/config中设置为disabled</p><p>关掉防火墙</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl disable direwalld</span><br></pre></td></tr></table></figure><p>软件情况</p><p>docker:18+</p><p>rancher:2.2.4</p><h4 id="安装"><a href="/2019/06/18/rancher2安装/#安装" class="headerlink" title="安装"></a>安装</h4><p><strong>1、在192.168.137.101执行</strong>：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher</span><br></pre></td></tr></table></figure><p>成功后，在浏览器访问<a href="https://192.168.0.101，设置初始密码" target="_blank" rel="noopener">https://192.168.0.101，设置初始密码</a></p><p><img src="https://clyhs.github.io/images/rancher/01.png" alt="img"></p><p>下一步</p><p><img src="https://clyhs.github.io/images/rancher/02.png" alt="img"></p><p>下一步</p><p><img src="https://clyhs.github.io/images/rancher/03.png" alt="img"></p><p>选择右下角中文</p><p><img src="https://clyhs.github.io/images/rancher/04.png" alt="img"></p><p>添加集群，选择右下角custom，并滚动页面，在下面填定集群名称</p><p><img src="https://clyhs.github.io/images/rancher/05.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/06.png" alt="img"></p><p>下一步，勾选所有选项</p><p><img src="https://clyhs.github.io/images/rancher/07.png" alt="img"></p><p>并且可以看到以下：</p><p>复制以下命令在主机的SSH终端运行。这个是在agent执行的命令</p><p><strong>2、在192.168.137.100执行</strong>：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.2.4 --server https://192.168.137.101 --token jpbmr8k27l7r7hxps5q9p6lxhzjpjk8sspqvx9flbb2rxlpslgcsg9 --ca-checksum ccba9db8ad0f6e204968ec2dc5f87de5fea16c05032f6f1c19e141b03f8edcf5 --etcd --controlplane --worker</span><br></pre></td></tr></table></figure><p>红色字体提示没有rancher/hyperkube:v1.13.5-rancher1镜像，连网不成功。</p><p>最好192.168.137.100是连网状态，因为加上agent节点，会从网上拉下镜像。</p><p>添加成功后如下：</p><p><img src="https://clyhs.github.io/images/rancher/10.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/11.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/12.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/13.png" alt="img"></p>]]></content>
     
     <summary type="html">
     
@@ -290,9 +290,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -345,9 +345,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -399,9 +399,9 @@
       <category term="docker" scheme="http://abigfish.net/categories/docker/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
