@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[rancher2安装]]></title>
+    <url>%2F2019%2F06%2F18%2Francher2%E5%AE%89%E8%A3%85%2F</url>
+    <content type="text"><![CDATA[rancher安装服务器 主：192.168.137.101 agent：192.168.137.100 准备关掉swap 1swapoff -a 设置selinux 1setenforce 0 或者/etc/selinux/config中设置为disabled 关掉防火墙 12systemctl stop firewalldsystemctl disable direwalld 软件情况 docker:18+ rancher:2.2.4 安装1、在192.168.137.101执行： 1docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher 成功后，在浏览器访问https://192.168.0.16，设置初始密码 下一步 下一步 选择右下角中文 添加集群，选择右下角custom，并滚动页面，在下面填定集群名称 下一步，勾选所有选项 并且可以看到以下： 复制以下命令在主机的SSH终端运行。这个是在agent执行的命令 2、在192.168.137.100执行： 1sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.2.4 --server https://192.168.137.101 --token jpbmr8k27l7r7hxps5q9p6lxhzjpjk8sspqvx9flbb2rxlpslgcsg9 --ca-checksum ccba9db8ad0f6e204968ec2dc5f87de5fea16c05032f6f1c19e141b03f8edcf5 --etcd --controlplane --worker 红色字体提示没有rancher/hyperkube:v1.13.5-rancher1镜像，连网不成功。 最好192.168.0.7是连网状态，因为加上agent节点，会从网上拉下镜像。 添加成功后如下：]]></content>
+      <categories>
+        <category>rancher</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>rancher</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[redis内存分析工具rdb]]></title>
     <url>%2F2019%2F06%2F11%2Fredis%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7rdb%2F</url>
     <content type="text"><![CDATA[rdbredis-rdb-tools是由Python写的用来分析Redis的rdb快照文件用的工具，它可以把rdb快照文件生成json文件或者生成报表用来分析Redis的使用详情、使用标准的diff工具比较两个dump文件，总之是比较实用的工具，至于安装可以通过Python的pip来安装 安装12345678yum -y install python-pip python-redis正在解决依赖关系--&gt; 正在检查事务---&gt; 软件包 python2-pip.noarch.0.8.1.2-8.el7 将被 安装---&gt; 软件包 python2-redis.noarch.0.2.10.6-1.el7 将被 安装pip install rdbtools rdb常用的几个参数： 123456789101112-h，--help 显示此帮助信息并退出-c FILE, --command=FILE 要执行的命令，转出的类型。有效的命令是json(转成json)，diff（差异比对），justkeys（仅有key），justkeyvals（仅有value），memory（内存报告）， protocol（导成添加指令）-f FILE, --file=FILE 文件输出文件-n DBS, --db=DBS DBS数据库号码。可以提供多个数据库。如果未指定，则将包括所有数据库。-k KEYS, --key=KEYS 显示出的Redis的key。这可以是一个正则表达式-o NOT_KEYS, --not-key=NOT_KEYS 显示忽略的key。这可以是一个正则表达式-t TYPES, --type=TYPES 显示出数据类型，key的数据类型string(字符串)、list(链表)、set(集合)、zset(sorted set --有序集合)和hash（哈希类型），如果没有指定，全部数据类型将被返回-b BYTES, --bytes=BYTES 将内存输出限制为大于或等于的key，单位字节-l LARGEST, --largest=LARGEST 将内存输出限制为只有前N个key（按大小）-e ESCAPE, --escape=ESCAPE 将字符串转义为编码：raw（默认），print，utf8或base64。 运用把匹配到的key的key和value用json的格式打印 1Example : rdb --command json -k &quot;user.*&quot; /var/redis/6379/dump.rdb 把Redis的rdb内存分析报告生成csv文件，可以使用awk等相关工具分析，也可以导入数据库用以分析 rdb -c memory dump.rdb &gt; memory.csv 创建SQL 12345678910CREATE TABLE `memory` ( `database` int(128) DEFAULT NULL, `type` varchar(128) DEFAULT NULL, `KEY` varchar(128) DEFAULT NULL, `size_in_bytes` bigint(20) DEFAULT NULL, `encoding` varchar(128) DEFAULT NULL, `num_elements` bigint(20) DEFAULT NULL, `len_largest_element` varchar(128) DEFAULT NULL, PRIMARY KEY (`KEY`)); 将memory.csv导入数据库中，数据如下： database type key size_in_bytes encoding num_elements len_largest_element expiry 0 string dn1.jgyjhgl 41016 string 38035 38035 0 string dn0.hydkjxgzhzcx 14400 string 12712 12712 0 string dn0.zxllgl.para 16448 string 15143 15143 0 string dn0.zhjstzdr2 16440 string 16081 16081 0 string dn1.zhsthyrjrlye.para 10304 string 8365 8365 0 string dn0.cdkqxlrfx 20536 string 19333 19333 0 string dn1.eckhjxfpdr 14392 string 13945 13945 0 string dn0.bldkqsjxcx.para 16448 string 14736 14736]]></content>
@@ -14,7 +26,7 @@
   <entry>
     <title><![CDATA[redis中过期key的maxmemory-policy回收策略]]></title>
     <url>%2F2019%2F06%2F11%2Fredis%E4%B8%AD%E8%BF%87%E6%9C%9Fkey%E7%9A%84maxmemory-policy%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5%2F</url>
-    <content type="text"><![CDATA[redis内存问题Redis内存太大，会造成redis挂掉 最大内存maxmemorymaxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间 六种maxmemory-policy noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外） allkeys-lru: 尝试回收最少使用的键（LRU），使得新添加的数据有空间存放。 volatile-lru: 尝试回收最少使用的键（LRU），但仅限于在过期集合的键,使得新添加的数据有空间存放 allkeys-random: 回收随机的键使得新添加的数据有空间存放。 volatile-random: 回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合的键。 volatile-ttl: 回收在过期集合的键，并且优先回收存活时间（TTL）较短的键,使得新添加的数据有空间存放。 设置方式1config set maxmemory-policy volatile-lru 设置最大的内存12config set maxmemory 12884901888 # 12*1024*1024*1024 12GCONFIG SET maxmemory 12288MB # 12* 1024]]></content>
+    <content type="text"><![CDATA[redis内存问题Redis内存太大，会造成redis挂掉 最大内存maxmemorymaxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间 六种maxmemory-policy noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外） allkeys-lru: 尝试回收最少使用的键（LRU），使得新添加的数据有空间存放。 volatile-lru: 尝试回收最少使用的键（LRU），但仅限于在过期集合的键,使得新添加的数据有空间存放 allkeys-random: 回收随机的键使得新添加的数据有空间存放。 volatile-random: 回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合的键。 volatile-ttl: 回收在过期集合的键，并且优先回收存活时间（TTL）较短的键,使得新添加的数据有空间存放。 设置方式1config set maxmemory-policy volatile-lru 设置最大的内存12config set maxmemory 12884901888 # 12*1024*1024*1024 12GCONFIG SET maxmemory 12288MB # 12*1024]]></content>
       <categories>
         <category>redis</category>
       </categories>
@@ -107,8 +119,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -131,8 +143,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -155,8 +167,8 @@
         <category>docker</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>

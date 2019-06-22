@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://abigfish.net/"/>
-  <updated>2019-06-11T10:36:12.815Z</updated>
+  <updated>2019-06-22T00:38:11.343Z</updated>
   <id>http://abigfish.net/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>rancher2安装</title>
+    <link href="http://abigfish.net/2019/06/18/rancher2%E5%AE%89%E8%A3%85/"/>
+    <id>http://abigfish.net/2019/06/18/rancher2安装/</id>
+    <published>2019-06-18T06:47:28.000Z</published>
+    <updated>2019-06-22T00:38:11.343Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="rancher安装"><a href="/2019/06/18/rancher2安装/#rancher安装" class="headerlink" title="rancher安装"></a>rancher安装</h3><h4 id="服务器"><a href="/2019/06/18/rancher2安装/#服务器" class="headerlink" title="服务器"></a>服务器</h4><ul><li>主：192.168.137.101</li><li>agent：192.168.137.100</li></ul><h4 id="准备"><a href="/2019/06/18/rancher2安装/#准备" class="headerlink" title="准备"></a>准备</h4><p>关掉swap</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swapoff -a</span><br></pre></td></tr></table></figure><p>设置selinux</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setenforce 0</span><br></pre></td></tr></table></figure><p>或者/etc/selinux/config中设置为disabled</p><p>关掉防火墙</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl disable direwalld</span><br></pre></td></tr></table></figure><p>软件情况</p><p>docker:18+</p><p>rancher:2.2.4</p><h4 id="安装"><a href="/2019/06/18/rancher2安装/#安装" class="headerlink" title="安装"></a>安装</h4><p><strong>1、在192.168.137.101执行</strong>：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher</span><br></pre></td></tr></table></figure><p>成功后，在浏览器访问<a href="https://192.168.0.16，设置初始密码" target="_blank" rel="noopener">https://192.168.0.16，设置初始密码</a></p><p><img src="https://clyhs.github.io/images/rancher/01.png" alt="img"></p><p>下一步</p><p><img src="https://clyhs.github.io/images/rancher/02.png" alt="img"></p><p>下一步</p><p><img src="https://clyhs.github.io/images/rancher/03.png" alt="img"></p><p>选择右下角中文</p><p><img src="https://clyhs.github.io/images/rancher/04.png" alt="img"></p><p>添加集群，选择右下角custom，并滚动页面，在下面填定集群名称</p><p><img src="https://clyhs.github.io/images/rancher/05.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/06.png" alt="img"></p><p>下一步，勾选所有选项</p><p><img src="https://clyhs.github.io/images/rancher/07.png" alt="img"></p><p>并且可以看到以下：</p><p>复制以下命令在主机的SSH终端运行。这个是在agent执行的命令</p><p><strong>2、在192.168.137.100执行</strong>：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.2.4 --server https://192.168.137.101 --token jpbmr8k27l7r7hxps5q9p6lxhzjpjk8sspqvx9flbb2rxlpslgcsg9 --ca-checksum ccba9db8ad0f6e204968ec2dc5f87de5fea16c05032f6f1c19e141b03f8edcf5 --etcd --controlplane --worker</span><br></pre></td></tr></table></figure><p><img src="https://clyhs.github.io/images/rancher/07.png" alt="img"></p><p>红色字体提示没有rancher/hyperkube:v1.13.5-rancher1镜像，连网不成功。</p><p>最好192.168.0.7是连网状态，因为加上agent节点，会从网上拉下镜像。</p><p>添加成功后如下：</p><p><img src="https://clyhs.github.io/images/rancher/10.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/11.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/12.png" alt="img"></p><p><img src="https://clyhs.github.io/images/rancher/13.png" alt="img"></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;rancher安装&quot;&gt;&lt;a href=&quot;/2019/06/18/rancher2安装/#rancher安装&quot; class=&quot;headerlink&quot; title=&quot;rancher安装&quot;&gt;&lt;/a&gt;rancher安装&lt;/h3&gt;&lt;h4 id=&quot;服务器&quot;&gt;&lt;a href=&quot;
+      
+    
+    </summary>
+    
+      <category term="rancher" scheme="http://abigfish.net/categories/rancher/"/>
+    
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="rancher" scheme="http://abigfish.net/tags/rancher/"/>
+    
+  </entry>
   
   <entry>
     <title>redis内存分析工具rdb</title>
@@ -46,9 +73,9 @@
     <link href="http://abigfish.net/2019/06/11/redis%E4%B8%AD%E8%BF%87%E6%9C%9Fkey%E7%9A%84maxmemory-policy%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5/"/>
     <id>http://abigfish.net/2019/06/11/redis中过期key的maxmemory-policy回收策略/</id>
     <published>2019-06-11T08:19:58.000Z</published>
-    <updated>2019-06-14T08:00:55.219Z</updated>
+    <updated>2019-06-14T08:18:46.232Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="redis内存问题"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#redis内存问题" class="headerlink" title="redis内存问题"></a>redis内存问题</h3><p>Redis内存太大，会造成redis挂掉</p><h4 id="最大内存maxmemory"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#最大内存maxmemory" class="headerlink" title="最大内存maxmemory"></a>最大内存maxmemory</h4><p>maxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间</p><h4 id="六种maxmemory-policy"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#六种maxmemory-policy" class="headerlink" title="六种maxmemory-policy"></a>六种maxmemory-policy</h4><ul><li>noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外）</li><li>allkeys-lru: 尝试回收最少使用的键（LRU），使得新添加的数据有空间存放。</li><li>volatile-lru: 尝试回收最少使用的键（LRU），但仅限于在过期集合的键,使得新添加的数据有空间存放</li><li>allkeys-random: 回收随机的键使得新添加的数据有空间存放。</li><li>volatile-random: 回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合的键。</li><li>volatile-ttl: 回收在过期集合的键，并且优先回收存活时间（TTL）较短的键,使得新添加的数据有空间存放。</li></ul><h4 id="设置方式"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#设置方式" class="headerlink" title="设置方式"></a>设置方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory-policy volatile-lru</span><br></pre></td></tr></table></figure><p>设置最大的内存<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory 12884901888  # 12*1024*1024*1024 12G</span><br><span class="line">CONFIG SET maxmemory 12288MB      # 12* 1024</span><br></pre></td></tr></table></figure></p>]]></content>
+    <content type="html"><![CDATA[<h3 id="redis内存问题"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#redis内存问题" class="headerlink" title="redis内存问题"></a>redis内存问题</h3><p>Redis内存太大，会造成redis挂掉</p><h4 id="最大内存maxmemory"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#最大内存maxmemory" class="headerlink" title="最大内存maxmemory"></a>最大内存maxmemory</h4><p>maxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间</p><h4 id="六种maxmemory-policy"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#六种maxmemory-policy" class="headerlink" title="六种maxmemory-policy"></a>六种maxmemory-policy</h4><ul><li>noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外）</li><li>allkeys-lru: 尝试回收最少使用的键（LRU），使得新添加的数据有空间存放。</li><li>volatile-lru: 尝试回收最少使用的键（LRU），但仅限于在过期集合的键,使得新添加的数据有空间存放</li><li>allkeys-random: 回收随机的键使得新添加的数据有空间存放。</li><li>volatile-random: 回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合的键。</li><li>volatile-ttl: 回收在过期集合的键，并且优先回收存活时间（TTL）较短的键,使得新添加的数据有空间存放。</li></ul><h4 id="设置方式"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#设置方式" class="headerlink" title="设置方式"></a>设置方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory-policy volatile-lru</span><br></pre></td></tr></table></figure><p>设置最大的内存<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory 12884901888  # 12*1024*1024*1024 12G</span><br><span class="line">CONFIG SET maxmemory 12288MB      # 12*1024</span><br></pre></td></tr></table></figure></p>]]></content>
     
     <summary type="html">
     
@@ -263,9 +290,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -318,9 +345,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -372,9 +399,9 @@
       <category term="docker" scheme="http://abigfish.net/categories/docker/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -492,32 +519,6 @@
       
       
         &lt;h3 id=&quot;HBASE表的模板&quot;&gt;&lt;a href=&quot;/2018/04/03/hbase设计rowkey例子/#HBASE表的模板&quot; class=&quot;headerlink&quot; title=&quot;HBASE表的模板&quot;&gt;&lt;/a&gt;HBASE表的模板&lt;/h3&gt;&lt;table cellspacin
-      
-    
-    </summary>
-    
-      <category term="hbase" scheme="http://abigfish.net/categories/hbase/"/>
-    
-    
-      <category term="hbase" scheme="http://abigfish.net/tags/hbase/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hbase建表例子</title>
-    <link href="http://abigfish.net/2018/03/27/Hbase%E5%BB%BA%E8%A1%A8%E4%BE%8B%E5%AD%90/"/>
-    <id>http://abigfish.net/2018/03/27/Hbase建表例子/</id>
-    <published>2018-03-27T03:33:01.000Z</published>
-    <updated>2019-05-30T02:33:50.043Z</updated>
-    
-    <content type="html"><![CDATA[<p>HBase 是一个NoSQL数据库，用于处理海量数据，可以支持10亿行百万列的大表，下面就了解一下数据是如何存放在HBase表中的</p><h3 id="关系型数据库的表结构"><a href="/2018/03/27/Hbase建表例子/#关系型数据库的表结构" class="headerlink" title="关系型数据库的表结构"></a>关系型数据库的表结构</h3><p>为了更好的理解HBase表的思路，先回顾一下关系数据库中表的处理方式</p><p>例如有一个用户表user_info，有字段：id、name、tel，表名和字段需要在建表时指定<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">create table user_info (</span><br><span class="line"></span><br><span class="line">  id 类型,</span><br><span class="line"></span><br><span class="line">  name 类型,</span><br><span class="line"></span><br><span class="line">  tel 类型</span><br><span class="line"></span><br><span class="line">)</span><br></pre></td></tr></table></figure></p><p>然后插入两条数据</p><p>insert into user_info values(…)</p><p>表结构</p><table class="c2" border="0" cellspacing="0" cellpadding="0"><thead><tr><td><p class="c1"><strong>id</strong></p></td><td><p class="c1"><strong>name</strong></p></td><td><p class="c1"><strong>tel</strong></p></td></tr></thead><tbody><tr><td><p class="c1">1</p></td><td><p class="c1">小明</p></td><td><p class="c1">123</p></td></tr><tr><td><p class="c1">2</p></td><td><p class="c1">小王</p></td><td><p class="c1">456</p></td></tr></tbody></table><p>后来字段不够用了，新用户需要记录地址，就要新增一个字段</p><table class="c2" border="0" cellspacing="0" cellpadding="0"><thead><tr><td><p class="c1"><strong>id</strong></p></td><td><p class="c1"><strong>name</strong></p></td><td><p class="c1"><strong>tel</strong></p></td><td><p class="c1"><strong>addr</strong></p></td></tr></thead><tbody><tr><td><p class="c1">1</p></td><td><p class="c1">小明</p></td><td><p class="c1">123</p></td><td>&nbsp;</td></tr><tr><td><p class="c1">2</p></td><td><p class="c1">小王</p></td><td><p class="c1">456</p></td><td>&nbsp;</td></tr></tbody></table><p>以后再增加需求时，就继续新增字段，或者添加一个扩展表</p><p>上面的内容主要说明的是：</p><ul><li>建表的方式，需提前指定表名和字段</li><li>插入记录的方式，指定表名和各字段的值</li><li>数据表是二维结构，行和列</li><li>添加字段不灵活</li></ul><p>下面看一下HBase的处理方式</p><h3 id="HBase的表结构"><a href="/2018/03/27/Hbase建表例子/#HBase的表结构" class="headerlink" title="HBase的表结构"></a>HBase的表结构</h3><p>建表时要指定的是：表名、列族</p><p>建表语句</p><p>create ‘user_info’, ‘base_info’, ‘ext_info’</p><p>意思是新建一个表，名称是user_info，包含两个列族base_info和ext_info</p><p>列族 是列的集合，一个列族中包含多个列</p><p>这时的表结构：</p><table class="c2" border="0" cellspacing="0" cellpadding="0"><thead><tr><td><p class="c1"><strong>row key</strong></p></td><td><p class="c1"><strong>base_info</strong></p></td><td><p class="c1"><strong>ext_info</strong></p></td></tr></thead><tbody><tr><td><p class="c1">…</p></td><td><p class="c1">…</p></td><td><p class="c1">…</p></td></tr></tbody></table><p><strong>row key</strong> 是行键，每一行的ID，这个字段是自动创建的，建表时不需要指定</p><p>插入一条用户数据：name为‘a’，tel为‘123’</p><p>插入语句</p><p>put ‘user_info’, ‘row1’, ‘base_info:name’, ‘a’</p><p>put ‘user_info’, ‘row1’, ‘base_info:tel’, ‘123’</p><p>意思是向user_info表中行健为row1的base_info列族中添加一项数据 name:a，接着又添加一项数据tel:123</p><p>name和tel就是具体字段，属于base_info这个列族</p><p>这时的表结构：</p><table class="c2" border="0" cellspacing="0" cellpadding="0"><thead><tr><td><p class="c1"><strong>row key</strong></p></td><td><p class="c1"><strong>base_info</strong></p></td><td><p class="c1"><strong>ext_info</strong></p></td></tr></thead><tbody><tr><td><p class="c1">row1</p></td><td><p class="c1">name:a, tel:123</p></td><td>&nbsp;</td></tr></tbody></table><p>再插入一条数据：name为‘b’，addr为‘beijing’</p><p>put ‘user_info’, ‘row2’, ‘base_info:name’, ‘b’</p><p>put ‘user_info’, ‘row2’, ‘ext_info:addr’, ‘bj’</p><p>这时的表结构：</p><table class="c2" border="0" cellspacing="0" cellpadding="0"><thead><tr><td><p class="c1"><strong>row key</strong></p></td><td><p class="c1"><strong>base_info</strong></p></td><td><p class="c1"><strong>ext_info</strong></p></td></tr></thead><tbody><tr><td><p class="c1">row1</p></td><td><p class="c1">name:a, tel:123</p></td><td>&nbsp;</td></tr><tr><td><p class="c1">row2</p></td><td><p class="c1">name:b</p></td><td><p class="c1">addr:bj</p></td></tr></tbody></table><p>HBase表中还有一个重要概念：版本，每个字段的值都有版本信息（通过时间戳指定）</p><p>例如 base_info:name，每次修改时都会保留之前的值，就是说可以取到他的旧值</p><table class="c2" border="0" cellspacing="0" cellpadding="0"><thead><tr><td><p class="c1"><strong>row key</strong></p></td><td><p class="c1"><strong>base_info</strong></p></td><td><p class="c1"><strong>ext_info</strong></p></td></tr></thead><tbody><tr><td><p class="c1">row1</p></td><td><p class="c1">name:a, tel:123</p></td><td>&nbsp;</td></tr><tr><td><p class="c1">row2</p></td><td><p class="c1">name:c(v2)[name:b(v1)]</p></td><td><p class="c1">addr:bj</p></td></tr></tbody></table><p><strong>小结</strong></p><p>从上面建表、插入数据的过程可以看出 HBase 存储数据的特点了</p><ul><li>和关系数据库一样，也是使用行和列的结构</li><li>建表时，定义的是表名和列族（字段的集合），而不是具体字段</li><li>列族中可以包含任意个字段，字段名不需要预定义，每一行中同一列族中的字段也可以不一致</li><li>多维结构，关系数据库的表是二维的，通过指行、列定位一个数据，HBase中需要通过 行健、列族名、字段名、版本号才能定位到具体数据</li><li>插入数据时，一次插入一个字段的数据，不是像关系数据库那样一次插入多个字段</li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;HBase 是一个NoSQL数据库，用于处理海量数据，可以支持10亿行百万列的大表，下面就了解一下数据是如何存放在HBase表中的&lt;/p&gt;
-&lt;h3 id=&quot;关系型数据库的表结构&quot;&gt;&lt;a href=&quot;/2018/03/27/Hbase建表例子/#关系型数据库的表结构&quot; cla
       
     
     </summary>

@@ -97,7 +97,7 @@
 <meta property="og:site_name" content="大鱼的博客">
 <meta property="og:description" content="redis内存问题Redis内存太大，会造成redis挂掉 最大内存maxmemorymaxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间 六种maxmemory-policy noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外） allkeys-l">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-14T08:00:55.219Z">
+<meta property="og:updated_time" content="2019-06-14T08:18:46.232Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis中过期key的maxmemory-policy回收策略">
 <meta name="twitter:description" content="redis内存问题Redis内存太大，会造成redis挂掉 最大内存maxmemorymaxmemory设置最大内存，达到最大内存设置后，redis根据maxmemory-policy配置的策略来清理数据 释放空间 六种maxmemory-policy noeviction:返回错误当内存限制达到并且客户端尝试执行会让更多内存被使用的命令（大部分的写入指令，但DEL和几个例外） allkeys-l">
@@ -443,7 +443,7 @@
 <li>volatile-ttl: 回收在过期集合的键，并且优先回收存活时间（TTL）较短的键,使得新添加的数据有空间存放。</li>
 </ul>
 <h4 id="设置方式"><a href="/2019/06/11/redis中过期key的maxmemory-policy回收策略/#设置方式" class="headerlink" title="设置方式"></a>设置方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory-policy volatile-lru</span><br></pre></td></tr></table></figure>
-<p>设置最大的内存<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory 12884901888  # 12*1024*1024*1024 12G</span><br><span class="line">CONFIG SET maxmemory 12288MB      # 12* 1024</span><br></pre></td></tr></table></figure></p>
+<p>设置最大的内存<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config set maxmemory 12884901888  # 12*1024*1024*1024 12G</span><br><span class="line">CONFIG SET maxmemory 12288MB      # 12*1024</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -590,7 +590,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">67</span>
+                <span class="site-state-item-count">68</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -601,7 +601,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-count">26</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -612,7 +612,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">33</span>
+                <span class="site-state-item-count">34</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

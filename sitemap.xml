@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://abigfish.net/2019/06/18/rancher2%E5%AE%89%E8%A3%85/</loc>
+    
+    <lastmod>2019-06-22T00:38:11.343Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://abigfish.net/2019/06/11/redis%E4%B8%AD%E8%BF%87%E6%9C%9Fkey%E7%9A%84maxmemory-policy%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5/</loc>
     
-    <lastmod>2019-06-14T08:00:55.219Z</lastmod>
+    <lastmod>2019-06-14T08:18:46.232Z</lastmod>
     
   </url>
   
