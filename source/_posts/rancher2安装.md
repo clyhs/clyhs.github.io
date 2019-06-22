@@ -49,7 +49,7 @@ rancher:2.2.4
 docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher
 ```
 
-成功后，在浏览器访问https://192.168.0.16，设置初始密码
+成功后，在浏览器访问https://192.168.0.101，设置初始密码
 
 ![img](https://clyhs.github.io/images/rancher/01.png)
 
@@ -85,11 +85,9 @@ docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher
 sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.2.4 --server https://192.168.137.101 --token jpbmr8k27l7r7hxps5q9p6lxhzjpjk8sspqvx9flbb2rxlpslgcsg9 --ca-checksum ccba9db8ad0f6e204968ec2dc5f87de5fea16c05032f6f1c19e141b03f8edcf5 --etcd --controlplane --worker
 ```
 
-![img](https://clyhs.github.io/images/rancher/07.png)
-
 红色字体提示没有rancher/hyperkube:v1.13.5-rancher1镜像，连网不成功。
 
-最好192.168.0.7是连网状态，因为加上agent节点，会从网上拉下镜像。
+最好192.168.137.100是连网状态，因为加上agent节点，会从网上拉下镜像。
 
 添加成功后如下：
 
