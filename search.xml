@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[rancher2安装]]></title>
     <url>%2F2019%2F06%2F18%2Francher2%E5%AE%89%E8%A3%85%2F</url>
-    <content type="text"><![CDATA[rancher安装服务器 主：192.168.137.101 agent：192.168.137.100 准备关掉swap 1swapoff -a 设置selinux 1setenforce 0 或者/etc/selinux/config中设置为disabled 关掉防火墙 12systemctl stop firewalldsystemctl disable direwalld 软件情况 docker:18+ rancher:2.2.4 安装1、在192.168.137.101执行： 1docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher 成功后，在浏览器访问https://192.168.0.16，设置初始密码 下一步 下一步 选择右下角中文 添加集群，选择右下角custom，并滚动页面，在下面填定集群名称 下一步，勾选所有选项 并且可以看到以下： 复制以下命令在主机的SSH终端运行。这个是在agent执行的命令 2、在192.168.137.100执行： 1sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.2.4 --server https://192.168.137.101 --token jpbmr8k27l7r7hxps5q9p6lxhzjpjk8sspqvx9flbb2rxlpslgcsg9 --ca-checksum ccba9db8ad0f6e204968ec2dc5f87de5fea16c05032f6f1c19e141b03f8edcf5 --etcd --controlplane --worker 红色字体提示没有rancher/hyperkube:v1.13.5-rancher1镜像，连网不成功。 最好192.168.0.7是连网状态，因为加上agent节点，会从网上拉下镜像。 添加成功后如下：]]></content>
+    <content type="text"><![CDATA[rancher安装服务器 主：192.168.137.101 agent：192.168.137.100 准备关掉swap 1swapoff -a 设置selinux 1setenforce 0 或者/etc/selinux/config中设置为disabled 关掉防火墙 12systemctl stop firewalldsystemctl disable direwalld 软件情况 docker:18+ rancher:2.2.4 安装1、在192.168.137.101执行： 1docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher 成功后，在浏览器访问https://192.168.0.101，设置初始密码 下一步 下一步 选择右下角中文 添加集群，选择右下角custom，并滚动页面，在下面填定集群名称 下一步，勾选所有选项 并且可以看到以下： 复制以下命令在主机的SSH终端运行。这个是在agent执行的命令 2、在192.168.137.100执行： 1sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.2.4 --server https://192.168.137.101 --token jpbmr8k27l7r7hxps5q9p6lxhzjpjk8sspqvx9flbb2rxlpslgcsg9 --ca-checksum ccba9db8ad0f6e204968ec2dc5f87de5fea16c05032f6f1c19e141b03f8edcf5 --etcd --controlplane --worker 红色字体提示没有rancher/hyperkube:v1.13.5-rancher1镜像，连网不成功。 最好192.168.137.100是连网状态，因为加上agent节点，会从网上拉下镜像。 添加成功后如下：]]></content>
       <categories>
         <category>rancher</category>
       </categories>
@@ -119,8 +119,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -143,8 +143,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -167,8 +167,8 @@
         <category>docker</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
