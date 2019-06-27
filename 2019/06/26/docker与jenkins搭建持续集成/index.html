@@ -118,7 +118,7 @@
 <meta property="og:image" content="https://clyhs.github.io/images/jenkins/20.png">
 <meta property="og:image" content="https://clyhs.github.io/images/jenkins/21.png">
 <meta property="og:image" content="https://clyhs.github.io/images/jenkins/22.png">
-<meta property="og:updated_time" content="2019-06-27T07:58:40.559Z">
+<meta property="og:updated_time" content="2019-06-27T10:36:43.110Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker与jenkins搭建持续集成">
 <meta name="twitter:description" content="安装docker和git192.168.0.7,192.168.0.16(先自行安装docker,git) 12yum install dockeryum install git 离线安装git需要以下安装包    perl-Error-1:0.17020-2.el7   perl-TermReadKey-2.30-20.el7   perl-Git-1.8.3.1-19.el7   git-1.">
@@ -513,7 +513,9 @@
 <h4 id="创建一个jenkins"><a href="/2019/06/26/docker与jenkins搭建持续集成/#创建一个jenkins" class="headerlink" title="创建一个jenkins"></a>创建一个jenkins</h4><p>需要在192.168.0.7创建一个jenkins用户</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">useradd jenkins</span><br><span class="line">passwd jenkins</span><br><span class="line">su jenkins</span><br><span class="line">ssh-keygen -t rsa</span><br><span class="line">cat .ssh/id_rsa.pub #复制一下私钥</span><br></pre></td></tr></table></figure>
 <p>在jenkins里面添加一个jenkins用户凭证</p>
+<p><strong>系统管理-&gt;凭据-&gt;系统</strong></p>
 <p><img src="https://clyhs.github.io/images/jenkins/14.png" alt="img"></p>
+<p><strong>系统管理-&gt;系统设置-&gt;SSH remote hosts</strong></p>
 <p><img src="https://clyhs.github.io/images/jenkins/15.png" alt="img"></p>
 <p>配置maven</p>
 <p><img src="https://clyhs.github.io/images/jenkins/16.png" alt="img"></p>
