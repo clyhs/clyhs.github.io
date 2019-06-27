@@ -89,13 +89,13 @@
 
 
 
-<meta name="description" content="安装docker和git192.168.0.7,192.168.0.16(先自行安装docker,git) 12yum install dockeryum install git 离线安装git需要以下安装包    perl-Error-1:0.17020-2.el7   perl-TermReadKey-2.30-20.el7   perl-Git-1.8.3.1-19.el7   git-1.">
+<meta name="description" content="环境   服务器 软件     192.168.0.7 docker,git,registry,jenkins   192.168.0.16 docker    安装docker和git192.168.0.7,192.168.0.16(先自行安装docker,git) 12yum install dockeryum install git 离线安装git需要以下安装包    perl-Error-">
 <meta name="keywords" content="docker,jenkins">
 <meta property="og:type" content="article">
 <meta property="og:title" content="docker与jenkins搭建持续集成">
 <meta property="og:url" content="http://abigfish.net/2019/06/26/docker与jenkins搭建持续集成/index.html">
 <meta property="og:site_name" content="大鱼的博客">
-<meta property="og:description" content="安装docker和git192.168.0.7,192.168.0.16(先自行安装docker,git) 12yum install dockeryum install git 离线安装git需要以下安装包    perl-Error-1:0.17020-2.el7   perl-TermReadKey-2.30-20.el7   perl-Git-1.8.3.1-19.el7   git-1.">
+<meta property="og:description" content="环境   服务器 软件     192.168.0.7 docker,git,registry,jenkins   192.168.0.16 docker    安装docker和git192.168.0.7,192.168.0.16(先自行安装docker,git) 12yum install dockeryum install git 离线安装git需要以下安装包    perl-Error-">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://clyhs.github.io/images/jenkins/01.png">
 <meta property="og:image" content="https://clyhs.github.io/images/jenkins/02.png">
@@ -118,10 +118,10 @@
 <meta property="og:image" content="https://clyhs.github.io/images/jenkins/20.png">
 <meta property="og:image" content="https://clyhs.github.io/images/jenkins/21.png">
 <meta property="og:image" content="https://clyhs.github.io/images/jenkins/22.png">
-<meta property="og:updated_time" content="2019-06-27T10:36:43.110Z">
+<meta property="og:updated_time" content="2019-06-27T10:42:06.405Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker与jenkins搭建持续集成">
-<meta name="twitter:description" content="安装docker和git192.168.0.7,192.168.0.16(先自行安装docker,git) 12yum install dockeryum install git 离线安装git需要以下安装包    perl-Error-1:0.17020-2.el7   perl-TermReadKey-2.30-20.el7   perl-Git-1.8.3.1-19.el7   git-1.">
+<meta name="twitter:description" content="环境   服务器 软件     192.168.0.7 docker,git,registry,jenkins   192.168.0.16 docker    安装docker和git192.168.0.7,192.168.0.16(先自行安装docker,git) 12yum install dockeryum install git 离线安装git需要以下安装包    perl-Error-">
 <meta name="twitter:image" content="https://clyhs.github.io/images/jenkins/01.png">
 
 
@@ -454,7 +454,25 @@
       
 
       
-        <h3 id="安装docker和git"><a href="/2019/06/26/docker与jenkins搭建持续集成/#安装docker和git" class="headerlink" title="安装docker和git"></a>安装docker和git</h3><p><strong>192.168.0.7,192.168.0.16</strong>(先自行安装docker,git)</p>
+        <h3 id="环境"><a href="/2019/06/26/docker与jenkins搭建持续集成/#环境" class="headerlink" title="环境"></a>环境</h3><table>
+<thead>
+<tr>
+<th>服务器</th>
+<th>软件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>192.168.0.7</td>
+<td>docker,git,registry,jenkins</td>
+</tr>
+<tr>
+<td>192.168.0.16</td>
+<td>docker</td>
+</tr>
+</tbody>
+</table>
+<h3 id="安装docker和git"><a href="/2019/06/26/docker与jenkins搭建持续集成/#安装docker和git" class="headerlink" title="安装docker和git"></a>安装docker和git</h3><p><strong>192.168.0.7,192.168.0.16</strong>(先自行安装docker,git)</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install docker</span><br><span class="line">yum install git</span><br></pre></td></tr></table></figure>
 <p>离线安装git需要以下安装包</p>
 <p>   perl-Error-1:0.17020-2.el7<br>   perl-TermReadKey-2.30-20.el7<br>   perl-Git-1.8.3.1-19.el7<br>   git-1.8.3.1-19.el7 </p>
@@ -757,7 +775,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装docker和git"><span class="nav-number">1.</span> <span class="nav-text">安装docker和git</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jenkins安装"><span class="nav-number">2.</span> <span class="nav-text">jenkins安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署私有镜像仓库"><span class="nav-number">3.</span> <span class="nav-text">部署私有镜像仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jenkins配置全局工具配置"><span class="nav-number">4.</span> <span class="nav-text">Jenkins配置全局工具配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上传JAVA项目到git仓库"><span class="nav-number">5.</span> <span class="nav-text">上传JAVA项目到git仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建jenkins项目"><span class="nav-number">6.</span> <span class="nav-text">创建jenkins项目</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数化构建过程"><span class="nav-number">6.1.</span> <span class="nav-text">参数化构建过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码管理"><span class="nav-number">6.2.</span> <span class="nav-text">源码管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建一个jenkins"><span class="nav-number">6.3.</span> <span class="nav-text">创建一个jenkins</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#POST-STEP执行shell"><span class="nav-number">6.4.</span> <span class="nav-text">POST STEP执行shell</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始构建"><span class="nav-number">7.</span> <span class="nav-text">开始构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重建镜像"><span class="nav-number">8.</span> <span class="nav-text">重建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#重新启动"><span class="nav-number">8.1.</span> <span class="nav-text">重新启动</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境"><span class="nav-number">1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装docker和git"><span class="nav-number">2.</span> <span class="nav-text">安装docker和git</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jenkins安装"><span class="nav-number">3.</span> <span class="nav-text">jenkins安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署私有镜像仓库"><span class="nav-number">4.</span> <span class="nav-text">部署私有镜像仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jenkins配置全局工具配置"><span class="nav-number">5.</span> <span class="nav-text">Jenkins配置全局工具配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上传JAVA项目到git仓库"><span class="nav-number">6.</span> <span class="nav-text">上传JAVA项目到git仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建jenkins项目"><span class="nav-number">7.</span> <span class="nav-text">创建jenkins项目</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数化构建过程"><span class="nav-number">7.1.</span> <span class="nav-text">参数化构建过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码管理"><span class="nav-number">7.2.</span> <span class="nav-text">源码管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建一个jenkins"><span class="nav-number">7.3.</span> <span class="nav-text">创建一个jenkins</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#POST-STEP执行shell"><span class="nav-number">7.4.</span> <span class="nav-text">POST STEP执行shell</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始构建"><span class="nav-number">8.</span> <span class="nav-text">开始构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重建镜像"><span class="nav-number">9.</span> <span class="nav-text">重建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#重新启动"><span class="nav-number">9.1.</span> <span class="nav-text">重新启动</span></a></li></ol></li></ol></div>
             
 
           </div>
