@@ -35,5 +35,12 @@ config set maxmemory 12884901888  # 12*1024*1024*1024 12G
 CONFIG SET maxmemory 12288MB      # 12*1024
 ```
 
+**另外可以通过--bigkeys**来查看最大key
+```shell
+redis-cli -p 6300 --bigkeys
+> ttl key  #查看key的过期时间
+
+```
+
 
 
