@@ -321,3 +321,8 @@ docker run -d --name jenkins_my2 -p 8888:8080 -p 50000:50000 -v /home/domains/je
 ![img](https://clyhs.github.io/images/jenkins/22.png)
 
 用浏览器访问8111，出现正常的hello world!
+
+
+
+[参考]: https://blog.51cto.com/lizhenliang/2159817
+
