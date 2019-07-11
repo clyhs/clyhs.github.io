@@ -376,9 +376,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
@@ -431,9 +431,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
@@ -485,9 +485,9 @@
       <category term="docker" scheme="http://abigfish.net/categories/docker/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
