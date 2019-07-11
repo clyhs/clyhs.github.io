@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[jenkins利用testng自动化测试]]></title>
+    <url>%2F2019%2F07%2F10%2Fjenkins%E5%88%A9%E7%94%A8testng%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%2F</url>
+    <content type="text"><![CDATA[自动化测试Eclipse+TestNGTestNG插件安装，直接通过eclipse marketplace查找 在工程中新建TestNG类 生成TestNG.xml，NewTest.java如下 提交到git 1234git add .git commit -m &quot;2.0.0&quot;git tag 2.0.0git push origin 2.0.0 jenkins安装xUnit plugin和TestNG Result进入系统管理-&gt;插件管理 安装xUnit plugin 安装TestNG Result 修改mytest配置之前配置看上一篇docker与jenkins搭建持续集成 构件 构建后操作 选择publish TestNG Results 构建选择tag为2.0.0 构建完成如下： 多了一个testng Results 进去 查看服务器]]></content>
+      <categories>
+        <category>jenkins</category>
+      </categories>
+      <tags>
+        <tag>jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[docker与jenkins搭建持续集成]]></title>
     <url>%2F2019%2F06%2F26%2Fdocker%E4%B8%8Ejenkins%E6%90%AD%E5%BB%BA%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%2F</url>
     <content type="text"><![CDATA[环境 服务器 软件 192.168.0.7 docker,git,registry,jenkins 192.168.0.16 docker 安装docker和git192.168.0.7,192.168.0.16(先自行安装docker,git) 12yum install dockeryum install git 离线安装git需要以下安装包 perl-Error-1:0.17020-2.el7 perl-TermReadKey-2.30-20.el7 perl-Git-1.8.3.1-19.el7 git-1.8.3.1-19.el7 在192.168.0.7上创建git 12345678#创建git用户useradd gitpasswd git#创建mytest项目su - gitmkdir mytest.gitcd mytest.git/git --bare init 在192.168.0.16上执行，可以克隆 1git clone git@192.168.0.7:/home/git/mytest.git jenkins安装在192.168.0.7上安装jenkins 下载jenkins包 地址：http://mirrors.jenkins.io/war-stable/latest/jenkins.war 部署到tomcat/webapps里面，清掉webapps里面自带目录，把jenkins.war 改成ROOT.war 如：/home/domains/tomcat/webapps/ROOT.war 或者直接DOCKER部署 docker pull jenkins/jenkins 1docker run -d --name jenkins -p 8888:8080 -p 50000:50000 -v /home/domains/jenkins_home:/var/jenkins_home jenkins/jenkins 查看日志 1docker logs -f jenkins 找到启动输入的password复制 打开http://{ip}:8888/ 输入password 选择推荐安装插件。 创建第一个管理员。 可以通过http://{ip}:8888/login?from=%2F 登录 登录后发现空白，可能是权限问题，解决方法：把映射的目录权限改为777，重启服务 123docker stop jenkinschmod -R 777 /home/domains/jenkins_home/docker start jenkins 部署私有镜像仓库在192.168.0.7上安装docker私有仓库 1docker run -d -v /home/domains/registry:/var/lib/registry -p 5000:5000 --restart=always --name registry registry 在192.168.0.16、192.168.0.7添加http信任 123vi /etc/docker/daemon.json#加入&#123;&quot;insecure-registries&quot;:[&quot;192.168.0.7:5000&quot;]&#125; 重启docker:systemctl restart docker 然后找一个镜像，重新打一个与标签 这里用nginx:1.15.8 12docker tag nginx:1.15.8 192.168.0.7:5000/nginx:1.15.8docker push 192.168.0.7:5000/nginx:1.15.8 可以在192.168.0.7的/home/domains/registry看到生成一个docker目录，存放刚才push进去的镜像。 Jenkins配置全局工具配置系统管理-&gt;全局工具配置 先把maven，jdk复制到/home/domains/jenkins_home目录下，下面填写的jdk和maven用容器内部地址 比如jdk在/var/jenkins_home/jdk**目录下 添加凭证，可以远程通过ssh连接192.168.0.7 系统管理-&gt;凭据-&gt;系统 系统管理-&gt;系统设置-&gt;SSH remote hosts 上传JAVA项目到git仓库1234567git clone https://gitee.com/clyhs/mytest.gitgit remote remove origin git remote add origin git@192.168.0.7:/home/git/mytest.gitgit add .git commit -m &quot;init&quot;git tag 1.0.0git push origin 1.0.0 如何获取 12git clone git@192.168.0.7:/home/git/mytest.gitgit checkout 1.0.0 创建jenkins项目 选择构建一个maven项目（如果没有这个选择，可以去插件管理进行安装） 参数化构建过程 源码管理 如果显示 1234567Failed to connect to repository : Command &quot;git ls-remote -h git@192.168.0.7:/home/git/mytest.git HEAD&quot; returned status code 128:stdout: stderr: Host key verification failed fatal: Could not read from remote repository.Please make sure you have the correct access rightsand the repository exists. 创建一个jenkins需要在192.168.0.7创建一个jenkins用户 12345useradd jenkinspasswd jenkinssu jenkinsssh-keygen -t rsacat .ssh/id_rsa.pub #复制一下私钥 在jenkins里面添加一个jenkins用户凭证 配置maven POST STEP执行shell123456789REPO=192.168.0.7:5000/mytest:$&#123;Tag&#125;cat &gt; Dockerfile &lt;&lt; EOFFROM 192.168.0.7:5000/tomcat:7run rm -rf /usr/local/tomcat/webapps/ROOTCOPY target/*.war /usr/local/tomcat/webapps/ROOT.warCMD [&quot;catalina.sh&quot;,&quot;run&quot;]EOFdocker build -t $REPO .docker push $REPO 12345REPOSITORY=192.168.0.7:5000/mytest:$&#123;Tag&#125;# 部署docker rm -f mytest |truedocker image rm $REPOSITORY |truedocker container run -d --name mytest -p 8111:8080 $REPOSITORY 开始构建 根据版本号参数进行构建 构建过程发现jenkins里面没有docker命令，为了之前配置jenkins容器的数据不丢失，把运行的jenkins容器，打成镜像clyhs/jenkins:1.0 1docker commit containerId clyhs/jenkins:1.0 停止之前运行的容器 1docker stop containerId 启动 1docker run -d --name jenkins_my -p 8888:8080 -p 50000:50000 -v /home/domains/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -v /usr/lib64/libltdl.so.7:/usr/lib/x86_64-linux-gnu/libltdl.so.7 clyhs/jenkins:1.0 现没有/var/run/docker.sock权限， 缺少libltdl.so.7依赖 只能利用clyhs/jenkins:1.0来打新的镜像clyhs/jenkins:2.0 重建镜像vi Dockerfile 1234567891011121314FROM clyhs/jenkins:1.0USER root#清除了基础镜像设置的源，切换成阿里云的jessie源RUN echo &apos;&apos; &gt; /etc/apt/sources.list.d/jessie-backports.list \ &amp;&amp; echo &quot;deb http://mirrors.aliyun.com/debian jessie main contrib non-free&quot; &gt; /etc/apt/sources.list \ &amp;&amp; echo &quot;deb http://mirrors.aliyun.com/debian jessie-updates main contrib non-free&quot; &gt;&gt; /etc/apt/sources.list \ &amp;&amp; echo &quot;deb http://mirrors.aliyun.com/debian-security jessie/updates main contrib non-free&quot; &gt;&gt; /etc/apt/sources.list#更新源并安装缺少的包RUN apt-get update &amp;&amp; apt-get install -y libltdl7ARG dockerGid=999RUN echo &quot;docker:x:$&#123;dockerGid&#125;:jenkins&quot; &gt;&gt; /etc/group \USER jenkins 1docker build -t clyhs/jenkins:2.0 . 重新启动1docker run -d --name jenkins_my2 -p 8888:8080 -p 50000:50000 -v /home/domains/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker clyhs/jenkins:2.0 注意：$(which docker)表示用宿主的docker 终于构建成功 运行的容器如下： 用浏览器访问8111，出现正常的hello world!]]></content>
@@ -144,8 +155,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -168,8 +179,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -192,8 +203,8 @@
         <category>docker</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
