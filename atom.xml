@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://abigfish.net/"/>
-  <updated>2019-07-12T06:18:17.996Z</updated>
+  <updated>2019-07-15T05:51:54.502Z</updated>
   <id>http://abigfish.net/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>全栈技术图谱</title>
+    <link href="http://abigfish.net/2019/07/15/%E5%85%A8%E6%A0%88%E6%8A%80%E6%9C%AF%E5%9B%BE%E8%B0%B1/"/>
+    <id>http://abigfish.net/2019/07/15/全栈技术图谱/</id>
+    <published>2019-07-15T05:44:19.000Z</published>
+    <updated>2019-07-15T05:51:54.502Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="全栈技术图谱"><a href="/2019/07/15/全栈技术图谱/#全栈技术图谱" class="headerlink" title="全栈技术图谱"></a>全栈技术图谱</h3><p><img src="https://clyhs.github.io/images/java/all.png" alt="img"></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;全栈技术图谱&quot;&gt;&lt;a href=&quot;/2019/07/15/全栈技术图谱/#全栈技术图谱&quot; class=&quot;headerlink&quot; title=&quot;全栈技术图谱&quot;&gt;&lt;/a&gt;全栈技术图谱&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;https://clyhs.github.io/i
+      
+    
+    </summary>
+    
+    
+      <category term="全栈" scheme="http://abigfish.net/tags/%E5%85%A8%E6%A0%88/"/>
+    
+  </entry>
   
   <entry>
     <title>docker一些常见问题处理</title>
@@ -119,9 +142,9 @@
       <category term="iptables" scheme="http://abigfish.net/categories/iptables/"/>
     
     
-      <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
     
       <category term="iptables" scheme="http://abigfish.net/tags/iptables/"/>
     
@@ -513,31 +536,6 @@
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>docker中mysql的数据导出导入</title>
-    <link href="http://abigfish.net/2019/01/18/docker%E4%B8%ADmysql%E7%9A%84%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BA%E5%AF%BC%E5%85%A5/"/>
-    <id>http://abigfish.net/2019/01/18/docker中mysql的数据导出导入/</id>
-    <published>2019-01-18T12:18:34.000Z</published>
-    <updated>2019-05-30T02:33:49.271Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="docker启动mysql"><a href="/2019/01/18/docker中mysql的数据导出导入/#docker启动mysql" class="headerlink" title="docker启动mysql"></a>docker启动mysql</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name pascloud_mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:5.7 --lower_case_table_names=1 --character-set-server=utf8 --collation-server=utf8</span><br></pre></td></tr></table></figure><p>1、导出数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it pascloud_mysql mysqldump -uroot -proot pascloud &gt; /opt/pascloud.sql</span><br></pre></td></tr></table></figure></p><p>2、复制文件到容器里面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp /opt/pascloud.sql pascloud_mysql:/opt/pascloud.sql</span><br></pre></td></tr></table></figure></p><p>3、进入容器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it pascloud_mysql bash</span><br></pre></td></tr></table></figure></p><p>4、还原数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -proot</span><br><span class="line">&gt;create database pascloud;</span><br><span class="line">&gt;use pascloud;</span><br><span class="line">&gt;source /opt/pascloud.sql</span><br></pre></td></tr></table></figure></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;docker启动mysql&quot;&gt;&lt;a href=&quot;/2019/01/18/docker中mysql的数据导出导入/#docker启动mysql&quot; class=&quot;headerlink&quot; title=&quot;docker启动mysql&quot;&gt;&lt;/a&gt;docker启动mysql&lt;/
-      
-    
-    </summary>
-    
-      <category term="docker" scheme="http://abigfish.net/categories/docker/"/>
-    
-    
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
