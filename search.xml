@@ -4,6 +4,9 @@
     <title><![CDATA[全栈技术图谱]]></title>
     <url>%2F2019%2F07%2F15%2F%E5%85%A8%E6%A0%88%E6%8A%80%E6%9C%AF%E5%9B%BE%E8%B0%B1%2F</url>
     <content type="text"><![CDATA[全栈技术图谱]]></content>
+      <categories>
+        <category>全栈</category>
+      </categories>
       <tags>
         <tag>全栈</tag>
       </tags>
@@ -50,8 +53,8 @@
         <category>iptables</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>centos7</tag>
+        <tag>docker</tag>
         <tag>iptables</tag>
       </tags>
   </entry>
@@ -174,8 +177,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -198,8 +201,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -222,8 +225,8 @@
         <category>docker</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
