@@ -77,6 +77,8 @@ _ _ _
    2、SLAVE01\02
        service mesos-slave start
 
+
+
 ### 配置marathon
 
 修改端口
@@ -107,6 +109,10 @@ http://192.168.137.121:8181/ui
 
 ![img](https://clyhs.github.io/images/marathon/07.png)
 
+### 查看mesos master
 
+http://192.168.137.121:5050
+
+![img](https://clyhs.github.io/images/marathon/08.png)
 
 
