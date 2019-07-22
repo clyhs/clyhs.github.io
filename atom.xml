@@ -144,9 +144,9 @@
       <category term="iptables" scheme="http://abigfish.net/categories/iptables/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
       <category term="iptables" scheme="http://abigfish.net/tags/iptables/"/>
     
