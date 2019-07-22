@@ -77,9 +77,35 @@ _ _ _
    2、SLAVE01\02
        service mesos-slave start
 
+### 配置marathon
 
+修改端口
 
+```
+vi /etc/default/marathon
 
+export HTTP_PORT=8181
+
+export MARATHON_HTTP_PORT=8181
+```
+
+添加案例nginx
+
+http://192.168.137.121:8181/ui
+
+![img](https://clyhs.github.io/images/marathon/01.png)
+
+![img](https://clyhs.github.io/images/marathon/02.png)
+
+![img](https://clyhs.github.io/images/marathon/03.png)
+
+![img](https://clyhs.github.io/images/marathon/04.png)
+
+![img](https://clyhs.github.io/images/marathon/05.png)
+
+![img](https://clyhs.github.io/images/marathon/06.png)
+
+![img](https://clyhs.github.io/images/marathon/07.png)
 
 
 
