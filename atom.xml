@@ -144,9 +144,9 @@
       <category term="iptables" scheme="http://abigfish.net/categories/iptables/"/>
     
     
-      <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
     
       <category term="iptables" scheme="http://abigfish.net/tags/iptables/"/>
     
@@ -426,9 +426,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -481,9 +481,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
@@ -535,9 +535,9 @@
       <category term="docker" scheme="http://abigfish.net/categories/docker/"/>
     
     
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   

@@ -53,8 +53,8 @@
         <category>iptables</category>
       </categories>
       <tags>
-        <tag>centos7</tag>
         <tag>docker</tag>
+        <tag>centos7</tag>
         <tag>iptables</tag>
       </tags>
   </entry>
@@ -177,8 +177,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -201,8 +201,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -225,8 +225,8 @@
         <category>docker</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>docker</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -798,7 +798,7 @@
   <entry>
     <title><![CDATA[mesos+marathon搭建集群]]></title>
     <url>%2F2017%2F04%2F08%2Fmesos-marathon%E6%90%AD%E5%BB%BA%E9%9B%86%E7%BE%A4%2F</url>
-    <content type="text"><![CDATA[mesos+marathon搭建集群mesos简介 Mesos是Apache下的开源分布式资源管理框架，它被称为是分布式系统的内核。Mesos最初是由加州大学伯克利分校的AMPLab开发的，后在Twitter得到广泛使用。 marathon简介 它是一个mesos框架，能够支持运行长服务，比如web应用等。 准备三台虚拟机 主机名 IP mesos_master 192.168.137.121 mesos_slave01 192.168.137.122 mesos_slave02 192.168.137.123 开发搭建 三台机都安装docker yum install docker* 三台机都安装mesos rpm -Uvh http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpmrpm –import /etc/pki/rpm-gpg/RPM-GPG-KEY-mesosphereyum install mesos -y 修改hosts 192.168.137.121 mesos_master192.168.137.122 mesos_slave01192.168.137.123 mesos_slave02 mesos_master安装 1、关闭selinux systemctl stop firewalld &amp;&amp; systemctl disable firewalld 2、安装 yum -y install mesosphere-zookeeper3、给每一个master的zookeeper设置一个唯一id echo 1 &gt; /var/lib/zookeeper/myid vi /etc/zookeeper/conf/zoo.cfg server.1=192.168.137.121:2888:3888 vi /etc/mesos/zk zk://192.168.137.121:2181/mesos vi /etc/mesos-master/quorum 1（zookeeper的数量） 4、停掉mesos-slave systemctl stop mesos-slave.service systemctl disable mesos-slave.service 5、安装marahton yum install -y marathon 6、其他 vi /etc/mesos-master/ip (添加master的ip，默认是127.0.0.1，只做显示用) vi /etc/mesos-master/hostname (添加master的hostname，默认为localhost，主要在mesos集群间使用，不是机器的hostname，只做显示用)7、marathon配置这个设置和上面配置mesos的hostname效果一样，不配置会显示默认的localhost，不影响使用 mkdir -p /etc/marathon/conf/ &amp;&amp; touch hostname echo 192.168.137.121 | sudo tee /etc/marathon/conf/hostname mesos_slave01\slave02安装 1、设置zookeeper vi /etc/mesos/zk zk://192.168.1.24:2181/mesos 2、关闭mesos-master服务 systemctl stop mesos-master.service systemctl disable mesos-master.service 3、指定使用docker容器化 echo &apos;docker,mesos&apos; &gt; /etc/mesos-slave/containerizers 4、考虑到拉取容器镜像等的操作，适当增加timeout的时间 echo &apos;5mins&apos; &gt; /etc/mesos-slave/executor_registration_timeout 启动服务 1、MASTER service zookeeper start service mesos-master start service marathon start 2、SLAVE01\02 service mesos-slave start]]></content>
+    <content type="text"><![CDATA[mesos+marathon搭建集群mesos简介 Mesos是Apache下的开源分布式资源管理框架，它被称为是分布式系统的内核。Mesos最初是由加州大学伯克利分校的AMPLab开发的，后在Twitter得到广泛使用。 marathon简介 它是一个mesos框架，能够支持运行长服务，比如web应用等。 准备三台虚拟机 主机名 IP mesos_master 192.168.137.121 mesos_slave01 192.168.137.122 mesos_slave02 192.168.137.123 开发搭建 三台机都安装docker yum install docker* 三台机都安装mesos rpm -Uvh http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpmrpm –import /etc/pki/rpm-gpg/RPM-GPG-KEY-mesosphereyum install mesos -y 修改hosts 192.168.137.121 mesos_master192.168.137.122 mesos_slave01192.168.137.123 mesos_slave02 mesos_master安装 1、关闭selinux systemctl stop firewalld &amp;&amp; systemctl disable firewalld 2、安装 yum -y install mesosphere-zookeeper3、给每一个master的zookeeper设置一个唯一id echo 1 &gt; /var/lib/zookeeper/myid vi /etc/zookeeper/conf/zoo.cfg server.1=192.168.137.121:2888:3888 vi /etc/mesos/zk zk://192.168.137.121:2181/mesos vi /etc/mesos-master/quorum 1（zookeeper的数量） 4、停掉mesos-slave systemctl stop mesos-slave.service systemctl disable mesos-slave.service 5、安装marahton yum install -y marathon 6、其他 vi /etc/mesos-master/ip (添加master的ip，默认是127.0.0.1，只做显示用) vi /etc/mesos-master/hostname (添加master的hostname，默认为localhost，主要在mesos集群间使用，不是机器的hostname，只做显示用)7、marathon配置这个设置和上面配置mesos的hostname效果一样，不配置会显示默认的localhost，不影响使用 mkdir -p /etc/marathon/conf/ &amp;&amp; touch hostname echo 192.168.137.121 | sudo tee /etc/marathon/conf/hostname mesos_slave01\slave02安装 1、设置zookeeper vi /etc/mesos/zk zk://192.168.1.24:2181/mesos 2、关闭mesos-master服务 systemctl stop mesos-master.service systemctl disable mesos-master.service 3、指定使用docker容器化 echo &apos;docker,mesos&apos; &gt; /etc/mesos-slave/containerizers 4、考虑到拉取容器镜像等的操作，适当增加timeout的时间 echo &apos;5mins&apos; &gt; /etc/mesos-slave/executor_registration_timeout 启动服务 1、MASTER service zookeeper start service mesos-master start service marathon start 2、SLAVE01\02 service mesos-slave start 配置marathon修改端口 12345vi /etc/default/marathonexport HTTP_PORT=8181export MARATHON_HTTP_PORT=8181 添加案例nginx http://192.168.137.121:8181/ui]]></content>
       <categories>
         <category>mesos</category>
       </categories>
