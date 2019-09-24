@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://abigfish.net/"/>
-  <updated>2019-07-15T06:32:20.594Z</updated>
+  <updated>2019-09-24T08:09:47.471Z</updated>
   <id>http://abigfish.net/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>gitlab本地部署</title>
+    <link href="http://abigfish.net/2019/09/24/gitlab%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/"/>
+    <id>http://abigfish.net/2019/09/24/gitlab本地部署/</id>
+    <published>2019-09-24T07:51:05.000Z</published>
+    <updated>2019-09-24T08:09:47.471Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="gitlab本地部署"><a href="/2019/09/24/gitlab本地部署/#gitlab本地部署" class="headerlink" title="gitlab本地部署"></a>gitlab本地部署</h3><h4 id="准备"><a href="/2019/09/24/gitlab本地部署/#准备" class="headerlink" title="准备"></a>准备</h4><p>下载地址：<a href="https://packages.gitlab.com/gitlab/gitlab-ce/" target="_blank" rel="noopener">https://packages.gitlab.com/gitlab/gitlab-ce/</a></p><p>系统：centos7</p><p>软件包：gitlab-ce-10.5.1-ce.0.el7.x86_64.rpm</p><h4 id="先安装依赖"><a href="/2019/09/24/gitlab本地部署/#先安装依赖" class="headerlink" title="先安装依赖"></a>先安装依赖</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install curl openssh-server openssh-clients postfix cronie policycoreutils-python</span><br></pre></td></tr></table></figure><h4 id="安装gitlab"><a href="/2019/09/24/gitlab本地部署/#安装gitlab" class="headerlink" title="安装gitlab"></a>安装gitlab</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh gitlab-ce-10.5.1-ce.0.el7.x86_64.rpm</span><br><span class="line">#安装完成后，执行配置</span><br><span class="line">gitlab-ctl reconfigure</span><br></pre></td></tr></table></figure><p>修改/etc/gitblab/gitlab.rb</p><p>将external_url，改成具体ip，如：<a href="http://192.168.0.7" target="_blank" rel="noopener">http://192.168.0.7</a></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#重新配置</span><br><span class="line">gitlab-ctl reconfigure</span><br><span class="line">#重启</span><br><span class="line">gitlab-ctl restart</span><br></pre></td></tr></table></figure><p> 查看gitlab版本 </p><p>head -1 /opt/gitlab/version-manifest.txt</p><p>通过浏览器登录</p><p><a href="http://192.168.0.7" target="_blank" rel="noopener">http://192.168.0.7</a></p><p>配置用户密码，默认用户为root</p><h4 id="汉化"><a href="/2019/09/24/gitlab本地部署/#汉化" class="headerlink" title="汉化"></a>汉化</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/marbleqi/gitlab-ce-zh.git</span><br><span class="line">cd gitlab-ce-zh</span><br><span class="line">git pull origin #从远端获取最新库</span><br><span class="line">git branch -a</span><br><span class="line">git checkout remotes/origin/v10.5.1-zh-patch</span><br></pre></td></tr></table></figure><p>将汉化文件覆盖到/opt/gitlab/embedded/service/gitlab-rails/</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\cp -r -f gitlab-ce-zh/* /opt/gitlab/embedded/service/gitlab-rails/</span><br></pre></td></tr></table></figure><p>修改/etc/gitlab/gitlab.rb</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/gitlab/gitlab.rb</span><br><span class="line">gitlab_rails[&apos;time_zone&apos;] = &apos;PRC&apos; #将标准时修改为中国时间</span><br><span class="line"></span><br><span class="line">gitlab-ctl reconfigure #使修改的配置文件生效</span><br><span class="line">#注：如果上述命令执行后，未汉化或有异常，则执行以下命令</span><br><span class="line">gitlab-ctl stop #停止gitlab服务</span><br><span class="line">gitlab-ctl start #启动gitlab服务</span><br></pre></td></tr></table></figure><p><img src="https://clyhs.github.io/images/gitlab/gitlab-01.png" alt="img"></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;gitlab本地部署&quot;&gt;&lt;a href=&quot;/2019/09/24/gitlab本地部署/#gitlab本地部署&quot; class=&quot;headerlink&quot; title=&quot;gitlab本地部署&quot;&gt;&lt;/a&gt;gitlab本地部署&lt;/h3&gt;&lt;h4 id=&quot;准备&quot;&gt;&lt;a hre
+      
+    
+    </summary>
+    
+      <category term="git" scheme="http://abigfish.net/categories/git/"/>
+    
+    
+      <category term="gitlab" scheme="http://abigfish.net/tags/gitlab/"/>
+    
+  </entry>
   
   <entry>
     <title>全栈技术图谱</title>
@@ -144,9 +169,9 @@
       <category term="iptables" scheme="http://abigfish.net/categories/iptables/"/>
     
     
-      <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
     
       <category term="iptables" scheme="http://abigfish.net/tags/iptables/"/>
     
@@ -426,9 +451,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
@@ -481,9 +506,9 @@
       <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
     
     
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
       <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
+    
+      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
     
   </entry>
   
@@ -511,33 +536,6 @@
       <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
     
       <category term="firewall" scheme="http://abigfish.net/tags/firewall/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>docker中redis设置密码</title>
-    <link href="http://abigfish.net/2019/01/19/docker%E4%B8%ADredis%E8%AE%BE%E7%BD%AE%E5%AF%86%E7%A0%81/"/>
-    <id>http://abigfish.net/2019/01/19/docker中redis设置密码/</id>
-    <published>2019-01-19T06:48:39.000Z</published>
-    <updated>2019-06-11T07:50:08.903Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="redis启动"><a href="/2019/01/19/docker中redis设置密码/#redis启动" class="headerlink" title="redis启动"></a>redis启动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name redis_test -p 6378:6379 --restart=always redis:latest redis-server --appendonly yes --requirepass &quot;123456&quot;</span><br></pre></td></tr></table></figure><p><em>redis-server –appendonly yes在容器执行redis-server启动命令，并打开redis持久化</em><br>1、访问<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it c0de7caa5d1c redis-cli -a &apos;123456&apos;</span><br></pre></td></tr></table></figure></p><p>或者<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it c0de7caa5d1c redis-cli -h 127.0.0.1 -p 6378 -a &apos;123456&apos;</span><br></pre></td></tr></table></figure></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; keys *</span><br><span class="line">(empty list or set)</span><br></pre></td></tr></table></figure><p><em>c0de7caa5d1c为容器ID</em></p><h3 id="redis挂载目录"><a href="/2019/01/19/docker中redis设置密码/#redis挂载目录" class="headerlink" title="redis挂载目录"></a>redis挂载目录</h3><ul><li>/home/domains/pascloud/redis/redis.conf:/etc/redis/redis.conf</li><li>/home/domains/pascloud/redis/data:/data<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --privileged=true -p 6379:6379 -v /home/domains/pascloud/redis/redis.conf:/etc/redis/redis.conf -v /home/domains/pascloud/redis/data:/data --name pascloud_redis redis:latest redis-server /etc/redis/redis.conf --appendonly yes</span><br></pre></td></tr></table></figure></li></ul><p>/etc/redis/redis.conf 关键配置，让redis以指定的配置文件启动，而不是默认无配置启动。</p><p>–appendonly yes redis启动后开启数据持久化</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;redis启动&quot;&gt;&lt;a href=&quot;/2019/01/19/docker中redis设置密码/#redis启动&quot; class=&quot;headerlink&quot; title=&quot;redis启动&quot;&gt;&lt;/a&gt;redis启动&lt;/h3&gt;&lt;figure class=&quot;highlight
-      
-    
-    </summary>
-    
-      <category term="docker" scheme="http://abigfish.net/categories/docker/"/>
-    
-    
-      <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
-    
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   

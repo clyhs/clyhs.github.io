@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[gitlab本地部署]]></title>
+    <url>%2F2019%2F09%2F24%2Fgitlab%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%2F</url>
+    <content type="text"><![CDATA[gitlab本地部署准备下载地址：https://packages.gitlab.com/gitlab/gitlab-ce/ 系统：centos7 软件包：gitlab-ce-10.5.1-ce.0.el7.x86_64.rpm 先安装依赖1yum install curl openssh-server openssh-clients postfix cronie policycoreutils-python 安装gitlab123rpm -ivh gitlab-ce-10.5.1-ce.0.el7.x86_64.rpm#安装完成后，执行配置gitlab-ctl reconfigure 修改/etc/gitblab/gitlab.rb 将external_url，改成具体ip，如：http://192.168.0.7 1234#重新配置gitlab-ctl reconfigure#重启gitlab-ctl restart 查看gitlab版本 head -1 /opt/gitlab/version-manifest.txt 通过浏览器登录 http://192.168.0.7 配置用户密码，默认用户为root 汉化12345git clone https://github.com/marbleqi/gitlab-ce-zh.gitcd gitlab-ce-zhgit pull origin #从远端获取最新库git branch -agit checkout remotes/origin/v10.5.1-zh-patch 将汉化文件覆盖到/opt/gitlab/embedded/service/gitlab-rails/ 1\cp -r -f gitlab-ce-zh/* /opt/gitlab/embedded/service/gitlab-rails/ 修改/etc/gitlab/gitlab.rb 1234567vi /etc/gitlab/gitlab.rbgitlab_rails[&apos;time_zone&apos;] = &apos;PRC&apos; #将标准时修改为中国时间gitlab-ctl reconfigure #使修改的配置文件生效#注：如果上述命令执行后，未汉化或有异常，则执行以下命令gitlab-ctl stop #停止gitlab服务gitlab-ctl start #启动gitlab服务]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>gitlab</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[全栈技术图谱]]></title>
     <url>%2F2019%2F07%2F15%2F%E5%85%A8%E6%A0%88%E6%8A%80%E6%9C%AF%E5%9B%BE%E8%B0%B1%2F</url>
     <content type="text"><![CDATA[全栈技术图谱]]></content>
@@ -53,8 +64,8 @@
         <category>iptables</category>
       </categories>
       <tags>
-        <tag>centos7</tag>
         <tag>docker</tag>
+        <tag>centos7</tag>
         <tag>iptables</tag>
       </tags>
   </entry>
@@ -177,8 +188,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -201,8 +212,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -225,8 +236,8 @@
         <category>docker</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>redis</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
