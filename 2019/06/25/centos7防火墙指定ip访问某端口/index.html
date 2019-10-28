@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="docker,centos7,iptables,">
+  <meta name="keywords" content="centos7,docker,iptables,">
 
 
 
@@ -90,14 +90,14 @@
 
 
 <meta name="description" content="docker 启动的服务想用防火墙来限制ip访问，怎么做？ 防火墙命令systemctl enable firewalld 允许防火墙 systemctl disable firewalld 禁止防火墙 systemctl start firewalld 开启防火墙 systemctl stop firewalld 停止防火墙 先开启防火墙12systemctl enable firewallds">
-<meta name="keywords" content="docker,centos7,iptables">
+<meta name="keywords" content="centos7,docker,iptables">
 <meta property="og:type" content="article">
 <meta property="og:title" content="centos7防火墙指定ip访问某端口">
 <meta property="og:url" content="http://abigfish.net/2019/06/25/centos7防火墙指定ip访问某端口/index.html">
 <meta property="og:site_name" content="大鱼的博客">
 <meta property="og:description" content="docker 启动的服务想用防火墙来限制ip访问，怎么做？ 防火墙命令systemctl enable firewalld 允许防火墙 systemctl disable firewalld 禁止防火墙 systemctl start firewalld 开启防火墙 systemctl stop firewalld 停止防火墙 先开启防火墙12systemctl enable firewallds">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-28T08:42:58.808Z">
+<meta property="og:updated_time" content="2019-10-28T08:54:11.053Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="centos7防火墙指定ip访问某端口">
 <meta name="twitter:description" content="docker 启动的服务想用防火墙来限制ip访问，怎么做？ 防火墙命令systemctl enable firewalld 允许防火墙 systemctl disable firewalld 禁止防火墙 systemctl start firewalld 开启防火墙 systemctl stop firewalld 停止防火墙 先开启防火墙12systemctl enable firewallds">
@@ -478,7 +478,15 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@appserver1 ~]# telnet 192.168.0.54 6300</span><br><span class="line">Trying 192.168.0.54...</span><br><span class="line">Connected to 192.168.0.54.</span><br><span class="line">Escape character is '^]'.</span><br></pre></td></tr></table></figure>
 <p>这样就可以成功了。</p>
 <p><strong>如果上面无效、需要增加下面操作</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`docker 会在iptables上加上自己的转发规则，如果直接在input链上限制端口是没有效果的。这就需要限制docker的转发链上的DOCKER表。``# 查询DOCKER表并显示规则编号``iptables -L DOCKER -n --line-number``# 修改对应编号的iptables 规则，这里添加了允许访问ip的限制``iptables -R DOCKER 5 -p tcp -m tcp -s 192.168.1.0``/24` `--dport 3000 -j ACCEPT`</span><br></pre></td></tr></table></figure>
+<p>docker 会在iptables上加上自己的转发规则，如果直接在input链上限制端口是没有效果的。</p>
+<p>这就需要限制docker的转发链上的DOCKER表。</p>
+<p>查询DOCKER表并显示规则编号</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -L DOCKER -n --line-number</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Chain DOCKER (1 references)</span><br><span class="line">num  target     prot opt source               destination         </span><br><span class="line">1    ACCEPT     tcp  --  0.0.0.0/0         0.0.0.0/0            tcp dpt:6300</span><br><span class="line">2    ACCEPT     tcp  --  0.0.0.0/0            172.17.0.3        tcp dpt:8080</span><br></pre></td></tr></table></figure>
+<p> 修改对应编号的iptables 规则，这里添加了允许访问ip的限制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -R DOCKER 1 -p tcp -m tcp -s 192.168.0.54 --dport 6300 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p>再执行iptables -L DOCKER -n –line-number</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Chain DOCKER (1 references)</span><br><span class="line">num  target     prot opt source               destination         </span><br><span class="line">1    ACCEPT     tcp  --  192.168.0.54         0.0.0.0/0            tcp dpt:6300</span><br><span class="line">2    ACCEPT     tcp  --  0.0.0.0/0            172.17.0.3           tcp dpt:8080</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -523,9 +531,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/docker/" rel="tag"># docker</a>
-          
             <a href="/tags/centos7/" rel="tag"># centos7</a>
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
           
             <a href="/tags/iptables/" rel="tag"># iptables</a>
           
