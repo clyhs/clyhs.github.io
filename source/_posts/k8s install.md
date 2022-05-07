@@ -439,8 +439,9 @@ kubectl edit daemonset calico-node -n kube-system
 ```
 kubectl get pods -A
 NAMESPACE              NAME                                         READY   STATUS    RESTARTS   AGE
-kube-system            calico-node-4xnrr                            1/1     Running   0          7m59s
-kube-system            calico-node-tj7w9                            1/1     Running   0          5m23s
-kube-system            calico-node-tp55n                            1/1     Running   0          7m59s
+kube-system            calico-node-bw8b9                            1/1     Running   0          35s
+kube-system            calico-node-g4dvb                            1/1     Running   0          50s
+kube-system            calico-node-tftp8                            1/1     Running   0          63s
 ```
 
+*注意三台机必须相互能Ping得通*
