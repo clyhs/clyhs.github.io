@@ -972,3 +972,373 @@ http://demo.test.com:32335
 404 not found
 
 nginx
+
+### 存储抽象
+
+> 所有节点都安装nfs
+
+```
+yum install -y nfs-utils
+```
+
+> nfs主节点
+
+```
+echo "/nfs/data/ *(insecure,rw,sync,no_root_squash)" > /etc/exports
+
+mkdir -p /nfs/data
+systemctl enable rpcbind --now
+systemctl enable nfs-server --now
+#配置生效
+exportfs -r
+
+[root@master ~]# exportfs
+/nfs/data       <world>
+```
+
+> 从节点
+
+```
+showmount -e 192.168.2.221
+[root@node1 ~]# showmount -e 192.168.2.221
+Export list for 192.168.2.221:
+/nfs/data *
+
+#执行以下命令挂载nfs服务器上的共享目录到本机路径/root/nfsmount
+mkdir -p /nfs/data
+
+mount -t nfs 192.168.2.221:/nfs/data /nfs/data
+#写入一个测试文件
+echo "hello nfs server" > /nfs/data/test.txt
+
+```
+
+在其它服务器查看test.txt
+
+#### nfs（原生）方式数据挂载
+
+在所有服务器创建目录
+
+```
+mkdir /nfs/data/nginx-pv/
+```
+
+mountnfs.yaml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-pv-demo
+  name: nginx-pv-demo
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: nginx-pv-demo
+  template:
+    metadata:
+      labels:
+        app: nginx-pv-demo
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+      volumes:
+        - name: html
+          nfs:
+            server: 192.168.2.221
+            path: /nfs/data/nginx-pv/
+```
+
+```
+kubectl apply -f mountnfs.yaml
+cd /nfs/data/nginx-pv/
+echo "Hello Mount" > index.html
+```
+
+```
+kubectl get pods -o wide
+
+nginx-pv-demo-587489dfcf-ljwqr   1/1     Running   0          85s     172.31.145.141   centosapp1   <none>           <none>
+nginx-pv-demo-587489dfcf-ssc2c   1/1     Running   0          85s     172.31.19.203    centosapp2   <none>           <none>
+```
+
+```
+[root@master ~]# curl 172.31.19.203
+Hello Mount
+```
+
+#### PV(持久卷)和PVC(持久卷申明)
+
+NFS(原生)方式数据挂载存在一些问题：
+
+- 目录要自己创建
+- Deployment及其pod删除后,服务器目录数据依旧存在
+- 挂载容量没有限制
+
+PV：持久卷（Persistent Volume），将应用需要持久化的数据保存到指定位置（存放持久化数据的目录就是持久卷）
+
+ PVC：持久卷申明（Persistent Volume Claim），申明需要使用的持久卷规格 （申请持久卷的申请书）
+
+静态供应： 提取指定位置和空间大小
+
+动态供应：位置和空间大小由pv自动创建
+
+> 创建pv池
+
+```
+在master
+mkdir -p /nfs/data/01
+mkdir -p /nfs/data/02
+mkdir -p /nfs/data/03
+```
+
+创建三个 PV（持久卷）**静态供应的方式**，配置文件createPV.yaml
+
+```
+apiVersion: v1
+kind: PersistentVolume # 类型
+metadata:
+  name: pv01-10m # 名称
+spec:
+  capacity:
+    storage: 10M # 持久卷空间大小
+  accessModes:
+    - ReadWriteMany # 多节点可读可写
+  storageClassName: nfs # 存储类名
+  nfs:
+    path: /nfs/data/01 # pc目录位置
+    server: 192.168.2.221
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv02-1gi
+spec:
+  capacity:
+    storage: 1Gi # 持久卷空间大小
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs
+  nfs:
+    path: /nfs/data/02 # pc目录位置
+    server: 192.168.2.221
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv03-3gi
+spec:
+  capacity:
+    storage: 3Gi # 持久卷空间大小
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs
+  nfs:
+    path: /nfs/data/03 # pc目录位置
+    server: 192.168.2.221
+
+```
+
+```
+[root@master ~]# kubectl apply -f createPV.yaml
+persistentvolume/pv01-10m created
+persistentvolume/pv02-1gi created
+persistentvolume/pv03-3gi created
+
+[root@master ~]# kubectl get persistentvolume
+NAME       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+pv01-10m   10M        RWX            Retain           Available           nfs                     48s
+pv02-1gi   1Gi        RWX            Retain           Available           nfs                     48s
+pv03-3gi   3Gi        RWX            Retain           Available           nfs                     48s
+```
+
+> 创建PVC
+
+createPVC.yaml
+
+```
+kind: PersistentVolumeClaim # 类型
+apiVersion: v1
+metadata:
+  name: nginx-pvc # PVC名称
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Mi # 需要空间
+  storageClassName: nfs # 要对应PV的storageClassName
+
+```
+
+```
+[root@master ~]# kubectl apply -f createPVC.yaml 
+persistentvolumeclaim/nginx-pvc created
+[root@master ~]# kubectl get persistentvolumeclaim
+NAME        STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+nginx-pvc   Bound    pv02-1gi   1Gi        RWX            nfs            30s
+```
+
+```
+#查看PC,状态Bound(绑定),说明已经被使用,绑定信息： default/nginx-pvc => 名称空间/PVC名称
+[root@master ~]# kubectl get pv
+NAME       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM               STORAGECLASS   REASON   AGE
+pv01-10m   10M        RWX            Retain           Available                       nfs                     4m47s
+pv02-1gi   1Gi        RWX            Retain           Bound       default/nginx-pvc   nfs                     4m47s
+pv03-3gi   3Gi        RWX            Retain           Available                       nfs                     4m47s
+```
+
+> 创建Deployment ，让Deployment中的Pod绑定PVC
+
+boundPVC.yaml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-deploy-pvc # Deployment名称
+  name: nginx-deploy-pvc
+spec:
+  replicas: 2 # pod数量
+  selector:
+    matchLabels:
+      app: nginx-deploy-pvc
+  template:
+    metadata:
+      labels:
+        app: nginx-deploy-pvc
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html # 挂载目录
+      volumes:
+        - name: html
+          persistentVolumeClaim:
+            claimName: nginx-pvc  # pvc 的名称
+
+```
+
+```
+[root@master ~]#  kubectl apply -f boundPVC.yaml
+deployment.apps/nginx-deploy-pvc created
+```
+
+> 向挂载目录 `/nfs/data/02`写入测试文件
+
+```
+[root@master ~]# cd /nfs/data/02
+[root@master 02]# echo "boundPVC test nginx" > index.html
+
+[root@master 02]# kubectl get pod -o wide
+nginx-deploy-pvc-79fc8558c7-8m9nn   1/1     Running   0          97s     172.31.19.204    centosapp2   <none>           <none>
+nginx-deploy-pvc-79fc8558c7-s97vh   1/1     Running   0          97s     172.31.145.142   centosapp1   <none>           <none>
+```
+
+#### configMap(配置集)
+
+ConfigMap 缩写为cm
+
+ConfigMap（配置集）：用于配置文件挂载，抽取应用配置，并且可以自动更新。
+
+> redis.conf内容如下：
+
+```
+appendonly yes
+```
+
+````
+[root@master ~]# kubectl create configmap redis-conf --from-file=redis.conf
+configmap/redis-conf created
+
+[root@master ~]# kubectl get configmap
+NAME               DATA   AGE
+kube-root-ca.crt   1      24h
+redis-conf         1      76s
+````
+
+```
+kubectl get configmap redis-conf -o yaml
+```
+
+创建redistest.yaml
+
+```
+apiVersion: v1
+kind: Pod # 类型
+metadata:
+  name: redis # pod名称
+spec:
+  containers:
+  - name: redis
+    image: redis # 镜像
+    command:
+      - redis-server
+      - "/redis-master/redis.conf"  #指的是redis容器内部的位置
+    ports:
+    - containerPort: 6379 
+    volumeMounts: # 配置卷挂载
+    - mountPath: /data 
+      name: data 	# 卷挂载名称  对应 下面的 挂载卷 data
+    - mountPath: /redis-master
+      name: config	 # 卷挂载名称  对应 下面的 挂载卷 config
+  volumes: # 挂载卷
+    - name: data 
+      emptyDir: {} 
+    - name: config 
+      configMap:   # 配置集
+        name: redis-conf
+        items:
+        - key: redis.conf
+          path: redis.conf
+
+```
+
+```
+[root@master ~]# kubectl apply -f redistest.yaml 
+pod/redis created
+
+kubectl exec -ti redis -- /bin/sh
+cd ../redis-manager
+more redis.conf
+appendonly yes
+```
+
+修改配置集的redis.conf
+
+```
+kubectl edit configmap redis-conf 
+```
+
+加入：
+
+```
+requirepass 123456
+```
+
+```
+[root@centosdb ~]# kubectl exec -ti redis -- /bin/sh
+# cd ../
+# ls
+bin   data  etc   lib    media  opt   redis-master  run   srv  tmp  var
+boot  dev   home  lib64  mnt    proc  root          sbin  sys  usr
+# cd redis-master
+# more redis.conf
+appendonly yes
+requirepass 123456
+```
+
+
+
+
+
+*来源：https://blog.csdn.net/weixin_46703850/article/details/122922090*
