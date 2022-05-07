@@ -445,3 +445,56 @@ kube-system            calico-node-tftp8                            1/1     Runn
 ```
 
 *注意三台机必须相互能Ping得通*
+
+### namespace
+
+```
+kubectl create ns hello
+kubectl delete ns hello
+
+# vi creates.yaml
+apiVersion: v1 # 版本
+kind: Namespace # 类型
+metadata:
+  name: hello
+
+kubectl apply -f creates.yaml
+```
+
+> 运行Pod
+
+```
+kubectl run 【Pod名称】 --image=【镜像名称】
+
+[root@master ~]# kubectl run mynginx --image=nginx
+pod/mynginx created
+
+[root@centosdb ~]# kubectl get pod
+NAME      READY   STATUS    RESTARTS   AGE
+mynginx   1/1     Running   0          81s
+
+```
+
+*常用命令*
+
+```
+#查看default名称空间的Pod
+kubectl get pod 
+#描述
+kubectl describe pod 你自己的Pod名字
+#删除
+kubectl delete pod Pod名字
+#查看Pod的运行日志
+kubectl logs Pod名字
+
+#每个Pod-k8s都会分配一个ip
+kubectl get pod -owide
+
+[root@master ~]# kubectl get pod -owide
+NAME      READY   STATUS    RESTARTS   AGE   IP               NODE         NOMINATED NODE   READINESS GATES
+mynginx   1/1     Running   0          27m   172.31.145.131   centosapp1   <none>           <none>
+
+#使用Pod的ip+pod里面运行容器的端口
+curl 172.31.145.131
+```
+
