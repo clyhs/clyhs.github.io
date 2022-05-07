@@ -496,5 +496,479 @@ mynginx   1/1     Running   0          27m   172.31.145.131   centosapp1   <none
 
 #使用Pod的ip+pod里面运行容器的端口
 curl 172.31.145.131
+
+进入pod
+kubectl exec -ti [pod-name] -n <your-namespace> -- /bin/sh
+kubectl exec -ti mynginx -- /bin/sh
 ```
 
+### Deployment
+
+> 多副本
+
+```
+kubectl create deployment my-dep --image=nginx --replicas=3
+
+```
+
+deployment.yaml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: my-dep-02
+  name: my-dep-02
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-dep-02
+  template:
+    metadata:
+      labels:
+        app: my-dep-02
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+
+```
+
+> 扩缩容
+
+```
+kubectl scale --replicas=5 deployment/my-dep
+kubectl edit deployment my-dep
+
+#修改replicas
+
+```
+
+> 滚动更新
+
+将一个pod集群在正常提供服务时从V1版本升级成 V2版本
+
+```
+kubectl set image deployment/my-dep-02 nginx=nginx:1.16.1 --record
+kubectl rollout status deployment/my-dep-02
+```
+
+通过修改deployment配置文件实现更新
+
+```
+kubectl edit deployment/my-dep-02
+```
+
+> 版本回退
+
+```
+[root@master ~]# kubectl rollout history deployment/my-dep-02
+deployment.apps/my-dep-02 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         kubectl set image deployment/my-dep-02 nginx=nginx:1.16.1 --record=true
+```
+
+查看某个历史详情
+
+```
+kubectl rollout history deployment/my-dep-02 --revision=3
+```
+
+回滚到上次的版本
+
+```
+kubectl rollout undo deployment/my-dep-02
+```
+
+回滚到指定版本
+
+```
+kubectl rollout undo deployment/my-dep-02 --to-revision=1
+
+```
+
+除了Deployment，k8s还有 `StatefulSet` 、`DaemonSet` 、`Job` 等 类型资源。我们都称为 `工作负载`。
+
+有状态应用使用 `StatefulSet` 部署，无状态应用使用 `Deployment` 部署
+
+### service
+
+以上内容的pod中的容器我们在外网都无法访问，使用Service来解决（–type=NodePort）。
+
+> Service是 将一组 [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/) 公开为网络服务的抽象方法。
+
+```
+[root@master ~]# kubectl get service
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   21h
+```
+
+> 暴露deployment的服务和端口,进行端口映射，创建出具有ip地址的Service (pod的集群)
+
+```
+kubectl expose deployment my-dep-02 --port=8000 --target-port=80
+
+[root@master ~]# kubectl get service
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP    22h
+my-dep-02    ClusterIP   10.96.226.142   <none>        8000/TCP   4s
+```
+
+> 查看pod的标签
+
+```
+kubectl get pod --show-labels
+
+[root@master ~]# kubectl get pod --show-labels
+NAME                         READY   STATUS    RESTARTS   AGE     LABELS
+my-dep-02-7b9d6bb69c-4fvl8   1/1     Running   0          5m31s   app=my-dep-02,pod-template-hash=7b9d6bb69c
+my-dep-02-7b9d6bb69c-j4mjk   1/1     Running   0          5m31s   app=my-dep-02,pod-template-hash=7b9d6bb69c
+my-dep-02-7b9d6bb69c-k7lhl   1/1     Running   0          5m31s   app=my-dep-02,pod-template-hash=7b9d6bb69c
+mynginx                      1/1     Running   0          157m    run=mynginx
+#使用标签检索Pod
+kubectl get pod -l app=my-dep-02
+```
+
+> 查看service/my-dep-02 的yaml配置文件
+
+```
+kubectl get service/my-dep-02 -o yaml
+
+```
+
+> 重里面pod访问
+
+```
+kubectl exec -ti my-dep-02-7b9d6bb69c-4fvl8 -- /bin/sh
+# curl my-dep-02.default.svc:8000
+```
+
+> 删除Service
+
+```
+ kubectl delete service/my-dep-02
+```
+
+
+
+>clusterIP
+
+* 默认就是ClusterIP 等同于没有–type的
+
+```
+kubectl expose deployment my-dep-02 --port=8000 --target-port=80 --type=ClusterIP
+```
+
+> NodePort
+
+* 集群外可以访问
+
+```
+kubectl expose deployment my-dep-02 --port=8000 --target-port=80 --type=NodePort
+```
+
+```
+[root@master ~]# kubectl get service
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          22h
+my-dep-02    NodePort    10.96.200.109   <none>        8000:30037/TCP   10s
+```
+
+ **ip+port映射**: 集群外`（mater、node1、node2的ip):30037` 映射到 ` 10.96.200.109:8000`
+
+外网访问 可以 http://192.168.2.219:30037
+
+### Ingress(网关)
+
+> Ingress：Service的统一网关入口（如百度的统一域名访问，统一Service层），Ingress是k8s机器集群的统一入口，请求流量先经过Ingress（入口）再进入集群内接受服务。
+>
+>  service是为一组pod服务提供一个统一集群内访问入口或外部访问的随机端口，而ingress做得是通过反射的形式对服务进行分发到对应的service上。
+>
+> service一般是针对内部的，集群内部调用，而ingress应该是针对外部调用的
+>
+> service只是开了端口，可以通过服务器IP:端口的方式去访问，但是服务器IP还是可变的，Ingress应该就是作为网关去转发
+>
+> 因为有很多服务,入口不统一,不方便管理
+
+> 安装ingress
+
+```
+wget https://github.com/kubernetes/ingress-nginx/blob/controller-v0.47.0/deploy/static/provider/baremetal/deploy.yaml
+
+```
+
+```
+vi deploy.yaml
+#将image的值改为如下值：
+registry.cn-hangzhou.aliyuncs.com/lfy_k8s_images/ingress-nginx-controller:v0.46.0
+
+kubectl apply -f deploy.yaml
+```
+
+> 查看安装结果
+
+```
+kubectl get pod,svc -n ingress-nginx
+
+[root@master ~]# kubectl get pod,svc -n ingress-nginx
+NAME                                            READY   STATUS              RESTARTS   AGE
+pod/ingress-nginx-admission-create-j92kq        0/1     Completed           0          2m27s
+pod/ingress-nginx-admission-patch-2pmwz         0/1     Completed           2          2m27s
+pod/ingress-nginx-controller-65bf56f7fc-8b4nk   0/1     ContainerCreating   0          2m27s
+```
+
+* 新建了Service，以NodePort方式暴露了端口
+
+```
+[root@master ~]# kubectl get service -A | grep ingress
+ingress-nginx          ingress-nginx-controller             NodePort    10.96.160.237   <none>        80:32335/TCP,443:30536/TCP   3m29s
+ingress-nginx          ingress-nginx-controller-admission   ClusterIP   10.96.138.149   <none>        443/TCP                      3m29s
+```
+
+映射：32335,30536
+
+http://192.168.2.221:30536/，bad request
+
+http://192.168.2.221:32335 , notfound
+
+* 安装测试环境
+
+> 应用配置文件，部署了2个Deployment,2个Service
+
+ingresstest.yaml
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-server
+  template:
+    metadata:
+      labels:
+        app: hello-server
+    spec:
+      containers:
+      - name: hello-server
+        image: registry.cn-hangzhou.aliyuncs.com/lfy_k8s_images/hello-server
+        ports:
+        - containerPort: 9000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-demo
+  name: nginx-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-demo
+  template:
+    metadata:
+      labels:
+        app: nginx-demo
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx-demo
+  name: nginx-demo
+spec:
+  selector:
+    app: nginx-demo
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello-server
+  name: hello-server
+spec:
+  selector:
+    app: hello-server
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 9000
+```
+
+```
+[root@master ~]# kubectl apply -f ingresstest.yaml 
+deployment.apps/hello-server created
+deployment.apps/nginx-demo created
+service/nginx-demo created
+service/hello-server created
+
+[root@master ~]# kubectl get service
+NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+hello-server   ClusterIP   10.96.121.161   <none>        8000/TCP         69s
+kubernetes     ClusterIP   10.96.0.1       <none>        443/TCP          22h
+my-dep-02      NodePort    10.96.200.109   <none>        8000:30037/TCP   30m
+nginx-demo     ClusterIP   10.96.221.97    <none>        8000/TCP         69s
+
+[root@master ~]# kubectl get deployment -o wide
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS     IMAGES                                                          SELECTOR
+hello-server   2/2     2            2           2m48s   hello-server   registry.cn-hangzhou.aliyuncs.com/lfy_k8s_images/hello-server   app=hello-server
+my-dep-02      3/3     3            3           55m     nginx          nginx                                                           app=my-dep-02
+nginx-demo     2/2     2            2           2m48s   nginx          nginx                                                           app=nginx-demo
+
+[root@master ~]#  kubectl get pods -o wide
+NAME                            READY   STATUS    RESTARTS   AGE     IP               NODE         NOMINATED NODE   READINESS GATES
+hello-server-6cbb679d85-5t2t4   1/1     Running   0          3m34s   172.31.145.140   centosapp1   <none>           <none>
+hello-server-6cbb679d85-88ndh   1/1     Running   0          3m34s   172.31.145.139   centosapp1   <none>           <none>
+my-dep-02-7b9d6bb69c-4fvl8      1/1     Running   0          56m     172.31.145.136   centosapp1   <none>           <none>
+my-dep-02-7b9d6bb69c-j4mjk      1/1     Running   0          56m     172.31.19.198    centosapp2   <none>           <none>
+my-dep-02-7b9d6bb69c-k7lhl      1/1     Running   0          56m     172.31.145.137   centosapp1   <none>           <none>
+mynginx                         1/1     Running   0          3h28m   172.31.145.131   centosapp1   <none>           <none>
+nginx-demo-7d56b74b84-rkjcd     1/1     Running   0          3m34s   172.31.19.202    centosapp2   <none>           <none>
+nginx-demo-7d56b74b84-twfms     1/1     Running   0          3m34s   172.31.19.201    centosapp2   <none>           <none>
+
+```
+
+> 域名访问
+
+* 访问 hello.test.com 的请求由 hello-server (Service)集群处理
+* 访问 demo.test.com 的请求由 nginx-demo (Service)集群处理
+* Ingress(网关)根据请求的域名分配对应的Service去处理
+
+ingresscom.yaml
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress  # 类型
+metadata:
+  name: ingress-host-bar
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "hello.test.com" #域名
+    http:
+      paths:
+      - pathType: Prefix # 前缀
+        path: "/"
+        backend:
+          service:
+            name: hello-server # Service 名称
+            port:
+              number: 8000 # 端口
+  - host: "demo.test.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/nginx"  # 把请求会转给下面的service，下面的service一定要能处理这个路径，不能处理就是404
+        backend:
+          service:
+            name: nginx-demo  # java，比如使用路径重写，去掉前缀nginx
+            port:
+              number: 8000
+
+```
+
+```
+[root@master ~]# kubectl apply -f ingresscom.yaml 
+ingress.networking.k8s.io/ingress-host-bar created
+
+[root@master ~]# kubectl get ingress
+NAME               CLASS   HOSTS                          ADDRESS         PORTS   AGE
+ingress-host-bar   nginx   hello.test.com,demo.test.com   192.168.2.220   80      2m47s
+```
+
+* windows 配置域名映射（域名映射文件地址：`C:\Windows\System32\drivers\etc`）
+
+```
+192.168.2.220 hello.test.com 
+192.168.2.220 demo.test.com 
+```
+
+浏览器：http://hello.test.com:32335/
+
+hello world!
+
+浏览器：http://demo.test.com:30536/  nginx是由Ingress层返回的
+
+400 bad request
+
+nginx
+
+* 修改Ingress配置文件,将`path: "/nginx"`改成`path: "/nginx.html"`
+
+浏览器：http://demo.test.com:32335/nginx.html
+
+404 not found
+
+nginx/1.21.5
+
+问题： path: “/nginx.html” 与 path: “/” 为什么会有不同的效果？
+
+```
+kubectl edit ingress ingress-host-bar
+```
+
+> - 修改配置文件 ingresscom.yaml
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress  
+metadata:
+  annotations: # 路径重写配置功能开启
+    nginx.ingress.kubernetes.io/rewrite-target: /$2 
+  name: ingress-host-bar
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "hello.test.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: hello-server
+            port:
+              number: 8000
+  - host: "demo.test.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/nginx(/|$)(.*)"  # 配置忽略/nginx
+        backend:
+          service:
+            name: nginx-demo 
+            port:
+              number: 8000
+
+```
+
+```
+[root@master ~]# kubectl apply -f ingresscom.yaml 
+ingress.networking.k8s.io/ingress-host-bar configured
+```
+
+http://demo.test.com:32335/nginx.html
+
+http://demo.test.com:32335
+
+都返回
+
+404 not found
+
+nginx
