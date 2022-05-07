@@ -1337,6 +1337,39 @@ appendonly yes
 requirepass 123456
 ```
 
+#### secret
+
+ Secret 对象类型**用来保存敏感信息**，例如密码、OAuth 令牌和 SSH 密钥。 将这些信息放在 secret 中比放在 [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/) 的定义或者 [容器镜像](https://kubernetes.io/zh/docs/reference/glossary/?all=true#term-image) 中来说更加安全和灵活。原理同ConfigMap
+
+```
+kubectl create secret docker-registry 【Secret的名称】 \
+  --docker-server=【你的镜像仓库服务器】 \
+  --docker-username=【你的用户名】 \
+  --docker-password=【你的密码】 \
+  --docker-email=【你的邮箱地址】
+
+```
+
+secret01.yaml
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: private-nginx # pod 名称
+spec:
+  containers:
+  - name: private-nginx
+    image: dockerywl/mysql # 私有镜像名称
+
+```
+
+查看
+
+```
+kubectl get secret
+```
+
 
 
 
