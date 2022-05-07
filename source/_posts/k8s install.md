@@ -394,3 +394,53 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6IndNSllNU3p0MzRJVDhoV0NWMEJqZkd5WmdveEpkcXExbEZmOHY1
 ```
 
 next login *https://192.168.2.219:30104*
+
+**注：calico node不运行**
+
+```
+kube-system            calico-node-8fnpb                            0/1     Running   0          17h
+kube-system            calico-node-l49k6                            0/1     Running   0          17h
+kube-system            calico-node-q5pd6                            0/1     Running   0          17h
+
+kubectl describe pod calico-node-8fnpb -n kube-system
+
+IRD: unable to connect to BIRDv4 socket: dial unix /var/run/calico/bird.ctl: connect: connection refused
+  Warning  Unhealthy  14m   kubelet            Readiness probe failed: 2022-05-07 03:01:44.179 [INFO][204] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+  Warning  Unhealthy  13m  kubelet  Readiness probe failed: 2022-05-07 03:01:54.107 [INFO][243] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+  Warning  Unhealthy  13m  kubelet  Readiness probe failed: 2022-05-07 03:02:04.112 [INFO][276] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+  Warning  Unhealthy  13m  kubelet  Readiness probe failed: 2022-05-07 03:02:14.133 [INFO][317] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+  Warning  Unhealthy  13m  kubelet  Readiness probe failed: 2022-05-07 03:02:24.106 [INFO][351] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+  Warning  Unhealthy  13m  kubelet  Readiness probe failed: 2022-05-07 03:02:34.133 [INFO][385] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+  Warning  Unhealthy  13m  kubelet  Readiness probe failed: 2022-05-07 03:02:44.119 [INFO][426] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+  Warning  Unhealthy  12m  kubelet  Readiness probe failed: 2022-05-07 03:02:54.108 [INFO][458] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+  Warning  Unhealthy  4m12s (x52 over 12m)  kubelet  (combined from similar events): Readiness probe failed: 2022-05-07 03:11:34.318 [INFO][2258] confd/health.go 180: Number of node(s) with BGP peering established = 0
+calico/node is not ready: BIRD is not ready: BGP not established with 192.168.2.219,192.168.2.220
+
+```
+
+```
+
+kubectl edit daemonset calico-node -n kube-system
+- name: CALICO_IPV4POOL_CIDR
+  value: 172.31.0.0/16
+- name: IP_AUTODETECTION_METHOD
+  value: interface=eth0
+
+```
+
+```
+kubectl get pods -A
+NAMESPACE              NAME                                         READY   STATUS    RESTARTS   AGE
+kube-system            calico-node-4xnrr                            1/1     Running   0          7m59s
+kube-system            calico-node-tj7w9                            1/1     Running   0          5m23s
+kube-system            calico-node-tp55n                            1/1     Running   0          7m59s
+```
+
