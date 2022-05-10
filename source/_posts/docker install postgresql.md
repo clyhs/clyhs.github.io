@@ -1,6 +1,6 @@
 ---
 title: docker安装postgresql
-date: 2019-01-10 09:22:24
+date: 2022-05-01 09:22:24
 category: docker
 tags: postgresql
 ---
