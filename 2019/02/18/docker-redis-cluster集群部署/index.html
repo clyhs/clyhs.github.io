@@ -1,0 +1,1210 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="docker,redis,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="大鱼的博客" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="docker部署redis集群用两台虚拟机模拟6个节点，一台机器3个节点，创建出3 master、3 salve 环境。    name ip port remark     redis1 192.168.0.16 8001 master   redis2 192.168.0.16 8002 master   redis3 192.168.0.16 8003 master   redis4 192">
+<meta name="keywords" content="docker,redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker redis cluster集群部署">
+<meta property="og:url" content="http://abigfish.net/2019/02/18/docker-redis-cluster集群部署/index.html">
+<meta property="og:site_name" content="大鱼的博客">
+<meta property="og:description" content="docker部署redis集群用两台虚拟机模拟6个节点，一台机器3个节点，创建出3 master、3 salve 环境。    name ip port remark     redis1 192.168.0.16 8001 master   redis2 192.168.0.16 8002 master   redis3 192.168.0.16 8003 master   redis4 192">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-04-01T01:35:16.900Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="docker redis cluster集群部署">
+<meta name="twitter:description" content="docker部署redis集群用两台虚拟机模拟6个节点，一台机器3个节点，创建出3 master、3 salve 环境。    name ip port remark     redis1 192.168.0.16 8001 master   redis2 192.168.0.16 8002 master   redis3 192.168.0.16 8003 master   redis4 192">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://abigfish.net/2019/02/18/docker-redis-cluster集群部署/">
+
+
+
+
+
+  <title> docker redis cluster集群部署 | 大鱼的博客 </title>
+</head>
+
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大鱼的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">bigfish's blog</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://abigfish.net/2019/02/18/docker-redis-cluster集群部署/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="bigfish">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大鱼的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                docker redis cluster集群部署
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-18T11:49:13+08:00">
+                2019-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2019/02/18/docker-redis-cluster集群部署/#SOHUCS" itemprop="discussionUrl">
+                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2019/02/18/docker-redis-cluster集群部署/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2019/02/18/docker-redis-cluster集群部署/" class="leancloud_visitors" data-flag-title="docker redis cluster集群部署">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </span></div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="docker部署redis集群"><a href="/2019/02/18/docker-redis-cluster集群部署/#docker部署redis集群" class="headerlink" title="docker部署redis集群"></a>docker部署redis集群</h3><p>用两台虚拟机模拟6个节点，一台机器3个节点，创建出3 master、3 salve 环境。</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>ip</th>
+<th>port</th>
+<th>remark</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>redis1</td>
+<td>192.168.0.16</td>
+<td>8001</td>
+<td>master</td>
+</tr>
+<tr>
+<td>redis2</td>
+<td>192.168.0.16</td>
+<td>8002</td>
+<td>master</td>
+</tr>
+<tr>
+<td>redis3</td>
+<td>192.168.0.16</td>
+<td>8003</td>
+<td>master</td>
+</tr>
+<tr>
+<td>redis4</td>
+<td>192.168.0.7</td>
+<td>8004</td>
+<td>slave</td>
+</tr>
+<tr>
+<td>redis5</td>
+<td>192.168.0.7</td>
+<td>8005</td>
+<td>slave</td>
+</tr>
+<tr>
+<td>redis6</td>
+<td>192.168.0.7</td>
+<td>8006</td>
+<td>slave</td>
+</tr>
+</tbody>
+</table>
+<h4 id="准备镜像"><a href="/2019/02/18/docker-redis-cluster集群部署/#准备镜像" class="headerlink" title="准备镜像"></a>准备镜像</h4><p>publicisworldwide/redis-cluster:latest</p>
+<p>inem0o/redis-trib:latest</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker pull publicisworldwide/redis-cluster</span><br><span class="line">docker pull inem0o/redis-trib</span><br></pre></td></tr></table></figure>
+<h4 id="新建容器"><a href="/2019/02/18/docker-redis-cluster集群部署/#新建容器" class="headerlink" title="新建容器"></a>新建容器</h4><p>在192.168.0.16新建/app/app/redis/docker-compose.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">vi /app/app/redis/docker-compose.yml</span><br><span class="line"></span><br><span class="line">version: &apos;3&apos;</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line"> redis1:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8001/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8001</span><br><span class="line"></span><br><span class="line"> redis2:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8002/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8002</span><br><span class="line"></span><br><span class="line"> redis3:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8003/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8003</span><br></pre></td></tr></table></figure>
+<p>在192.168.0.7新建/app/app/redis/docker-compose.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">vi /app/app/redis/docker-compose.yml</span><br><span class="line"></span><br><span class="line">version: &apos;3&apos;</span><br><span class="line"> redis4:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8004/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8004</span><br><span class="line"></span><br><span class="line"> redis5:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8005/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8005</span><br><span class="line"></span><br><span class="line"> redis6:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8006/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8006</span><br></pre></td></tr></table></figure>
+<p><em>若同一台宿主机，不想使用host模式同一台，也可以把network_mode去掉，但就要加ports映射。<br>redis-cluster的节点端口共分为2种，一种是节点提供服务的端口，如6379；一种是节点间通信的端口，固定格式为：10000+6379。</em></p>
+<p><em>如:</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">docker-compose.yml</span><br><span class="line"></span><br><span class="line">version: &apos;3&apos;</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line"> redis1:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8001/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8001</span><br><span class="line">  ports:</span><br><span class="line">    - &apos;8001:8001&apos;</span><br><span class="line">    - &apos;18001:18001&apos;</span><br><span class="line">    </span><br><span class="line"> redis2:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8002/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8002</span><br><span class="line">  ports:</span><br><span class="line">    - &apos;8002:8002&apos;</span><br><span class="line">    - &apos;18002:18002&apos;</span><br><span class="line">    </span><br><span class="line"> redis3:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8003/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8003</span><br><span class="line">  ports:</span><br><span class="line">    - &apos;8003:8003&apos;</span><br><span class="line">    - &apos;18003:18003&apos;</span><br><span class="line">    </span><br><span class="line"> redis4:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8004/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8004</span><br><span class="line">  ports:</span><br><span class="line">    - &apos;8004:8004&apos;</span><br><span class="line">    - &apos;18004:18004&apos;</span><br><span class="line">    </span><br><span class="line"> redis5:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8005/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8005</span><br><span class="line">  ports:</span><br><span class="line">    - &apos;8005:8005&apos;</span><br><span class="line">    - &apos;18005:18005&apos;</span><br><span class="line">    </span><br><span class="line"> redis6:</span><br><span class="line">  image: publicisworldwide/redis-cluster</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8006/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8006</span><br><span class="line">  ports:</span><br><span class="line">    - &apos;8006:8006&apos;</span><br><span class="line">    - &apos;18006:18006&apos;</span><br></pre></td></tr></table></figure>
+<h4 id="直接启动服务"><a href="/2019/02/18/docker-redis-cluster集群部署/#直接启动服务" class="headerlink" title="直接启动服务"></a>直接启动服务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">窗口模式</span><br><span class="line">docker-compose up</span><br><span class="line">后台进程</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+<p><em>以上镜像不能设置永久密码，其实redis一般是内网访问，可以不需密码。</em></p>
+<h4 id="redis容器集群配置"><a href="/2019/02/18/docker-redis-cluster集群部署/#redis容器集群配置" class="headerlink" title="redis容器集群配置"></a>redis容器集群配置</h4><h5 id="方法一、直接启动"><a href="/2019/02/18/docker-redis-cluster集群部署/#方法一、直接启动" class="headerlink" title="方法一、直接启动"></a>方法一、直接启动</h5><p>不指定master</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it inem0o/redis-trib create --replicas 1 192.168.0.16:8001 192.168.0.16:8002 192.168.0.16:8003 192.168.0.7:8004 192.168.0.7:8005 192.168.0.7:8006</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; Creating cluster</span><br><span class="line">&gt;&gt;&gt; Performing hash slots allocation on 6 nodes...</span><br><span class="line">Using 3 masters:</span><br><span class="line">192.168.0.16:8001</span><br><span class="line">192.168.0.16:8002</span><br><span class="line">192.168.0.16:8003</span><br><span class="line">Adding replica 192.168.0.7:8004 to 192.168.0.16:8001</span><br><span class="line">Adding replica 192.168.0.7:8005 to 192.168.0.16:8002</span><br><span class="line">Adding replica 192.168.0.7:8006 to 192.168.0.16:8003</span><br><span class="line">M: 0e594d4e46fef74366c0ce9f43f5d805af3bf639 192.168.0.16:8001</span><br><span class="line">   slots:0-5460 (5461 slots) master</span><br><span class="line">M: 0f86275fa7a965295153206c872d901d28461e6b 192.168.0.16:8002</span><br><span class="line">   slots:5461-10922 (5462 slots) master</span><br><span class="line">M: 25b5951be791956cc8aa7b93b8cecda25927d0f4 192.168.0.16:8003</span><br><span class="line">   slots:10923-16383 (5461 slots) master</span><br><span class="line">S: 9bd2ee334963a472a7ae183d69133c0cc0ede8d8 192.168.0.7:8004</span><br><span class="line">   replicates 0e594d4e46fef74366c0ce9f43f5d805af3bf639</span><br><span class="line">S: 2bd8d9a3e24b142d19bb4922f5aace9e60b9a16f 192.168.0.7:8005</span><br><span class="line">   replicates 0f86275fa7a965295153206c872d901d28461e6b</span><br><span class="line">S: c844c9277b34f685fc979dcdb47a1e71011a185a 192.168.0.7:8006</span><br><span class="line">   replicates 25b5951be791956cc8aa7b93b8cecda25927d0f4</span><br><span class="line">Can I set the above configuration? (type &apos;yes&apos; to accept): yes</span><br><span class="line">&gt;&gt;&gt; Nodes configuration updated</span><br><span class="line">&gt;&gt;&gt; Assign a different config epoch to each node</span><br><span class="line">&gt;&gt;&gt; Sending CLUSTER MEET messages to join the cluster</span><br><span class="line">Waiting for the cluster to join...</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 192.168.0.16:8001)</span><br><span class="line">M: 0e594d4e46fef74366c0ce9f43f5d805af3bf639 192.168.0.16:8001</span><br><span class="line">   slots:0-5460 (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">M: 25b5951be791956cc8aa7b93b8cecda25927d0f4 192.168.0.16:8003@18003</span><br><span class="line">   slots:10923-16383 (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 9bd2ee334963a472a7ae183d69133c0cc0ede8d8 192.168.0.7:8004@18004</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 0e594d4e46fef74366c0ce9f43f5d805af3bf639</span><br><span class="line">S: 2bd8d9a3e24b142d19bb4922f5aace9e60b9a16f 192.168.0.7:8005@18005</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 0f86275fa7a965295153206c872d901d28461e6b</span><br><span class="line">M: 0f86275fa7a965295153206c872d901d28461e6b 192.168.0.16:8002@18002</span><br><span class="line">   slots:5461-10922 (5462 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: c844c9277b34f685fc979dcdb47a1e71011a185a 192.168.0.7:8006@18006</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 25b5951be791956cc8aa7b93b8cecda25927d0f4</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">&gt;&gt;&gt; Check for open slots...</span><br><span class="line">&gt;&gt;&gt; Check slots coverage...</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
+<h5 id="方法二、指定master"><a href="/2019/02/18/docker-redis-cluster集群部署/#方法二、指定master" class="headerlink" title="方法二、指定master"></a>方法二、指定master</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it inem0o/redis-trib create  192.168.0.16:8001 192.168.0.16:8002 192.168.0.16:8003</span><br><span class="line"></span><br><span class="line">检查集群</span><br><span class="line"></span><br><span class="line">docker run --rm -it inem0o/redis-trib check 192.168.0.16:8001</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 192.168.0.16:8001)</span><br><span class="line">M: dbb6b214215f70b6a9e7ce150d1898ebadbf90fc 192.168.0.16:8001</span><br><span class="line">   slots:0-5460 (5461 slots) master</span><br><span class="line">   0 additional replica(s)</span><br><span class="line">M: 6915f5f4bb5df77c72a943a5afb1b619bdc0d937 192.168.0.16:8002@18002</span><br><span class="line">   slots:5461-10922 (5462 slots) master</span><br><span class="line">   0 additional replica(s)</span><br><span class="line">M: d80ee99cea1a6050a16fee952b012df455b2fb07 192.168.0.16:8003@18003</span><br><span class="line">   slots:10923-16383 (5461 slots) master</span><br><span class="line">   0 additional replica(s)</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">&gt;&gt;&gt; Check for open slots...</span><br><span class="line">&gt;&gt;&gt; Check slots coverage...</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
+<p>添加从节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it inem0o/redis-trib add-node --slave --master-id dbb6b214215f70b6a9e7ce150d1898ebadbf90fc 192.168.0.7:8004 192.168.0.16:8001</span><br><span class="line"></span><br><span class="line">docker run --rm -it inem0o/redis-trib add-node --slave --master-id 6915f5f4bb5df77c72a943a5afb1b619bdc0d937 192.168.0.7:8005 192.168.0.16:8002</span><br><span class="line"></span><br><span class="line">docker run --rm -it inem0o/redis-trib add-node --slave --master-id d80ee99cea1a6050a16fee952b012df455b2fb07 192.168.0.7:8006 192.168.0.16:8003</span><br><span class="line"></span><br><span class="line">查询三个主节点，都有一个从节点</span><br><span class="line"></span><br><span class="line">docker run --rm -it inem0o/redis-trib info 192.168.0.16:8001</span><br><span class="line">192.168.0.16:8001 (dbb6b214...) -&gt; 0 keys | 5461 slots | 1 slaves.</span><br><span class="line">192.168.0.16:8002@18002 (6915f5f4...) -&gt; 0 keys | 5462 slots | 1 slaves.</span><br><span class="line">192.168.0.16:8003@18003 (d80ee99c...) -&gt; 0 keys | 5461 slots | 1 slaves.</span><br><span class="line">[OK] 0 keys in 3 masters.</span><br><span class="line">0.00 keys per slot on average.</span><br></pre></td></tr></table></figure>
+<h4 id="查看redis-trib使用"><a href="/2019/02/18/docker-redis-cluster集群部署/#查看redis-trib使用" class="headerlink" title="查看redis-trib使用"></a>查看redis-trib使用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it inem0o/redis-trib help</span><br></pre></td></tr></table></figure>
+<p><em>1、create：创建集群<br>2、check：检查集群<br>3、info：查看集群信息<br>4、fix：修复集群<br>5、reshard：在线迁移slot<br>6、rebalance：平衡集群节点slot数量<br>7、add-node：将新节点加入集群<br>8、del-node：从集群中删除节点<br>9、set-timeout：设置集群节点间心跳连接的超时时间<br>10、call：在集群全部节点上执行命令<br>11、import：将外部redis数据导入集群</em></p>
+<h3 id="自己创建镜像"><a href="/2019/02/18/docker-redis-cluster集群部署/#自己创建镜像" class="headerlink" title="自己创建镜像"></a>自己创建镜像</h3><h4 id="准备脚本"><a href="/2019/02/18/docker-redis-cluster集群部署/#准备脚本" class="headerlink" title="准备脚本"></a>准备脚本</h4><p>/app/app/redis/entrypoint.sh</p>
+<p>vi entrypoint.sh</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh</span><br><span class="line">#只作用于当前进程,不作用于其创建的子进程</span><br><span class="line">set -e</span><br><span class="line">#$0--Shell本身的文件名 $1--第一个参数 $@--所有参数列表</span><br><span class="line"># allow the container to be started with `--user`</span><br><span class="line">if [ &quot;$1&quot; = &apos;redis-server&apos; -a &quot;$(id -u)&quot; = &apos;0&apos; ]; then</span><br><span class="line">    sed -i &apos;s/REDIS_PORT/&apos;$REDIS_PORT&apos;/g&apos; /usr/local/etc/redis.conf</span><br><span class="line">    chown -R redis .  #改变当前文件所有者</span><br><span class="line">    exec gosu redis &quot;$0&quot; &quot;$@&quot;  #gosu是sudo轻量级”替代品”</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">exec &quot;$@&quot;</span><br></pre></td></tr></table></figure>
+<p>/app/app/redis/redis.conf</p>
+<p>vi redis.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#端口</span><br><span class="line">port REDIS_PORT</span><br><span class="line">#开启集群</span><br><span class="line">cluster-enabled yes</span><br><span class="line">#配置文件</span><br><span class="line">cluster-config-file nodes.conf</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line">#更新操作后进行日志记录</span><br><span class="line">appendonly yes</span><br><span class="line">#设置主服务的连接密码</span><br><span class="line"># masterauth</span><br><span class="line">#设置从服务的连接密码</span><br><span class="line"># requirepass</span><br></pre></td></tr></table></figure>
+<ul>
+<li>requirepass和masterauth不能启用，否则redis-trib创建集群失败。</li>
+<li>protected-mode 保护模式是禁止公网访问，但是不能设置密码和bind ip。</li>
+</ul>
+<p>编写Dockerfile文件</p>
+<p>/app/app/redis/Dockerfile</p>
+<p>vi Dockerfile</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#基础镜像</span><br><span class="line">FROM redis</span><br><span class="line">#修复时区</span><br><span class="line">RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span><br><span class="line">RUN echo &apos;Asia/Shanghai&apos; &gt;/etc/timezone</span><br><span class="line">#环境变量</span><br><span class="line">ENV REDIS_PORT 8000</span><br><span class="line">#ENV REDIS_PORT_NODE 18000</span><br><span class="line">#暴露变量</span><br><span class="line">EXPOSE $REDIS_PORT</span><br><span class="line">#EXPOSE $REDIS_PORT_NODE</span><br><span class="line">#复制</span><br><span class="line">COPY entrypoint.sh /usr/local/bin/</span><br><span class="line">COPY redis.conf /usr/local/etc/</span><br><span class="line">#for config rewrite</span><br><span class="line">RUN chmod 777 /usr/local/etc/redis.conf</span><br><span class="line">RUN chmod +x /usr/local/bin/entrypoint.sh</span><br><span class="line">#入口</span><br><span class="line">ENTRYPOINT [&quot;/usr/local/bin/entrypoint.sh&quot;]</span><br><span class="line">#命令</span><br><span class="line">CMD [&quot;redis-server&quot;, &quot;/usr/local/etc/redis.conf&quot;]</span><br></pre></td></tr></table></figure>
+<h4 id="创建镜像"><a href="/2019/02/18/docker-redis-cluster集群部署/#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">cd /app/app/redis</span><br><span class="line">docker build -t pascloud/redis-cluster:1.0 .</span><br><span class="line"></span><br><span class="line">Sending build context to Docker daemon 4.608 kB</span><br><span class="line">Step 1/11 : FROM redis</span><br><span class="line"> ---&gt; 0f55cf3661e9</span><br><span class="line">Step 2/11 : RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span><br><span class="line"> ---&gt; Running in 5aa77cdb9d96</span><br><span class="line"> ---&gt; 67c21c2f65cc</span><br><span class="line">Removing intermediate container 5aa77cdb9d96</span><br><span class="line">Step 3/11 : RUN echo &apos;Asia/Shanghai&apos; &gt;/etc/timezone</span><br><span class="line"> ---&gt; Running in b08571fcaca3</span><br><span class="line"> ---&gt; 75c88a71c3e2</span><br><span class="line">Removing intermediate container b08571fcaca3</span><br><span class="line">Step 4/11 : ENV REDIS_PORT 8000</span><br><span class="line"> ---&gt; Running in 264dd35607f9</span><br><span class="line"> ---&gt; 237723740c53</span><br><span class="line">Removing intermediate container 264dd35607f9</span><br><span class="line">Step 5/11 : EXPOSE $REDIS_PORT</span><br><span class="line"> ---&gt; Running in 3ec733186488</span><br><span class="line"> ---&gt; d44c858fd07a</span><br><span class="line">Removing intermediate container 3ec733186488</span><br><span class="line">Step 6/11 : COPY entrypoint.sh /usr/local/bin/</span><br><span class="line"> ---&gt; 53cc6f8e9979</span><br><span class="line">Removing intermediate container 253c851483a9</span><br><span class="line">Step 7/11 : COPY redis.conf /usr/local/etc/</span><br><span class="line"> ---&gt; 849df9aace37</span><br><span class="line">Removing intermediate container 1cb7033269a5</span><br><span class="line">Step 8/11 : RUN chmod 777 /usr/local/etc/redis.conf</span><br><span class="line"> ---&gt; Running in c755b51d08ef</span><br><span class="line"> ---&gt; 232eff722727</span><br><span class="line">Removing intermediate container c755b51d08ef</span><br><span class="line">Step 9/11 : RUN chmod +x /usr/local/bin/entrypoint.sh</span><br><span class="line"> ---&gt; Running in ec35a6c8b212</span><br><span class="line"> ---&gt; 555f5497fb9c</span><br><span class="line">Removing intermediate container ec35a6c8b212</span><br><span class="line">Step 10/11 : ENTRYPOINT /usr/local/bin/entrypoint.sh</span><br><span class="line"> ---&gt; Running in 8b0dd921d40a</span><br><span class="line"> ---&gt; c377c55da021</span><br><span class="line">Removing intermediate container 8b0dd921d40a</span><br><span class="line">Step 11/11 : CMD redis-server /usr/local/etc/redis.conf</span><br><span class="line"> ---&gt; Running in 080d23a389c3</span><br><span class="line"> ---&gt; d281c0f4ded9</span><br><span class="line">Removing intermediate container 080d23a389c3</span><br><span class="line">Successfully built d281c0f4ded9</span><br></pre></td></tr></table></figure>
+<h4 id="创建网络"><a href="/2019/02/18/docker-redis-cluster集群部署/#创建网络" class="headerlink" title="创建网络"></a>创建网络</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create redis-cluster-net</span><br></pre></td></tr></table></figure>
+<h4 id="编写docker-compose-yml"><a href="/2019/02/18/docker-redis-cluster集群部署/#编写docker-compose-yml" class="headerlink" title="编写docker-compose.yml"></a>编写docker-compose.yml</h4><p>在192.168.0.16新建/app/app/redis/docker-compose.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">version: &apos;3&apos;</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line"> redis1:</span><br><span class="line">  image: pascloud/redis-cluster:1.0</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8001/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8001</span><br><span class="line">    </span><br><span class="line"> redis2:</span><br><span class="line">  image: pascloud/redis-cluster:1.0</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8002/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8002</span><br><span class="line">    </span><br><span class="line"> redis3:</span><br><span class="line">  image: pascloud/redis-cluster:1.0</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8003/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8003</span><br></pre></td></tr></table></figure>
+<p>在192.168.0.7新建/app/app/redis/docker-compose.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">version: &apos;3&apos;</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line"> redis4:</span><br><span class="line">  image: pascloud/redis-cluster:1.0</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8004/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8004</span><br><span class="line">    </span><br><span class="line"> redis5:</span><br><span class="line">  image: pascloud/redis-cluster:1.0</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8005/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8005</span><br><span class="line">    </span><br><span class="line"> redis6:</span><br><span class="line">  image: pascloud/redis-cluster:1.0</span><br><span class="line">  network_mode: host</span><br><span class="line">  restart: always</span><br><span class="line">  volumes:</span><br><span class="line">   - /app/app/redis/8006/data:/data</span><br><span class="line">  environment:</span><br><span class="line">   - REDIS_PORT=8006</span><br></pre></td></tr></table></figure>
+<h4 id="启动"><a href="/2019/02/18/docker-redis-cluster集群部署/#启动" class="headerlink" title="启动"></a>启动</h4><p>分别在16和07上执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+<p>在16上执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it inem0o/redis-trib create --replicas 1 192.168.0.16:8001 192.168.0.16:8002 192.168.0.16:8003 192.168.0.7:8004 192.168.0.7:8005 192.168.0.7:8006</span><br></pre></td></tr></table></figure>
+<p><strong>设置集群密码</strong></p>
+<p>分别通过端口设置密码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost src]# ./redis-cli -c -p 8001(8002...8006)</span><br><span class="line">127.0.0.1:8001&gt; config set masterauth 123456</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:8001&gt; config set requirepass 123456</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:8001&gt; config rewrite</span><br><span class="line">(error) NOAUTH Authentication required.</span><br><span class="line">127.0.0.1:8001&gt; auth 123456</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:8001&gt; config rewrite</span><br><span class="line">OK</span><br></pre></td></tr></table></figure>
+<p><strong>查看密码文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it 容器ID /bin/bash</span><br><span class="line">cat /usr/local/etc/redis.conf</span><br><span class="line"></span><br><span class="line">root@centoss1:/data# cat /usr/local/etc/redis.conf</span><br><span class="line">#端口</span><br><span class="line">port 8002</span><br><span class="line">#开启集群</span><br><span class="line">cluster-enabled yes</span><br><span class="line">#配置文件</span><br><span class="line">cluster-config-file &quot;nodes.conf&quot;</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line">#更新操作后进行日志记录</span><br><span class="line">appendonly yes</span><br><span class="line">#设置主服务的连接密码</span><br><span class="line"># masterauth</span><br><span class="line">#设置从服务的连接密码</span><br><span class="line"># requirepass</span><br><span class="line"># Generated by CONFIG REWRITE</span><br><span class="line">dir &quot;/data&quot;</span><br><span class="line">masterauth &quot;123456&quot;</span><br><span class="line">requirepass &quot;123456&quot;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      bigfish
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://abigfish.net/2019/02/18/docker-redis-cluster集群部署/" title="docker redis cluster集群部署">http://abigfish.net/2019/02/18/docker-redis-cluster集群部署/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/redis/" rel="tag"># redis</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/16/shiro-redis-session共享/" rel="next" title="shiro redis session共享">
+                <i class="fa fa-chevron-left"></i> shiro redis session共享
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/28/window redis高可用部署/" rel="prev" title="window redis 高可用部署">
+                window redis 高可用部署 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=1ccac48aa5a00"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/photo.jpg" alt="bigfish">
+          <p class="site-author-name" itemprop="name">bigfish</p>
+           
+              <p class="site-description motion-element" itemprop="description">record my life</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">77</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#docker部署redis集群"><span class="nav-number">1.</span> <span class="nav-text">docker部署redis集群</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#准备镜像"><span class="nav-number">1.1.</span> <span class="nav-text">准备镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新建容器"><span class="nav-number">1.2.</span> <span class="nav-text">新建容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#直接启动服务"><span class="nav-number">1.3.</span> <span class="nav-text">直接启动服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#redis容器集群配置"><span class="nav-number">1.4.</span> <span class="nav-text">redis容器集群配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#方法一、直接启动"><span class="nav-number">1.4.1.</span> <span class="nav-text">方法一、直接启动</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#方法二、指定master"><span class="nav-number">1.4.2.</span> <span class="nav-text">方法二、指定master</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看redis-trib使用"><span class="nav-number">1.5.</span> <span class="nav-text">查看redis-trib使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自己创建镜像"><span class="nav-number">2.</span> <span class="nav-text">自己创建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#准备脚本"><span class="nav-number">2.1.</span> <span class="nav-text">准备脚本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建镜像"><span class="nav-number">2.2.</span> <span class="nav-text">创建镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建网络"><span class="nav-number">2.3.</span> <span class="nav-text">创建网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写docker-compose-yml"><span class="nav-number">2.4.</span> <span class="nav-text">编写docker-compose.yml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动"><span class="nav-number">2.5.</span> <span class="nav-text">启动</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bigfish</span>
+  <span id="busuanzi_container_site_uv">
+  本站访问次数：<span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+  </span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cyu62R7Sk';
+      var conf = '1ddb5cdb2e688908ef5cc060ea346a6b';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("K6CpIXEyvcJ8rtkxMu0gBjmR-gzGzoHsz", "Cre2YXPrOsbcFrloqDEYr7F0");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+
+
+</body>
+</html>
