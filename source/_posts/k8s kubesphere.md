@@ -1,3 +1,9 @@
+---
+title: k8s安装kubesphere
+date: 2022-05-10 14:48:39
+category: k8s
+tags: [k8s]
+---
 # kubesphere on k8s
 
 > helm install on master

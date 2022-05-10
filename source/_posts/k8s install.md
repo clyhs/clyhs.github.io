@@ -1,3 +1,9 @@
+---
+title: k8s安装部署
+date: 2022-05-10 10:48:39
+category: k8s
+tags: [k8s]
+---
 # k8s install
 
 > Kubernetes Cluster = N Master Node + N Worker Node：N主节点+N工作节点； N>=1
