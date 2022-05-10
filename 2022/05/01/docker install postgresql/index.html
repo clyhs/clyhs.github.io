@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="docker,">
+  <meta name="keywords" content="postgresql,">
 
 
 
@@ -89,23 +89,18 @@
 
 
 
-<meta name="description" content="docker目录迁移Docker的默认目录是在/var/lib/docker目录下目录包括：将/var/lib/docker的目录迁移到/home/docker/lib/docker目录下 1、    用于查看Docker的磁盘使用情况1docker system df  2、    关闭docker1systemctl stop docker 3、    命令查看磁盘使用情况1du -hs /v">
-<meta name="keywords" content="docker">
+<meta name="description" content="docker install postgresqlimage1docker pull postgres build container1docker run -it --name postgres --restart always -e POSTGRES_PASSWORD=&amp;apos;123456&amp;apos; -e ALLOW_IP_RANGE=0.0.0.0/0 -v /home/postgre">
+<meta name="keywords" content="postgresql">
 <meta property="og:type" content="article">
-<meta property="og:title" content="docker目录迁移">
-<meta property="og:url" content="http://abigfish.net/2019/01/10/docker目录迁移/index.html">
+<meta property="og:title" content="docker安装postgresql">
+<meta property="og:url" content="http://abigfish.net/2022/05/01/docker install postgresql/index.html">
 <meta property="og:site_name" content="大鱼的博客">
-<meta property="og:description" content="docker目录迁移Docker的默认目录是在/var/lib/docker目录下目录包括：将/var/lib/docker的目录迁移到/home/docker/lib/docker目录下 1、    用于查看Docker的磁盘使用情况1docker system df  2、    关闭docker1systemctl stop docker 3、    命令查看磁盘使用情况1du -hs /v">
+<meta property="og:description" content="docker install postgresqlimage1docker pull postgres build container1docker run -it --name postgres --restart always -e POSTGRES_PASSWORD=&amp;apos;123456&amp;apos; -e ALLOW_IP_RANGE=0.0.0.0/0 -v /home/postgre">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://clyhs.github.io/images/docker/201901101.png">
-<meta property="og:image" content="https://clyhs.github.io/images/docker/201901102.png">
-<meta property="og:image" content="https://clyhs.github.io/images/docker/201901103.png">
-<meta property="og:image" content="https://clyhs.github.io/images/docker/201901104.png">
-<meta property="og:updated_time" content="2022-04-01T01:35:16.902Z">
+<meta property="og:updated_time" content="2022-05-10T08:42:31.329Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="docker目录迁移">
-<meta name="twitter:description" content="docker目录迁移Docker的默认目录是在/var/lib/docker目录下目录包括：将/var/lib/docker的目录迁移到/home/docker/lib/docker目录下 1、    用于查看Docker的磁盘使用情况1docker system df  2、    关闭docker1systemctl stop docker 3、    命令查看磁盘使用情况1du -hs /v">
-<meta name="twitter:image" content="https://clyhs.github.io/images/docker/201901101.png">
+<meta name="twitter:title" content="docker安装postgresql">
+<meta name="twitter:description" content="docker install postgresqlimage1docker pull postgres build container1docker run -it --name postgres --restart always -e POSTGRES_PASSWORD=&amp;apos;123456&amp;apos; -e ALLOW_IP_RANGE=0.0.0.0/0 -v /home/postgre">
 
 
 
@@ -133,13 +128,13 @@
 
 
 
-  <link rel="canonical" href="http://abigfish.net/2019/01/10/docker目录迁移/">
+  <link rel="canonical" href="http://abigfish.net/2022/05/01/docker install postgresql/">
 
 
 
 
 
-  <title> docker目录迁移 | 大鱼的博客 </title>
+  <title> docker安装postgresql | 大鱼的博客 </title>
 </head>
 
 
@@ -321,7 +316,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://abigfish.net/2019/01/10/docker目录迁移/">
+    <link itemprop="mainEntityOfPage" href="http://abigfish.net/2022/05/01/docker install postgresql/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="bigfish">
@@ -342,7 +337,7 @@
             
             
               
-                docker目录迁移
+                docker安装postgresql
               
             
           </h1>
@@ -357,8 +352,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-10T09:22:24+08:00">
-                2019-01-10
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-01T09:22:24+08:00">
+                2022-05-01
               </time>
             
 
@@ -399,8 +394,8 @@
                 <i class="fa fa-comment-o"></i>
               </span>
               
-                <a href="/2019/01/10/docker目录迁移/#SOHUCS" itemprop="discussionUrl">
-                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2019/01/10/docker目录迁移/" itemprop="commentsCount"></span>
+                <a href="/2022/05/01/docker install postgresql/#SOHUCS" itemprop="discussionUrl">
+                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2022/05/01/docker install postgresql/" itemprop="commentsCount"></span>
                 </a>
               
             
@@ -408,7 +403,7 @@
 
           
           
-             <span id="/2019/01/10/docker目录迁移/" class="leancloud_visitors" data-flag-title="docker目录迁移">
+             <span id="/2022/05/01/docker install postgresql/" class="leancloud_visitors" data-flag-title="docker安装postgresql">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -442,20 +437,24 @@
       
 
       
-        <h3 id="docker目录迁移"><a href="/2019/01/10/docker目录迁移/#docker目录迁移" class="headerlink" title="docker目录迁移"></a>docker目录迁移</h3><p>Docker的默认目录是在/var/lib/docker目录下<br>目录包括：<br><img src="https://clyhs.github.io/images/docker/201901101.png" alt="img"><br>将/var/lib/docker的目录迁移到/home/docker/lib/docker目录下</p>
-<p>1、    用于查看Docker的磁盘使用情况<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker system df</span><br></pre></td></tr></table></figure></p>
-<p><img src="https://clyhs.github.io/images/docker/201901102.png" alt="img"></p>
-<p>2、    关闭docker<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop docker</span><br></pre></td></tr></table></figure></p>
-<p>3、    命令查看磁盘使用情况<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -hs /var/lib/docker/</span><br></pre></td></tr></table></figure></p>
-<p><img src="https://clyhs.github.io/images/docker/201901103.png" alt="img"></p>
-<p>4、    创建新的docker目录，执行命令df -h,找一个大的磁盘。 我在 /home目录下面建了<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /home/docker/lib/docker</span><br></pre></td></tr></table></figure></p>
-<p>5、    迁移/var/lib/docker目录下面的文件到 /home/docker/lib/docker<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp -R /var/lib/docker/* /home/docker/lib/docker/</span><br></pre></td></tr></table></figure></p>
-<p>6、    配置 /etc/systemd/system/docker.service.d/devicemapper.conf。查看 devicemapper.conf 是否存在。如果不存在，就新建<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /etc/systemd/system/docker.service.d/</span><br><span class="line">vi /etc/systemd/system/docker.service.d/devicemapper.conf</span><br></pre></td></tr></table></figure></p>
-<p>7、    然后在 devicemapper.conf 写入<br>内容如下：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">ExecStart=</span><br><span class="line">ExecStart=/usr/bin/dockerd  --graph=/home/docker/lib/docker</span><br></pre></td></tr></table></figure></p>
-<p>8、    重新加载 docker<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker</span><br><span class="line">systemctl enable docker</span><br></pre></td></tr></table></figure></p>
-<p>9、    启动成功后，再确认之前的镜像还在：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure></p>
-<p><img src="https://clyhs.github.io/images/docker/201901104.png" alt="img"></p>
-<p>10、确定容器没问题后删除/var/lib/docker/目录中的文件。</p>
+        <h1 id="docker-install-postgresql"><a href="/2022/05/01/docker install postgresql/#docker-install-postgresql" class="headerlink" title="docker install postgresql"></a>docker install postgresql</h1><h2 id="image"><a href="/2022/05/01/docker install postgresql/#image" class="headerlink" title="image"></a>image</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull postgres</span><br></pre></td></tr></table></figure>
+<h2 id="build-container"><a href="/2022/05/01/docker install postgresql/#build-container" class="headerlink" title="build container"></a>build container</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --name postgres --restart always -e POSTGRES_PASSWORD=&apos;123456&apos; -e ALLOW_IP_RANGE=0.0.0.0/0 -v /home/postgres/data:/var/lib/postgresql -p 5432:5432 -d postgres</span><br></pre></td></tr></table></figure>
+<h2 id="enter-container"><a href="/2022/05/01/docker install postgresql/#enter-container" class="headerlink" title="enter container"></a>enter container</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it postgres bash</span><br></pre></td></tr></table></figure>
+<h2 id="login-postgres"><a href="/2022/05/01/docker install postgresql/#login-postgres" class="headerlink" title="login postgres"></a>login postgres</h2><p>change postgres</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">su postgres</span><br><span class="line">psql -U postgres -W</span><br><span class="line">password:</span><br><span class="line">psql (12.2....)</span><br><span class="line">Type &quot;help&quot; for help.</span><br><span class="line">postgres=#</span><br></pre></td></tr></table></figure>
+<h2 id="setting-remote-access"><a href="/2022/05/01/docker install postgresql/#setting-remote-access" class="headerlink" title="setting remote access"></a>setting remote access</h2><p>change file: pg_hba.conf   postgresql.conf</p>
+<h3 id="1、change-pg-hba-conf"><a href="/2022/05/01/docker install postgresql/#1、change-pg-hba-conf" class="headerlink" title="1、change pg_hba.conf"></a>1、change pg_hba.conf</h3><p>copy pg_hba.conf to /home</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp postgres:/var/lib/postgresql/data/pg_hba.conf /home</span><br></pre></td></tr></table></figure>
+<p>example</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">local all all         trust</span><br><span class="line">host all all 127.0.0.1/32 trust</span><br><span class="line">*host all all 0.0.0.1/0 md5*</span><br><span class="line">host all all ::1/128 trust</span><br></pre></td></tr></table></figure>
+<p>next copy to container change</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp /home/pg_hba.conf postgres:/var/lib/postgresql/data</span><br></pre></td></tr></table></figure>
+<h3 id="2、change-postgresql-conf"><a href="/2022/05/01/docker install postgresql/#2、change-postgresql-conf" class="headerlink" title="2、change postgresql.conf"></a>2、change postgresql.conf</h3><p>change listen_addresses</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listen_addresses=&apos;*&apos;</span><br></pre></td></tr></table></figure>
+<p>exit container</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exit</span><br></pre></td></tr></table></figure>
+<h2 id="shutdown-firewalld"><a href="/2022/05/01/docker install postgresql/#shutdown-firewalld" class="headerlink" title="shutdown firewalld"></a>shutdown firewalld</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld</span><br><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl disable firewalld</span><br></pre></td></tr></table></figure>
+<h2 id="download-pgAdmin-client"><a href="/2022/05/01/docker install postgresql/#download-pgAdmin-client" class="headerlink" title="download pgAdmin client"></a>download pgAdmin client</h2><p> …</p>
 
       
     </div>
@@ -484,7 +483,7 @@
     </li>
     <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="http://abigfish.net/2019/01/10/docker目录迁移/" title="docker目录迁移">http://abigfish.net/2019/01/10/docker目录迁移/</a>
+      <a href="http://abigfish.net/2022/05/01/docker install postgresql/" title="docker安装postgresql">http://abigfish.net/2022/05/01/docker install postgresql/</a>
     </li>
     <li class="post-copyright-license">
       <strong>版权声明： </strong>
@@ -500,7 +499,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/docker/" rel="tag"># docker</a>
+            <a href="/tags/postgresql/" rel="tag"># postgresql</a>
           
         </div>
       
@@ -513,8 +512,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/04/15/swift3-0-闭包/" rel="next" title="swift3.0 闭包">
-                <i class="fa fa-chevron-left"></i> swift3.0 闭包
+              <a href="/2019/09/24/gitlab本地部署/" rel="next" title="gitlab本地部署">
+                <i class="fa fa-chevron-left"></i> gitlab本地部署
               </a>
             
           </div>
@@ -523,8 +522,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/01/18/docker中mysql的数据导出导入/" rel="prev" title="docker中mysql的数据导出导入">
-                docker中mysql的数据导出导入 <i class="fa fa-chevron-right"></i>
+              <a href="/2022/05/10/k8s install/" rel="prev" title="k8s安装部署">
+                k8s安装部署 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -681,7 +680,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#docker目录迁移"><span class="nav-number">1.</span> <span class="nav-text">docker目录迁移</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#docker-install-postgresql"><span class="nav-number">1.</span> <span class="nav-text">docker install postgresql</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#image"><span class="nav-number">1.1.</span> <span class="nav-text">image</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#build-container"><span class="nav-number">1.2.</span> <span class="nav-text">build container</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#enter-container"><span class="nav-number">1.3.</span> <span class="nav-text">enter container</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#login-postgres"><span class="nav-number">1.4.</span> <span class="nav-text">login postgres</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setting-remote-access"><span class="nav-number">1.5.</span> <span class="nav-text">setting remote access</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、change-pg-hba-conf"><span class="nav-number">1.5.1.</span> <span class="nav-text">1、change pg_hba.conf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、change-postgresql-conf"><span class="nav-number">1.5.2.</span> <span class="nav-text">2、change postgresql.conf</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shutdown-firewalld"><span class="nav-number">1.6.</span> <span class="nav-text">shutdown firewalld</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#download-pgAdmin-client"><span class="nav-number">1.7.</span> <span class="nav-text">download pgAdmin client</span></a></li></ol></li></ol></div>
             
 
           </div>
