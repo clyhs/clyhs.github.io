@@ -1,0 +1,209 @@
+# kubesphere on k8s
+
+> helm install on master
+>
+> tiller install on master
+>
+> openEBS install on master
+
+## helm
+
+* 包含两个组件，分别是 helm 客户端 和 Tiller 服务器
+* **Tiller** 是 Helm 的服务端。Tiller 负责接收 Helm 的请求，与 k8s 的 apiserver 交互，根据chart
+  来生成一个 release 并管理 release
+* **chart** Helm的打包格式叫做chart，所谓chart就是一系列文件, 它描述了一组相关的 k8s 集群资源
+* **release** 使用 helm install 命令在 Kubernetes 集群中部署的 Chart 称为 Release
+* **Repoistory** Helm chart 的仓库，Helm 客户端通过 HTTP 协议来访问存储库中 chart 的索引文件和压缩包
+
+* download https://get.helm.sh/helm-v3.6.1-linux-amd64.tar.gz
+
+```
+tar -zvxf helm-v2.16.3-linux-amd64.tar.gz
+cd cd linux-amd64/
+cp helm /usr/local/bin/
+cp tiller /usr/local/bin/
+
+[root@master ~]# helm init
+Creating /root/.helm 
+Creating /root/.helm/repository 
+Creating /root/.helm/repository/cache 
+Creating /root/.helm/repository/local 
+Creating /root/.helm/plugins 
+Creating /root/.helm/starters 
+Creating /root/.helm/cache/archive 
+Creating /root/.helm/repository/repositories.yaml 
+Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com 
+Error: error initializing: Looks like "https://kubernetes-charts.storage.googleapis.com" is not a valid chart repository or cannot be reached: Failed to fetch https://kubernetes-charts.storage.googleapis.com/index.yaml : 403 Forbidden
+
+[root@master ~]# helm version
+Client: &version.Version{SemVer:"v2.16.3", GitCommit:"1ee0254c86d4ed6887327dabed7aa7da29d7eb0d", GitTreeState:"clean"}
+Error: could not find tiller
+```
+
+## tiller
+
+tiller.yaml
+
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+ - kind: ServiceAccount
+    name: tiller
+    namespace: kube-system
+```
+
+初始化helm服务端
+
+```
+helm init --service-account tiller --tiller-image registry.cn-hangzhou.aliyuncs.com/google_containers/tiller:v2.16.3 --stable-repo-url https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+如下：
+Creating /root/.helm/repository/repositories.yaml 
+Adding stable repo with URL: https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts 
+Adding local repo with URL: http://127.0.0.1:8879/charts 
+$HELM_HOME has been configured at /root/.helm.
+
+Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+Please note: by default, Tiller is deployed with an insecure 'allow unauthenticated users' policy.
+To prevent this, run `helm init` with the --tiller-tls-verify flag.
+For more information on securing your installation see: https://docs.helm.sh/using_helm/#securing-your-helm-installation
+#查询
+kubectl get pod -n kube-system
+tiller-deploy-7bf45f97c7-c2978             0/1     ContainerCreating   0          63s
+#过一会儿再查
+tiller-deploy-7bf45f97c7-c2978             1/1     Running   0          3m37s
+```
+
+修改镜像地址：
+
+```
+[root@master ~]# helm repo add stable http://mirror.azure.cn/kubernetes/charts
+"stable" has been added to your repositories
+```
+
+
+
+## openEBS
+
+确认 master 节点是否有 Taint，如下看到 master 节点有 Taint
+
+```
+[root@master ~]# kubectl describe node master | grep Taint
+Taints:             node-role.kubernetes.io/master:NoSchedule
+```
+
+先去掉master的Taint:
+
+```
+[root@master ~]# kubectl taint nodes master node-role.kubernetes.io/master:NoSchedule-
+node/centosdb untainted
+```
+
+安装openEBS
+
+```
+kubectl create ns openebs
+helm install --namespace openebs --name openebs stable/openebs --version 1.5.0
+
+NOTES:
+The OpenEBS has been installed. Check its status by running:
+$ kubectl get pods -n openebs
+
+For dynamically creating OpenEBS Volumes, you can either create a new StorageClass or
+use one of the default storage classes provided by OpenEBS.
+
+Use `kubectl get sc` to see the list of installed OpenEBS StorageClasses. A sample
+PVC spec using `openebs-jiva-default` StorageClass is given below:
+```
+
+等几份钟，安装 OpenEBS 后将自动创建 4 个 StorageClass，查看创建的 StorageClass：
+
+```
+[root@master ~]# kubectl get pods -n openebs
+NAME                                           READY   STATUS    RESTARTS   AGE
+openebs-admission-server-5dbc9f4456-jwv5f      1/1     Running   0          13m
+openebs-apiserver-659d656db5-xjkb5             1/1     Running   3          13m
+openebs-localpv-provisioner-6cb9d78965-fhmgz   1/1     Running   0          13m
+openebs-ndm-4zbrt                              1/1     Running   0          13m
+openebs-ndm-operator-5ff78c45f6-25hjf          1/1     Running   1          13m
+openebs-ndm-q58pr                              1/1     Running   0          13m
+openebs-ndm-td58x                              1/1     Running   0          13m
+openebs-provisioner-77b84d8cc-tnmn9            1/1     Running   0          13m
+openebs-snapshot-operator-6dcc7b6fbd-ssqn4     2/2     Running   0          13m
+
+[root@master ~]# kubectl get sc
+NAME                        PROVISIONER                                                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+openebs-device              openebs.io/local                                           Delete          WaitForFirstConsumer   false                  2m4s
+openebs-hostpath            openebs.io/local                                           Delete          WaitForFirstConsumer   false                  2m4s
+openebs-jiva-default        openebs.io/provisioner-iscsi                               Delete          Immediate              false                  2m5s
+openebs-snapshot-promoter   volumesnapshot.external-storage.k8s.io/snapshot-promoter   Delete          Immediate              false                  2m5s
+
+```
+
+将 openebs-hostpath设置为 默认的 StorageClass：
+
+```
+kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+[root@master ~]# kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+storageclass.storage.k8s.io/openebs-hostpath patched
+
+```
+
+## kubesphere
+
+```
+kubectl apply -f https://github.com/kubesphere/ks-installer/releases/download/v3.2.1/kubesphere-installer.yaml
+   
+kubectl apply -f https://github.com/kubesphere/ks-installer/releases/download/v3.2.1/cluster-configuration.yaml
+
+```
+
+查看日志
+
+```
+kubectl logs -n kubesphere-system $(kubectl get pod -n kubesphere-system -l app=ks-install -o jsonpath='{.items[0].metadata.name}') -f
+
+Error from server (BadRequest): container "installer" in pod "ks-installer-85dcfff87d-wgcn2" is waiting to start: trying and failing to pull image
+#在拉镜像，等会
+
+Waiting for all tasks to be completed ...
+task network status is successful  (1/4)
+task openpitrix status is successful  (2/4)
+task multicluster status is successful  (3/4)
+task monitoring status is successful  (4/4)
+**************************************************
+Collecting installation results ...
+#####################################################
+###              Welcome to KubeSphere!           ###
+#####################################################
+
+Console: http://192.168.2.219:30880
+Account: admin
+Password: P@88w0rd
+
+NOTES：
+  1. After you log into the console, please check the
+     monitoring status of service components in
+     "Cluster Management". If any service is not
+     ready, please wait patiently until all components 
+     are up and running.
+  2. Please change the default password after login.
+
+#####################################################
+https://kubesphere.io             2022-05-10 10:30:52
+#####################################################
+```
+
