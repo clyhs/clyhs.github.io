@@ -14,7 +14,7 @@ email:clygd#126.com
 
 blog:[http://abigfish.net](http://abigfish.net/)
 
-其它：毕业于2009，主要语言java，目前就职于广州天维信息。
+其它：毕业于2009，主要语言java，目前坐标广州。
 
 擅长：……&*56467%%……
 
