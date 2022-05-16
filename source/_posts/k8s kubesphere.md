@@ -166,7 +166,150 @@ kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"st
 [root@master ~]# kubectl patch storageclass openebs-hostpath -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 storageclass.storage.k8s.io/openebs-hostpath patched
 
+kubectl create ns storgeclass
+
+
 ```
+
+* 创建deployment
+
+```
+#nfs-client-provisioner.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-client-provisioner
+  labels:
+    app: nfs-client-provisioner
+  # replace with namespace where provisioner is deployed
+  namespace: openebs
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: quay.io/external_storage/nfs-client-provisioner:latest
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: mynfs
+            - name: NFS_SERVER
+              value: 192.168.2.221
+            - name: NFS_PATH
+              value: /nfs/data
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 192.168.2.221
+            path: /nfs/data
+
+
+
+
+```
+
+* rbac.yaml
+
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nfs-client-provisioner
+  # replace with namespace where provisioner is deployed
+  namespace: openebs
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nfs-client-provisioner-runner
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: run-nfs-client-provisioner
+subjects:
+  - kind: ServiceAccount
+    name: nfs-client-provisioner
+    # replace with namespace where provisioner is deployed
+    namespace: openebs
+roleRef:
+  kind: ClusterRole
+  name: nfs-client-provisioner-runner
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: leader-locking-nfs-client-provisioner
+  # replace with namespace where provisioner is deployed
+  namespace: openebs
+rules:
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: leader-locking-nfs-client-provisioner
+  # replace with namespace where provisioner is deployed
+  namespace: openebs
+subjects:
+  - kind: ServiceAccount
+    name: nfs-client-provisioner
+    # replace with namespace where provisioner is deployed
+    namespace: openebs
+roleRef:
+  kind: Role
+  name: leader-locking-nfs-client-provisioner
+  apiGroup: rbac.authorization.k8s.io
+```
+
+
+
+* 
+
+```
+#storgeclass.yaml
+
+apiVersion: storage.k8s.io/v1
+kind: storageClass
+metadata:
+  name: managed-nfs-storage
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: mynfs # or choose another name, must match deployment's env PROVISIONER_NAME'
+parameters:
+  archiveOnDelete: "false"
+```
+
+*https://openebs.io/docs/concepts/localpv*
 
 ## kubesphere
 
@@ -211,5 +354,71 @@ NOTES：
 #####################################################
 https://kubesphere.io             2022-05-10 10:30:52
 #####################################################
+```
+
+
+
+
+
+**注**：
+
+（1）prometheus-k8s-0容器一直处于SchedulerError状态，无法使用监控功能
+
+running PreBind plugin "VolumeBinding": binding volumes: timed out waiting for the condition
+
+```
+kubectl logs -n openebs -l openebs.io/component-name=openebs-localpv-provisioner
+```
+
+"openebs-hostpath": unexpected error getting claim reference: selfLink was empty, can't make referen
+
+elfLink was empty 在k8s集群 v1.20之前都存在，在v1.20之后被删除，需要在/etc/kubernetes/manifests/kube-apiserver.yaml 添加参数
+增加 - --feature-gates=RemoveSelfLink=false
+
+```
+spec:
+containers:
+- command:
+    - kube-apiserver
+    - --feature-gates=RemoveSelfLink=false
+
+```
+
+```
+kubectl apply -f /etc/kubernetes/manifests/kube-apiserver.yaml
+```
+
+（2）有一台安装了gitlab，那台的node-expoter一直说端口9100被占用
+
+```
+gitlab status
+[root@node2 ~]# gitlab-ctl status
+/opt/gitlab/embedded/lib/ruby/gems/2.3.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb:684: warning: Insecure world writable dir /home/domains/maven/bin in PATH, mode 040777
+run: gitaly: (pid 705) 33304154s; run: log: (pid 698) 33304154s
+run: gitlab-monitor: (pid 684) 33304154s; run: log: (pid 683) 33304154s
+run: gitlab-workhorse: (pid 704) 33304154s; run: log: (pid 695) 33304154s
+run: logrotate: (pid 15501) 566s; run: log: (pid 696) 33304154s
+run: nginx: (pid 699) 33304154s; run: log: (pid 688) 33304154s
+run: node-exporter: (pid 692) 33304154s; run: log: (pid 686) 33304154s
+run: postgres-exporter: (pid 702) 33304154s; run: log: (pid 690) 33304154s
+run: postgresql: (pid 693) 33304154s; run: log: (pid 691) 33304154s
+run: prometheus: (pid 706) 33304154s; run: log: (pid 703) 33304154s
+run: redis: (pid 682) 33304154s; run: log: (pid 681) 33304154s
+run: redis-exporter: (pid 687) 33304154s; run: log: (pid 685) 33304154s
+run: sidekiq: (pid 701) 33304154s; run: log: (pid 694) 33304154s
+run: unicorn: (pid 700) 33304154s; run: log: (pid 689) 33304154s
+```
+
+关掉
+
+```
+gitlab-ctl stop node_exporter
+
+[root@node2 ~]# gitlab-ctl stop node_exporter
+/opt/gitlab/embedded/lib/ruby/gems/2.3.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb:684: warning: Insecure world writable dir /home/domains/maven/bin in PATH, mode 040777【没有权限】
+
+chmod go-w /home/domains/manve/bin
+再执行
+gitlab-ctl stop node_exporter
 ```
 
