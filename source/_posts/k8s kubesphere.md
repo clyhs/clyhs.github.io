@@ -199,7 +199,8 @@ spec:
       serviceAccountName: nfs-client-provisioner
       containers:
         - name: nfs-client-provisioner
-          image: quay.io/external_storage/nfs-client-provisioner:latest
+          #image: quay.io/external_storage/nfs-client-provisioner:latest
+          image: registry.cn-beijing.aliyuncs.com/xngczl/nfs-subdir-external-provisione:v4.0.0
           volumeMounts:
             - name: nfs-client-root
               mountPath: /persistentvolumes
@@ -388,6 +389,8 @@ containers:
 kubectl apply -f /etc/kubernetes/manifests/kube-apiserver.yaml
 ```
 
+**另一种方式：**修改nfs-client-provisioner.yaml的image:registry.cn-beijing.aliyuncs.com/xngczl/nfs-subdir-external-provisione:v4.0.0
+
 （2）有一台安装了gitlab，那台的node-expoter一直说端口9100被占用
 
 ```
@@ -420,5 +423,7 @@ gitlab-ctl stop node_exporter
 chmod go-w /home/domains/manve/bin
 再执行
 gitlab-ctl stop node_exporter
+如果 还不行，直接先gitlab-ctl stop
+再等k8s的node_exporter运行后，再gitlab-ctl start
 ```
 
