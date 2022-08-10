@@ -1,7 +1,9 @@
+---
 title: linux db2安装
 date: 2022-08-10 09:22:25
 category: linux
 tags: db2
+---
 
 # linux db2安装
 

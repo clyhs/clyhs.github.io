@@ -1,7 +1,9 @@
+---
 title: CentOS7静默安装oracle11g
 date: 2022-08-10 09:22:24
 category: linux
 tags: oracle
+---
 
 # CentOS7静默安装oracle11g
 
