@@ -80,6 +80,30 @@ keytool -keystore d:\tomcat.keystore -export -alias tomcat -file d:\tomcat.cer
 https://localhost:8443
 ```
 
+* 修改tomcat的web.xml，强制http跳转到https
+
+  </welcome-file-list>后面加上这样一段：
+
+  ```
+      <login-config>    
+          <!-- Authorization setting for SSL -->    
+          <auth-method>CLIENT-CERT</auth-method>    
+          <realm-name>Client Cert Users-only Area</realm-name>    
+      </login-config>    
+      <security-constraint>    
+          <!-- Authorization setting for SSL -->    
+          <web-resource-collection >    
+              <web-resource-name >SSL</web-resource-name>    
+              <url-pattern>/*</url-pattern>    
+          </web-resource-collection>    
+          <user-data-constraint>    
+              <transport-guarantee>CONFIDENTIAL</transport-guarantee>    
+          </user-data-constraint>    
+      </security-constraint>
+  ```
+
+  
+
 2、 **导入服务器公钥证书（tomcat.cer）**
 
 由于是自签名的证书，为避免每次都提示不安全。这里双击tomcat.cer安装服务器证书。
