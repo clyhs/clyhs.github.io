@@ -204,19 +204,19 @@ keytool -list -v -keystore D:/ssl/keystore.jks
 1.创建CA库，用于对证书签名
 
 ```
-keytool -genkey -alias rootca -keypass 123456 -keyalg RSA -keysize 2048 -validity 365 -storetype JKS -keystore D:/ssl/castore.jks -storepass 123456
+keytool -genkey -alias rootca -keypass 123456 -keyalg RSA -keysize 2048 -validity 365 -storetype JKS -keystore D:/ssl/castore.jks -storepass 123456 
 ```
 
 2.创建服务端密钥库
 
 ```
-keytool -genkey -alias tomcat -keypass 123456 -keyalg RSA -keysize 2048 -validity 365 -storetype JKS -keystore D:/ssl/keystore.jks -storepass 123456
+keytool -genkey -alias tomcat -keypass 123456 -keyalg RSA -keysize 2048 -validity 365 -storetype JKS -keystore D:/ssl/keystore.jks -storepass 123456 -ext san=ip:127.0.0.1,dns:localhost
 ```
 
 3.创建服务端证书签名请求文件
 
 ```
-keytool -certreq -keyalg RSA -alias tomcat -sigalg SHA256withRSA -keystore D:/ssl/keystore.jks -file D:/ssl/serverreq.csr
+keytool -certreq -keyalg RSA -alias tomcat -sigalg SHA256withRSA -keystore D:/ssl/keystore.jks -file D:/ssl/serverreq.csr 
 ```
 
 4.CA库对服务端证书进行签名，生成一个证书文件
@@ -260,7 +260,7 @@ keytool -import -v -alias tomcat -file D:/ssl/signedserver.cer  -keystore D:/ssl
 1.创建客户端密钥库
 
 ```
-keytool -genkey -alias client -keypass 123456 -keyalg RSA -keysize 2048 -validity 365 -storetype JKS -keystore D:/ssl/client.jks -storepass 123456
+keytool -genkey -alias client -keypass 123456 -keyalg RSA -keysize 2048 -validity 365 -storetype JKS -keystore D:/ssl/client.jks -storepass 123456 -ext san=ip:127.0.0.1
 ```
 
 2.创建客户端证书签名请求文件
