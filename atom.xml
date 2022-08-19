@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://abigfish.net/"/>
-  <updated>2022-08-10T07:03:36.636Z</updated>
+  <updated>2022-08-19T05:52:57.214Z</updated>
   <id>http://abigfish.net/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>k8s istio</title>
+    <link href="http://abigfish.net/2022/08/19/k8s%20istio/"/>
+    <id>http://abigfish.net/2022/08/19/k8s istio/</id>
+    <published>2022-08-19T05:38:37.000Z</published>
+    <updated>2022-08-19T05:52:57.214Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="istio-安装"><a href="/2022/08/19/k8s istio/#istio-安装" class="headerlink" title="istio 安装"></a>istio 安装</h2><p>istio-1.14.3.tar.gz</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">mv istio-1.14.3.tar.gz /usr/local/</span><br><span class="line">tar -zvxf istio-1.14.3</span><br><span class="line">cd ~</span><br><span class="line">vi .bash_profile</span><br><span class="line"># 开始</span><br><span class="line">export ISTIO_HOME=/usr/local/istio-1.14.3</span><br><span class="line">export PATH=$PATH:$ISTIO_HOME/bin</span><br><span class="line"># 结束</span><br><span class="line">source .bash_profile</span><br><span class="line">#安装</span><br><span class="line">istioctl install --set profile=demo -y</span><br><span class="line">✔ Istio core installed                         </span><br><span class="line">✔ Istiod installed                          </span><br><span class="line">✔ Ingress gateways installed                              </span><br><span class="line">✔ Egress gateways installed            </span><br><span class="line">✔ Installation complete                                                                                                         Making this installation the default for injection and validation.</span><br><span class="line"></span><br><span class="line">#给命名空间添加标签，指示 Istio 在部署应用的时候，自动注入 Envoy 边车代理：</span><br><span class="line">kubectl label namespace default istio-injection=enabled</span><br><span class="line"></span><br><span class="line">kubectl get svc -n istio-system</span><br><span class="line">NAME                                    READY   STATUS    RESTARTS   AGE</span><br><span class="line">istio-egressgateway-68cbb757cc-jdc8l    1/1     Running   0          8m8s</span><br><span class="line">istio-ingressgateway-6fbd8dddbf-2b25p   1/1     Running   0          8m8s</span><br><span class="line">istiod-6fcfb4fbd9-6jklv                 1/1     Running   0          10m</span><br></pre></td></tr></table></figure><h2 id="安装kiali"><a href="/2022/08/19/k8s istio/#安装kiali" class="headerlink" title="安装kiali"></a>安装kiali</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.14/samples/addons/kiali.yaml</span><br></pre></td></tr></table></figure><p>设置可视化界面kiali为外部访问模式并查询nodeport号</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">kubectl patch svc -n istio-system kiali -p &apos;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&apos;</span><br><span class="line"></span><br><span class="line">kubectl describe svc -n istio-system kiali</span><br><span class="line">Name:                     kiali</span><br><span class="line">Namespace:                istio-system</span><br><span class="line">Labels:                   app=kiali</span><br><span class="line">                          app.kubernetes.io/instance=kiali</span><br><span class="line">                          app.kubernetes.io/managed-by=Helm</span><br><span class="line">                          app.kubernetes.io/name=kiali</span><br><span class="line">                          app.kubernetes.io/part-of=kiali</span><br><span class="line">                          app.kubernetes.io/version=v1.50.0</span><br><span class="line">                          helm.sh/chart=kiali-server-1.50.0</span><br><span class="line">                          version=v1.50.0</span><br><span class="line">Annotations:              &lt;none&gt;</span><br><span class="line">Selector:                 app.kubernetes.io/instance=kiali,app.kubernetes.io/name=kiali</span><br><span class="line">Type:                     NodePort</span><br><span class="line">IP Families:              &lt;none&gt;</span><br><span class="line">IP:                       10.96.108.219</span><br><span class="line">IPs:                      10.96.108.219</span><br><span class="line">Port:                     http  20001/TCP</span><br><span class="line">TargetPort:               20001/TCP</span><br><span class="line">NodePort:                 http  31255/TCP</span><br><span class="line">Endpoints:                172.31.131.167:20001</span><br><span class="line">Port:                     http-metrics  9090/TCP</span><br><span class="line">TargetPort:               9090/TCP</span><br><span class="line">NodePort:                 http-metrics  32081/TCP</span><br><span class="line">Endpoints:                172.31.131.167:9090</span><br><span class="line">Session Affinity:         None</span><br><span class="line">External Traffic Policy:  Cluster</span><br><span class="line">Events:                   &lt;none&gt;</span><br></pre></td></tr></table></figure><p>（1）<strong>在istio上部署测试应用bookinfo</strong></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">1、开启sidecar自动注入</span><br><span class="line">kubectl label namespace default istio-injection=enabled</span><br><span class="line">2、使用kubectl部署bookinfo并创建网关</span><br><span class="line">kubectl apply -f /usr/local/istio-1.14.3/samples/bookinfo/platform/kube/bookinfo.yaml</span><br><span class="line">kubectl apply -f /usr/local/istio-1.14.3/samples/bookinfo/networking/bookinfo-gateway.yaml </span><br><span class="line">3、设置访问网关的 INGRESS_HOST 和 INGRESS_PORT 变量，查询是否有外部负载均衡器</span><br><span class="line">kubectl get svc istio-ingressgateway -n istio-system</span><br><span class="line"></span><br><span class="line">EXTERNAL-IP是none或是pending说明没有问题</span><br><span class="line">修改istio的网关为nodeport模式　</span><br><span class="line"></span><br><span class="line">kubectl patch service istio-ingressgateway -n istio-system -p &apos;&#123;&quot;spec&quot;:&#123;&quot;type&quot;:&quot;NodePort&quot;&#125;&#125;&apos;</span><br><span class="line">采用nodeport方式暴露istio-ingressgateway</span><br><span class="line"></span><br><span class="line">export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&apos;&#123;.spec.ports[?(@.name==&quot;http2&quot;)].nodePort&#125;&apos;)</span><br><span class="line"></span><br><span class="line">export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&apos;&#123;.spec.ports[?(@.name==&quot;https&quot;)].nodePort&#125;&apos;)</span><br><span class="line"></span><br><span class="line">#获取 ingress IP 地址：</span><br><span class="line">export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o &apos;jsonpath=&#123;.items[0].status.hostIP&#125;&apos;)</span><br><span class="line"></span><br><span class="line">查询URL</span><br><span class="line"></span><br><span class="line">echo $INGRESS_HOST:$INGRESS_PORT</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;istio-安装&quot;&gt;&lt;a href=&quot;/2022/08/19/k8s istio/#istio-安装&quot; class=&quot;headerlink&quot; title=&quot;istio 安装&quot;&gt;&lt;/a&gt;istio 安装&lt;/h2&gt;&lt;p&gt;istio-1.14.3.tar.gz&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+      <category term="k8s" scheme="http://abigfish.net/categories/k8s/"/>
+    
+    
+      <category term="istio" scheme="http://abigfish.net/tags/istio/"/>
+    
+  </entry>
   
   <entry>
     <title>linux db2安装</title>
@@ -295,9 +321,9 @@
       <category term="iptables" scheme="http://abigfish.net/categories/iptables/"/>
     
     
-      <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
-    
       <category term="docker" scheme="http://abigfish.net/tags/docker/"/>
+    
+      <category term="centos7" scheme="http://abigfish.net/tags/centos7/"/>
     
       <category term="iptables" scheme="http://abigfish.net/tags/iptables/"/>
     
@@ -503,31 +529,6 @@
     
     
       <category term="tomcat" scheme="http://abigfish.net/tags/tomcat/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>redis 高可用方案</title>
-    <link href="http://abigfish.net/2019/02/28/redis%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E6%A1%88/"/>
-    <id>http://abigfish.net/2019/02/28/redis高可用方案/</id>
-    <published>2019-02-28T07:38:44.000Z</published>
-    <updated>2022-04-01T01:35:16.908Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="1-主从配制模式-哨兵监控"><a href="/2019/02/28/redis高可用方案/#1-主从配制模式-哨兵监控" class="headerlink" title="1.主从配制模式+哨兵监控"></a>1.主从配制模式+哨兵监控</h3><h4 id="1-1、Redis主从模式配置"><a href="/2019/02/28/redis高可用方案/#1-1、Redis主从模式配置" class="headerlink" title="1.1、Redis主从模式配置"></a>1.1、Redis主从模式配置</h4><p>Redis的主从模式配置是非常简单的，要求两个节点，如下</p><p>主节点（master）:192.168.0.16:6379</p><p>从节点（slave）:192.168.0.7:6379</p><p><em>注意：在生产上这样的配置，没有意义，达不到双活，因为如果无论master节点还是slave节点挂了，我们都要手动启动来让他继续恢复工作。如果想要达到自动恢复，比如master挂掉了，在slave节点中选一个节点自动更换成master，redis在2.4之后出现了sentinel（哨兵监控），下面来看下（1.2）哨兵监控的机制：</em></p><h4 id="1-2、哨兵监控（Sentinel）"><a href="/2019/02/28/redis高可用方案/#1-2、哨兵监控（Sentinel）" class="headerlink" title="1.2、哨兵监控（Sentinel）"></a>1.2、哨兵监控（Sentinel）</h4><p>Sentinel是Redis的高可用性（HA）解决方案，由一个或多个Sentinel实例组成的Sentinel系统可以监视任意多个主服务器，以及这些主服务器属下的所有从服务器，并在被监视的主服务器进行下线状态时，自动将下线主服务器属下的某个从服务器升级为新的主服务器，然后由新的主服务器代替已下线的主服务器继续处理命令请求。</p><p>基本原理是：心跳机制+投票裁决</p><p>（1）监控（Monitoring）： Sentinel 会不断地检查你的主服务器和从服务器是否运作正常。</p><p>（2）提醒（Notification）： 当被监控的某个 Redis 服务器出现问题时， Sentinel 可以通过 API 向管理员或者其他应用程序发送通知。</p><p>（3）自动故障迁移（Automatic failover）： 当一个主服务器不能正常工作时， Sentinel 会开始一次自动故障迁移操作， 它会将失效主服务器的其中一个从服务器升级为新的主服务器</p><h4 id="1-3、哨兵机制的原理图"><a href="/2019/02/28/redis高可用方案/#1-3、哨兵机制的原理图" class="headerlink" title="1.3、哨兵机制的原理图"></a>1.3、哨兵机制的原理图</h4><p>当集群正常时</p><p><img src="https://clyhs.github.io/images/redis/redis01.png" alt="img"></p><p>当一个节点发生故障时，哨兵监控系统会从新选择一个新节点，做为主节点，如图</p><p><img src="https://clyhs.github.io/images/redis/redis02.png" alt="img"></p><h4 id="1-4、哨兵监控的服务器要求"><a href="/2019/02/28/redis高可用方案/#1-4、哨兵监控的服务器要求" class="headerlink" title="1.4、哨兵监控的服务器要求"></a>1.4、哨兵监控的服务器要求</h4><p>（1）、redis主要配置至少要一主一从，从可以多个，但是主只能一个</p><p>（2）、哨兵监控系统，可以一个，也可以多个</p><h3 id="2-分布式方案"><a href="/2019/02/28/redis高可用方案/#2-分布式方案" class="headerlink" title="2.分布式方案"></a>2.分布式方案</h3><h4 id="2-1、redis分布式配置"><a href="/2019/02/28/redis高可用方案/#2-1、redis分布式配置" class="headerlink" title="2.1、redis分布式配置"></a>2.1、redis分布式配置</h4><p>一般redis分布式要求三主三从，分布式与哨兵监控的差别在于，有多个主节点，每个主节点都需要从节点。最少要三个节点存活</p><p>主节点（master1）:192.168.0.16:6379</p><p>主节点（master2）:192.168.0.16:6378</p><p>主节点（master3）:192.168.0.16:6377</p><p>从节点（slave1）:192.168.0.7:6379</p><p>从节点（slave2）:192.168.0.7:6378</p><p>从节点（slave3）:192.168.0.7:6377</p><h4 id="2-2、分布式的原理图"><a href="/2019/02/28/redis高可用方案/#2-2、分布式的原理图" class="headerlink" title="2.2、分布式的原理图"></a>2.2、分布式的原理图</h4><p>当两台虚拟机正常时</p><p><img src="https://clyhs.github.io/images/redis/redis03.png" alt="img"></p><p>当一有台虚拟机发生故障，如图</p><p><img src="https://clyhs.github.io/images/redis/redis04.png" alt="img"></p><h4 id="2-3、服务器要求"><a href="/2019/02/28/redis高可用方案/#2-3、服务器要求" class="headerlink" title="2.3、服务器要求"></a>2.3、服务器要求</h4><p>至少两台虚拟机，每台三个节点。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;1-主从配制模式-哨兵监控&quot;&gt;&lt;a href=&quot;/2019/02/28/redis高可用方案/#1-主从配制模式-哨兵监控&quot; class=&quot;headerlink&quot; title=&quot;1.主从配制模式+哨兵监控&quot;&gt;&lt;/a&gt;1.主从配制模式+哨兵监控&lt;/h3&gt;&lt;h4 id
-      
-    
-    </summary>
-    
-      <category term="redis" scheme="http://abigfish.net/categories/redis/"/>
-    
-    
-      <category term="redis" scheme="http://abigfish.net/tags/redis/"/>
     
   </entry>
   
