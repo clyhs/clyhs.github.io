@@ -1005,6 +1005,7 @@ exportfs -r
 > 从节点
 
 ```
+systemctl enable rpcbind --now
 showmount -e 192.168.2.221
 [root@node1 ~]# showmount -e 192.168.2.221
 Export list for 192.168.2.221:
