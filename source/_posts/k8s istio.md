@@ -107,3 +107,9 @@ export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o 
 echo $INGRESS_HOST:$INGRESS_PORT
 ```
 
+（2）**[Prometheus](https://prometheus.io/)**
+
+```
+kubectl apply -f /usr/local/istio-1.14.3/samples/addons/prometheus.yaml 
+```
+
