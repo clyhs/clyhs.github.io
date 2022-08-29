@@ -105,6 +105,8 @@ export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o 
 查询URL
 
 echo $INGRESS_HOST:$INGRESS_PORT
+
+http://192.168.2.220:30290/productpage
 ```
 
 （2）**[Prometheus](https://prometheus.io/)**
