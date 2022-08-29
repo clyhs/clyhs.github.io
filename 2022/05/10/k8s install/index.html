@@ -97,7 +97,7 @@
 <meta property="og:site_name" content="大鱼的博客">
 <meta property="og:description" content="k8s install Kubernetes Cluster = N Master Node + N Worker Node：N主节点+N工作节点； N&amp;gt;=1  ready servercentos7 64  master 192.168.2.221 node1  192.168.2.219 node2  192.168.2.220  kubeadm installall server in">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-05-10T06:03:27.023Z">
+<meta property="og:updated_time" content="2022-08-24T03:51:52.455Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="k8s安装部署">
 <meta name="twitter:description" content="k8s install Kubernetes Cluster = N Master Node + N Worker Node：N主节点+N工作节点； N&amp;gt;=1  ready servercentos7 64  master 192.168.2.221 node1  192.168.2.219 node2  192.168.2.220  kubeadm installall server in">
@@ -697,7 +697,7 @@
 <blockquote>
 <p>从节点</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">showmount -e 192.168.2.221</span><br><span class="line">[root@node1 ~]# showmount -e 192.168.2.221</span><br><span class="line">Export list for 192.168.2.221:</span><br><span class="line">/nfs/data *</span><br><span class="line"></span><br><span class="line">#执行以下命令挂载nfs服务器上的共享目录到本机路径/root/nfsmount</span><br><span class="line">mkdir -p /nfs/data</span><br><span class="line"></span><br><span class="line">mount -t nfs 192.168.2.221:/nfs/data /nfs/data</span><br><span class="line">#写入一个测试文件</span><br><span class="line">echo &quot;hello nfs server&quot; &gt; /nfs/data/test.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable rpcbind --now</span><br><span class="line">showmount -e 192.168.2.221</span><br><span class="line">[root@node1 ~]# showmount -e 192.168.2.221</span><br><span class="line">Export list for 192.168.2.221:</span><br><span class="line">/nfs/data *</span><br><span class="line"></span><br><span class="line">#执行以下命令挂载nfs服务器上的共享目录到本机路径/root/nfsmount</span><br><span class="line">mkdir -p /nfs/data</span><br><span class="line"></span><br><span class="line">mount -t nfs 192.168.2.221:/nfs/data /nfs/data</span><br><span class="line">#写入一个测试文件</span><br><span class="line">echo &quot;hello nfs server&quot; &gt; /nfs/data/test.txt</span><br></pre></td></tr></table></figure>
 <p>在其它服务器查看test.txt</p>
 <h4 id="nfs（原生）方式数据挂载"><a href="/2022/05/10/k8s install/#nfs（原生）方式数据挂载" class="headerlink" title="nfs（原生）方式数据挂载"></a>nfs（原生）方式数据挂载</h4><p>在所有服务器创建目录</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /nfs/data/nginx-pv/</span><br></pre></td></tr></table></figure>
