@@ -109,9 +109,96 @@ echo $INGRESS_HOST:$INGRESS_PORT
 http://192.168.2.220:30290/productpage
 ```
 
-（2）**[Prometheus](https://prometheus.io/)**
+注：创建失败：Error creating: Internal error occurred: failed calling webhook "sidecar-injector.istio.io": Post https://istio-sidecar-injector.istio-system.svc:443/inject?timeout=30s: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+
+```
+istioctl install --set values.pilot.env.PILOT_ENABLE_STATUS=true --set values.global.istiod.enableAnalysis=true
+```
+
+
+
+如果sidecar不生效，改为：手动注放
+
+```
+istioctl kube-inject -f bookinfo.yaml | kubectl apply -f -
+```
+
+或者修改
+
+```
+kubectl edit mutatingWebhookConfiguration -o yaml
+
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: istio-sidecar-injector
+  labels:
+    app: sidecar-injector
+webhooks:
+  name: sidecar-injector.istio.io
+  - clientConfig:
+    service:
+      name: istio-sidecar-injector
+      namespace: istio-system
+      path: /inject
+  namespaceSelector:
+    matchLabels:
+      istio-injection: enabled
+    rules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      resources:
+      - pods
+```
+
+
+
+
+
+
+
+（2）**安装 其他插件**
 
 ```
 kubectl apply -f /usr/local/istio-1.14.3/samples/addons/prometheus.yaml 
+kubectl apply -f /usr/local/istio-1.14.3/samples/addons/grafana.yaml
+kubectl apply -f /usr/local/istio-1.14.3/samples/addons/jaeger.yaml
+
+# kubectl get svc -n istio-system
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                                                                      AGE
+grafana                NodePort    10.96.112.203   <none>        3000:30902/TCP                                                               4h27m
+istio-egressgateway    ClusterIP   10.96.84.162    <none>        80/TCP,443/TCP                                                               11d
+istio-ingressgateway   NodePort    10.96.133.178   <none>        15021:30991/TCP,80:30290/TCP,443:30679/TCP,31400:31393/TCP,15443:32229/TCP   11d
+istiod                 ClusterIP   10.96.153.168   <none>        15010/TCP,15012/TCP,443/TCP,15014/TCP                                        11d
+jaeger-collector       ClusterIP   10.96.44.207    <none>        14268/TCP,14250/TCP,9411/TCP                                                 4h16m
+kiali                  NodePort    10.96.108.219   <none>        20001:31255/TCP,9090:32081/TCP                                               10d
+prometheus             NodePort    10.96.92.93     <none>        9090:32619/TCP                                                               2d21h
+tracing                NodePort    10.96.112.245   <none>        80:30694/TCP,16685:30599/TCP                                                 4h16m
+zipkin                 ClusterIP   10.96.33.125    <none>        9411/TCP                                                                     4h16m
+
+kubectl edit configmap -n istio-system kiali
+#在
+    external_services:       
+      custom_dashboards:
+        enabled: true
+      istio:
+        root_namespace: istio-system
+      tracing:
+        #url: http://10.96.112.245
+        enabled: true
+        url: http://192.168.2.220:30694
+      prometheus:
+        # url: http://10.96.92.93:9090
+        url: http://192.168.2.220:32619
+      grafana:
+        enabled: true
+        # url: http://10.96.112.203:3000
+        url: http://192.168.2.220:30902
+
+
 ```
 
