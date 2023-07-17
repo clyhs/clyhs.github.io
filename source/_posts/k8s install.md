@@ -1377,8 +1377,14 @@ spec:
 kubectl get secret
 ```
 
+### 证书过期
 
-
-
+```
+kubeadm alpha certs check-expiration
+timedatectl set-ntp false  关闭ntp  （timedatectl set-ntp true 开启ntp）
+date -s 04/27/2022         修改系统时间 2024年4月27日
+使用 kubeadm alpha certs renew all 更新证书
+重启docker
+```
 
 *来源：https://blog.csdn.net/weixin_46703850/article/details/122922090*
