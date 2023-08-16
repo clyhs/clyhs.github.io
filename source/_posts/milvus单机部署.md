@@ -173,6 +173,8 @@ docker restart qa_chatbot_server
 
 可以看到服务
 
+![img](https://clyhs.github.io/images/ai/qa_chatbot_server.png)
+
 ### 安装客户端
 
 ```bash
@@ -185,3 +187,8 @@ docker run -d --name qa_chatbot_client -p 8283:80 -e "API_URL=${API_URL}" milvus
 ```
 
 打开地址：http://192.168.2.219:8283/
+
+![img](https://clyhs.github.io/images/ai/qa_chatbot_client.png)
+
+上传 [example.csv](https://clyhs.github.io/images/ai/example.csv)文件
+
