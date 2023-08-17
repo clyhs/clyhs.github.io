@@ -158,6 +158,14 @@ docker cp chinese_L-12_H-768_A-12.zip qa_chatbot_server:/app/src/models/
 #MODEL_PATH = '/app/src/models/paraphrase-mpnet-base-v2'
 MODEL_PATH = '/app/src/models/chinese_L-12_H-768_A-12'
 
+# 转模型tensorflow->pytorch
+git clone https://github.com/xieyufei1993/Bert-Pytorch-Chinese-TextClassification.git
+export BERT_BASE_DIR=/Users/chenliyu/clyhs/workspace/milvus/chinese_L-12_H-768_A-12
+python3 convert_tf_checkpoint_to_pytorch.py \
+  --tf_checkpoint_path $BERT_BASE_DIR/bert_model.ckpt \
+  --bert_config_file $BERT_BASE_DIR/bert_config.json \
+  --pytorch_dump_path $BERT_BASE_DIR/pytorch_model.bin
+
 #修改chinese_L-12_H-768_A-12的bert_config.json
 改为config.json
 
