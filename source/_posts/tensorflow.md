@@ -1,7 +1,9 @@
+---
 title: tensorflow安装部署
 date: 2023-08-11 22:45:25
 category: 人工智能
 tags: tensorflow
+---
 
 # tensorflow
 

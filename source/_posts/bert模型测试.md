@@ -1,7 +1,9 @@
+---
 title: bert模型测试
 date: 2023-08-18 23:15:53
 category: 人工智能
 tags: 大模型
+---
 
 # bert模型测试
 

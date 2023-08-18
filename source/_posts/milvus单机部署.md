@@ -1,7 +1,9 @@
+---
 title: milvus单机部署
 date: 2023-08-16 23:15:53
 category: 向量数据库
 tags: milvus
+---
 
 # milvus 单机部署
 
@@ -9,10 +11,9 @@ Docker 和 Docker Compose环境检查
 
 * Docker 版本 > 19.03 [部署docker](https://blog.csdn.net/u013933879/article/details/118763212)
 * Docker Compose 版本 > 1.25.1 [安装Compose](https://docs.docker.com/compose/install/
+* 检查CPU 对 SIMD库扩展的支持
 
-## 检查CPU 对 SIMD库扩展的支持
-
-CPU需要支持以下指令集中的任意一个
+**CPU需要支持以下指令集中的任意一个**
 
 - SSE4.2
 - AVX

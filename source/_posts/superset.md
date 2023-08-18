@@ -1,7 +1,9 @@
+---
 title: superset部署
 date: 2023-08-11 22:45:25
 category: BI
 tags: superset
+---
 
 # superset
 
