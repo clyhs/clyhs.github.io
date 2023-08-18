@@ -71,7 +71,7 @@ ops.sentence_embedding.sbert(model_name='bert-base-chinese'))
 
 **此版本对应的milvus 2.0.2**
 
-### 安装服务qa-chatbot-server:v1
+### 安装服务qa-chatbot-server
 
 ```
 export MILVUS_HOST='127.0.0.1'
@@ -94,6 +94,14 @@ docker cp chinese_L-12_H-768_A-12.zip qa_chatbot_server:/app/src/models/
 #MODEL_PATH = '/app/src/models/paraphrase-mpnet-base-v2'
 MODEL_PATH = '/app/src/models/chinese_L-12_H-768_A-12'
 
+# 转模型tensorflow->pytorch
+git clone https://github.com/xieyufei1993/Bert-Pytorch-Chinese-TextClassification.git
+export BERT_BASE_DIR=/Users/chenliyu/clyhs/workspace/milvus/chinese_L-12_H-768_A-12
+python3 convert_tf_checkpoint_to_pytorch.py \
+  --tf_checkpoint_path $BERT_BASE_DIR/bert_model.ckpt \
+  --bert_config_file $BERT_BASE_DIR/bert_config.json \
+  --pytorch_dump_path $BERT_BASE_DIR/pytorch_model.bin
+
 #修改chinese_L-12_H-768_A-12的bert_config.json
 改为config.json
 
@@ -101,7 +109,7 @@ MODEL_PATH = '/app/src/models/chinese_L-12_H-768_A-12'
 mysql_helper.py中创建mysql表部分为：
 sql = "create table .... answer Text)ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
-# 
+# 启动
 docker restart qa_chatbot_server
 ```
 
@@ -111,7 +119,7 @@ docker restart qa_chatbot_server
 
 ![img](https://clyhs.github.io/images/ai/qa_chatbot_server.png)
 
-### 安装客户端qa-chatbot-client:v1
+### 安装客户端
 
 ```bash
 qa-chatbot-client
@@ -122,7 +130,7 @@ export API_URL='http:/192.168.2.219:8282'
 docker run -d --name qa_chatbot_client -p 8283:80 -e "API_URL=${API_URL}" milvusbootcamp/qa-chatbot-client:v1
 ```
 
-打开地址：http://192.168.2.219:8283/
+打开地址：http://192.168.2.219:8283
 
 ![img](https://clyhs.github.io/images/ai/qa_chatbot_client.png)
 
