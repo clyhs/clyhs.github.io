@@ -448,7 +448,7 @@
 <li>(1)采用cms垃圾回收</li>
 </ul>
 <p>catalina.sh</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">JAVA_OPTS="-server -showversion -Xms2g -Xmx16g -Xmn1g -XX:PermSize=256m -</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -d64 -XX:CICompilerCount=8 -XX:+UseCompressedOops"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:SurvivorRatio=4 -XX:TargetSurvivorRatio=90"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:ReservedCodeCacheSize=256m -XX:-UseAdaptiveSizePolicy"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -Duser.timezone=Asia/Shanghai -XX:-DontCompileHugeMethods"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -Xss1024k -XX:+AggressiveOpts -XX:+UseBiasedLocking"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:MaxTenuringThreshold=31 -XX:+CMSParallelRemarkEnabled "</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:GCTimeRatio=19 -XX:CMSFullGCsBeforeCompaction=0 -XX:+UseCMSCompactAtFullCollection  -XX:LargePageSizeInBytes=256m -XX:+UseFastAccessorMethods"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=50 -Djava.awt.headless=true"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:+UseGCOverheadLimit -XX:AllocatePrefetchDistance=256 -XX:AllocatePrefetchStyle=1"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:MaxGCPauseMillis=200"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:SoftRefLRUPolicyMSPerMB=0"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.port=1090"</span><br><span class="line"><span class="meta">#</span>JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"   </span><br><span class="line"><span class="meta">#</span>JAVA_OPTS="$JAVA_OPTS -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager" </span><br><span class="line"><span class="meta">#</span>JAVA_OPTS="$JAVA_OPTS -Djava.util.logging.config.file=$CATALINA_HOME\conf\logging.properties"</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">JAVA_OPTS="-server -showversion -Xms2g -Xmx16g -Xmn1g -XX:PermSize=256m -</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -d64 -XX:CICompilerCount=8 -XX:+UseCompressedOops"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:SurvivorRatio=4 -XX:TargetSurvivorRatio=90"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:ReservedCodeCacheSize=256m -XX:-UseAdaptiveSizePolicy"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -Duser.timezone=Asia/Shanghai -XX:-DontCompileHugeMethods"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -Xss1024k -XX:+AggressiveOpts -XX:+UseBiasedLocking"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:MaxTenuringThreshold=31 -XX:+CMSParallelRemarkEnabled "</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:GCTimeRatio=19 -XX:CMSFullGCsBeforeCompaction=0 -XX:+UseCMSCompactAtFullCollection  -XX:LargePageSizeInBytes=256m -XX:+UseFastAccessorMethods"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=50 -Djava.awt.headless=true"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:+UseGCOverheadLimit -XX:AllocatePrefetchDistance=256 -XX:AllocatePrefetchStyle=1"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:MaxGCPauseMillis=200"</span><br><span class="line">JAVA_OPTS="$JAVA_OPTS -XX:SoftRefLRUPolicyMSPerMB=0"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">JAVA_OPTS=<span class="string">"<span class="variable">$JAVA_OPTS</span> -Dcom.sun.management.jmxremote.port=1090"</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">JAVA_OPTS=<span class="string">"<span class="variable">$JAVA_OPTS</span> -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"</span>   </span></span><br><span class="line"><span class="meta">#</span><span class="bash">JAVA_OPTS=<span class="string">"<span class="variable">$JAVA_OPTS</span> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager"</span> </span></span><br><span class="line"><span class="meta">#</span><span class="bash">JAVA_OPTS=<span class="string">"<span class="variable">$JAVA_OPTS</span> -Djava.util.logging.config.file=<span class="variable">$CATALINA_HOME</span>\conf\logging.properties"</span></span></span><br></pre></td></tr></table></figure>
 <p>server.xml</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;Executor name="tomcatThreadPool" namePrefix="catalina-exec-" </span><br><span class="line">        maxThreads="800" maxIdleTime="60000" </span><br><span class="line">        minSpareThreads="100"/&gt;</span><br><span class="line">        </span><br><span class="line">&lt;Connector executor="tomcatThreadPool"   port="8170" protocol="org.apache.coyote.http11.Http11NioProtocol"</span><br><span class="line">               connectionTimeout="20000"</span><br><span class="line">               compression="on"  </span><br><span class="line">               compressionMinSize="2048" </span><br><span class="line">               noCompressionUserAgents="gozilla, traviata"  </span><br><span class="line">               compressableMimeType="text/html,application/xhtml+xml,application/xml,text/xml,text/javascript,text/css,text/plain,application/x-</span><br><span class="line">javascript,application/javascript,text/xhtml,text/json,application/json,application/x-www-form-urlencoded,text/javaScript"  </span><br><span class="line">               useSendfile="false"</span><br><span class="line">               redirectPort="8443" /&gt;</span><br></pre></td></tr></table></figure>
 <ul>
@@ -635,7 +635,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">82</span>
+                <span class="site-state-item-count">88</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -646,7 +646,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -657,7 +657,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -722,7 +722,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

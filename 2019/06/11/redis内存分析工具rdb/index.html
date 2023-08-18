@@ -438,7 +438,7 @@
 
       
         <h3 id="rdb"><a href="/2019/06/11/redis内存分析工具rdb/#rdb" class="headerlink" title="rdb"></a>rdb</h3><p>redis-rdb-tools是由Python写的用来分析Redis的rdb快照文件用的工具，它可以把rdb快照文件生成json文件或者生成报表用来分析Redis的使用详情、使用标准的diff工具比较两个dump文件，总之是比较实用的工具，至于安装可以通过Python的pip来安装</p>
-<h4 id="安装"><a href="/2019/06/11/redis内存分析工具rdb/#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">yum -y install python-pip python-redis</span><br><span class="line"></span><br><span class="line">正在解决依赖关系</span><br><span class="line"><span class="meta">--&gt;</span> 正在检查事务</span><br><span class="line"><span class="meta">---&gt;</span> 软件包 python2-pip.noarch.0.8.1.2-8.el7 将被 安装</span><br><span class="line"><span class="meta">---&gt;</span> 软件包 python2-redis.noarch.0.2.10.6-1.el7 将被 安装</span><br><span class="line"></span><br><span class="line">pip install rdbtools</span><br></pre></td></tr></table></figure>
+<h4 id="安装"><a href="/2019/06/11/redis内存分析工具rdb/#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">yum -y install python-pip python-redis</span><br><span class="line"></span><br><span class="line">正在解决依赖关系</span><br><span class="line"><span class="meta">--&gt;</span><span class="bash"> 正在检查事务</span></span><br><span class="line"><span class="meta">---&gt;</span><span class="bash"> 软件包 python2-pip.noarch.0.8.1.2-8.el7 将被 安装</span></span><br><span class="line"><span class="meta">---&gt;</span><span class="bash"> 软件包 python2-redis.noarch.0.2.10.6-1.el7 将被 安装</span></span><br><span class="line"></span><br><span class="line">pip install rdbtools</span><br></pre></td></tr></table></figure>
 <p>rdb常用的几个参数：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">-h，--help                         显示此帮助信息并退出</span><br><span class="line">-c FILE, --command=FILE            要执行的命令，转出的类型。有效的命令是json(转成json)，diff（差异比对），justkeys（仅有key），justkeyvals（仅有value），memory（内存报告）， protocol（导成添加指令）</span><br><span class="line"></span><br><span class="line">-f FILE, --file=FILE               文件输出文件</span><br><span class="line">-n DBS, --db=DBS                   DBS数据库号码。可以提供多个数据库。如果未指定，则将包括所有数据库。</span><br><span class="line">-k KEYS, --key=KEYS                显示出的Redis的key。这可以是一个正则表达式</span><br><span class="line">-o NOT_KEYS, --not-key=NOT_KEYS    显示忽略的key。这可以是一个正则表达式</span><br><span class="line">-t TYPES, --type=TYPES             显示出数据类型，key的数据类型string(字符串)、list(链表)、set(集合)、zset(sorted set --有序集合)和hash（哈希类型），如果没有指定，全部数据类型将被返回</span><br><span class="line"></span><br><span class="line">-b BYTES, --bytes=BYTES            将内存输出限制为大于或等于的key，单位字节</span><br><span class="line">-l LARGEST, --largest=LARGEST      将内存输出限制为只有前N个key（按大小）</span><br><span class="line">-e ESCAPE, --escape=ESCAPE         将字符串转义为编码：raw（默认），print，utf8或base64。</span><br></pre></td></tr></table></figure>
 <h4 id="运用"><a href="/2019/06/11/redis内存分析工具rdb/#运用" class="headerlink" title="运用"></a>运用</h4><p>把匹配到的key的key和value用json的格式打印</p>
@@ -704,7 +704,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">82</span>
+                <span class="site-state-item-count">88</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -715,7 +715,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -726,7 +726,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -791,7 +791,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

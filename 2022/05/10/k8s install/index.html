@@ -97,7 +97,7 @@
 <meta property="og:site_name" content="大鱼的博客">
 <meta property="og:description" content="k8s install Kubernetes Cluster = N Master Node + N Worker Node：N主节点+N工作节点； N&amp;gt;=1  ready servercentos7 64  master 192.168.2.221 node1  192.168.2.219 node2  192.168.2.220  kubeadm installall server in">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-08-24T03:51:52.455Z">
+<meta property="og:updated_time" content="2023-07-17T04:03:09.754Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="k8s安装部署">
 <meta name="twitter:description" content="k8s install Kubernetes Cluster = N Master Node + N Worker Node：N主节点+N工作节点； N&amp;gt;=1  ready servercentos7 64  master 192.168.2.221 node1  192.168.2.219 node2  192.168.2.220  kubeadm installall server in">
@@ -762,6 +762,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: private-nginx # pod 名称</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: private-nginx</span><br><span class="line">    image: dockerywl/mysql # 私有镜像名称</span><br></pre></td></tr></table></figure>
 <p>查看</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get secret</span><br></pre></td></tr></table></figure>
+<h3 id="证书过期"><a href="/2022/05/10/k8s install/#证书过期" class="headerlink" title="证书过期"></a>证书过期</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kubeadm alpha certs check-expiration</span><br><span class="line">timedatectl set-ntp false  关闭ntp  （timedatectl set-ntp true 开启ntp）</span><br><span class="line">date -s 04/27/2022         修改系统时间 2024年4月27日</span><br><span class="line">使用 kubeadm alpha certs renew all 更新证书</span><br><span class="line">重启docker</span><br></pre></td></tr></table></figure>
 <p><em>来源：<a href="https://blog.csdn.net/weixin_46703850/article/details/122922090" target="_blank" rel="noopener">https://blog.csdn.net/weixin_46703850/article/details/122922090</a></em></p>
 
       
@@ -924,7 +925,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">82</span>
+                <span class="site-state-item-count">88</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -935,7 +936,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -946,7 +947,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -988,7 +989,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#k8s-install"><span class="nav-number">1.</span> <span class="nav-text">k8s install</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ready-server"><span class="nav-number">1.1.</span> <span class="nav-text">ready server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kubeadm-install"><span class="nav-number">1.2.</span> <span class="nav-text">kubeadm install</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#base-setting"><span class="nav-number">1.2.1.</span> <span class="nav-text">base setting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#install-network-components-calico"><span class="nav-number">1.2.2.</span> <span class="nav-text">install network components calico</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#install-dashboard"><span class="nav-number">1.2.3.</span> <span class="nav-text">install dashboard</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#namespace"><span class="nav-number">1.2.4.</span> <span class="nav-text">namespace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deployment"><span class="nav-number">1.2.5.</span> <span class="nav-text">Deployment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#service"><span class="nav-number">1.2.6.</span> <span class="nav-text">service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ingress-网关"><span class="nav-number">1.2.7.</span> <span class="nav-text">Ingress(网关)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储抽象"><span class="nav-number">1.2.8.</span> <span class="nav-text">存储抽象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#nfs（原生）方式数据挂载"><span class="nav-number">1.2.8.1.</span> <span class="nav-text">nfs（原生）方式数据挂载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PV-持久卷-和PVC-持久卷申明"><span class="nav-number">1.2.8.2.</span> <span class="nav-text">PV(持久卷)和PVC(持久卷申明)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#configMap-配置集"><span class="nav-number">1.2.8.3.</span> <span class="nav-text">configMap(配置集)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#secret"><span class="nav-number">1.2.8.4.</span> <span class="nav-text">secret</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#k8s-install"><span class="nav-number">1.</span> <span class="nav-text">k8s install</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ready-server"><span class="nav-number">1.1.</span> <span class="nav-text">ready server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kubeadm-install"><span class="nav-number">1.2.</span> <span class="nav-text">kubeadm install</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#base-setting"><span class="nav-number">1.2.1.</span> <span class="nav-text">base setting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#install-network-components-calico"><span class="nav-number">1.2.2.</span> <span class="nav-text">install network components calico</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#install-dashboard"><span class="nav-number">1.2.3.</span> <span class="nav-text">install dashboard</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#namespace"><span class="nav-number">1.2.4.</span> <span class="nav-text">namespace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deployment"><span class="nav-number">1.2.5.</span> <span class="nav-text">Deployment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#service"><span class="nav-number">1.2.6.</span> <span class="nav-text">service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ingress-网关"><span class="nav-number">1.2.7.</span> <span class="nav-text">Ingress(网关)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储抽象"><span class="nav-number">1.2.8.</span> <span class="nav-text">存储抽象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#nfs（原生）方式数据挂载"><span class="nav-number">1.2.8.1.</span> <span class="nav-text">nfs（原生）方式数据挂载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PV-持久卷-和PVC-持久卷申明"><span class="nav-number">1.2.8.2.</span> <span class="nav-text">PV(持久卷)和PVC(持久卷申明)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#configMap-配置集"><span class="nav-number">1.2.8.3.</span> <span class="nav-text">configMap(配置集)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#secret"><span class="nav-number">1.2.8.4.</span> <span class="nav-text">secret</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#证书过期"><span class="nav-number">1.2.9.</span> <span class="nav-text">证书过期</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1011,7 +1012,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

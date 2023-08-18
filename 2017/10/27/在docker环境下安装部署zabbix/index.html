@@ -443,9 +443,9 @@
 
       
         <h3 id="安装MYSQL"><a href="/2017/10/27/在docker环境下安装部署zabbix/#安装MYSQL" class="headerlink" title="安装MYSQL"></a>安装MYSQL</h3><p>此步略</p>
-<h3 id="安装zabbix-zabbix-server-mysql"><a href="/2017/10/27/在docker环境下安装部署zabbix/#安装zabbix-zabbix-server-mysql" class="headerlink" title="安装zabbix/zabbix-server-mysql"></a>安装zabbix/zabbix-server-mysql</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> docker pull zabbix/zabbix-server-mysql</span><br><span class="line"><span class="meta">#</span> docker run --name some-zabbix-server-mysql  -p 10051:10051 --net=host -e DB_SERVER_HOST="192.168.0.16" -e DB_SERVER_PORT=3306 -e MYSQL_USER="root" -e MYSQL_PASSWORD="123456" -d zabbix/zabbix-server-mysql</span><br></pre></td></tr></table></figure>
-<h3 id="安装zabbix-zabbix-web-apache-mysql"><a href="/2017/10/27/在docker环境下安装部署zabbix/#安装zabbix-zabbix-web-apache-mysql" class="headerlink" title="安装zabbix/zabbix-web-apache-mysql"></a>安装zabbix/zabbix-web-apache-mysql</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> docker pull zabbix/zabbix-web-apache-mysql</span><br><span class="line"><span class="meta">#</span> docker run --name some-zabbix-web-apache-mysql -p 8188:80  -e DB_SERVER_HOST="192.168.0.16" -e DB_SERVER_PORT=3306 -e MYSQL_USER="root" -e MYSQL_PASSWORD="123456" -e ZBX_SERVER_HOST="192.168.0.16" -e TZ="Asia/Shanghai" -d zabbix/zabbix-web-apache-mysql</span><br></pre></td></tr></table></figure>
-<h3 id="安装zabbix-zabbix-agent"><a href="/2017/10/27/在docker环境下安装部署zabbix/#安装zabbix-zabbix-agent" class="headerlink" title="安装zabbix/zabbix-agent"></a>安装zabbix/zabbix-agent</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> docker pull zabbix/zabbix-agent</span><br><span class="line"><span class="meta">#</span> docker run --name some-zabbix-agent -p 10050:10050 -e ZBX_HOSTNAME="192.168.0.16" -e ZBX_SERVER_HOST="192.168.0.16" -e ZBX_SERVER_PORT=10051 -d zabbix/zabbix-agent</span><br></pre></td></tr></table></figure>
+<h3 id="安装zabbix-zabbix-server-mysql"><a href="/2017/10/27/在docker环境下安装部署zabbix/#安装zabbix-zabbix-server-mysql" class="headerlink" title="安装zabbix/zabbix-server-mysql"></a>安装zabbix/zabbix-server-mysql</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> docker pull zabbix/zabbix-server-mysql</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> docker run --name some-zabbix-server-mysql  -p 10051:10051 --net=host -e DB_SERVER_HOST=<span class="string">"192.168.0.16"</span> -e DB_SERVER_PORT=3306 -e MYSQL_USER=<span class="string">"root"</span> -e MYSQL_PASSWORD=<span class="string">"123456"</span> -d zabbix/zabbix-server-mysql</span></span><br></pre></td></tr></table></figure>
+<h3 id="安装zabbix-zabbix-web-apache-mysql"><a href="/2017/10/27/在docker环境下安装部署zabbix/#安装zabbix-zabbix-web-apache-mysql" class="headerlink" title="安装zabbix/zabbix-web-apache-mysql"></a>安装zabbix/zabbix-web-apache-mysql</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> docker pull zabbix/zabbix-web-apache-mysql</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> docker run --name some-zabbix-web-apache-mysql -p 8188:80  -e DB_SERVER_HOST=<span class="string">"192.168.0.16"</span> -e DB_SERVER_PORT=3306 -e MYSQL_USER=<span class="string">"root"</span> -e MYSQL_PASSWORD=<span class="string">"123456"</span> -e ZBX_SERVER_HOST=<span class="string">"192.168.0.16"</span> -e TZ=<span class="string">"Asia/Shanghai"</span> -d zabbix/zabbix-web-apache-mysql</span></span><br></pre></td></tr></table></figure>
+<h3 id="安装zabbix-zabbix-agent"><a href="/2017/10/27/在docker环境下安装部署zabbix/#安装zabbix-zabbix-agent" class="headerlink" title="安装zabbix/zabbix-agent"></a>安装zabbix/zabbix-agent</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> docker pull zabbix/zabbix-agent</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> docker run --name some-zabbix-agent -p 10050:10050 -e ZBX_HOSTNAME=<span class="string">"192.168.0.16"</span> -e ZBX_SERVER_HOST=<span class="string">"192.168.0.16"</span> -e ZBX_SERVER_PORT=10051 -d zabbix/zabbix-agent</span></span><br></pre></td></tr></table></figure>
 <h3 id="访问WEB"><a href="/2017/10/27/在docker环境下安装部署zabbix/#访问WEB" class="headerlink" title="访问WEB"></a>访问WEB</h3><p>帐号密码：Admin/zabbix<br>地址：<a href="http://192.168.0.16:8188" target="_blank" rel="noopener">http://192.168.0.16:8188</a><br><img src="https://clyhs.github.io/images/zabbix/zabbix01.png" alt="img"></p>
 <h3 id="配置"><a href="/2017/10/27/在docker环境下安装部署zabbix/#配置" class="headerlink" title="配置"></a>配置</h3><p><img src="https://clyhs.github.io/images/zabbix/zabbix02.png" alt="img"><br><img src="https://clyhs.github.io/images/zabbix/zabbix03.png" alt="img"><br><img src="https://clyhs.github.io/images/zabbix/zabbix04.png" alt="img"></p>
 
@@ -611,7 +611,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">82</span>
+                <span class="site-state-item-count">88</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -622,7 +622,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -633,7 +633,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -698,7 +698,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

@@ -440,7 +440,7 @@
         <h3 id="redis持久化"><a href="/2019/06/11/redis的持久化策略/#redis持久化" class="headerlink" title="redis持久化"></a>redis持久化</h3><p>Redis 有两种持久化方案，RDB （Redis DataBase）和 AOF （Append Only File）</p>
 <h4 id="rdb方案"><a href="/2019/06/11/redis的持久化策略/#rdb方案" class="headerlink" title="rdb方案"></a>rdb方案</h4><p>RDB 是 Redis 默认的持久化方案。在指定的时间间隔内，执行指定次数的写操作，则会将内存中的数据写入到磁盘中。即在指定目录下生成一个dump.rdb文件。Redis 重启会通过加载dump.rdb文件恢复数据。</p>
 <p><em>在redis.conf中</em></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>   save ""</span><br><span class="line">save 900 1</span><br><span class="line">save 300 10</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">   save <span class="string">""</span></span></span><br><span class="line">save 900 1</span><br><span class="line">save 300 10</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure>
 <p>上面的意思是：</p>
 <p><em>900秒内有1个更改，300秒内有10个更改以及60秒内有10000个更改，则将内存中的数据快照写入磁盘</em>。</p>
 <p><em>若不想用RDB方案，可以把 save “” 的注释打开，下面三个注释。</em></p>
@@ -453,7 +453,7 @@
 <p>优点：<br>1 适合大规模的数据恢复。<br>2 如果业务对数据完整性和一致性要求不高，RDB是很好的选择。</p>
 <p>缺点：<br>1 数据的完整性和一致性不高，因为RDB可能在最后一次备份时宕机了。<br>2 备份时占用内存，因为Redis 在备份时会独立创建一个子进程，将数据写入到一个临时文件（此时内存中的数据是原来的两倍），最后再将临时文件替换之前的备份文件。<br>所以Redis 的持久化和数据的恢复要选择在夜深人静的时候执行是比较合理的。</p>
 <h4 id="aof方案"><a href="/2019/06/11/redis的持久化策略/#aof方案" class="headerlink" title="aof方案"></a>aof方案</h4><p>AOF ：Redis 默认不开启。它的出现是为了弥补RDB的不足（数据的不一致性），所以它采用日志的形式来记录每个<strong>写操作</strong>，并<strong>追加</strong>到文件中</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">appendonly yes                             #开启需要手动把no改为yes</span><br><span class="line">appendfilename "appendonly.aof"            #指定本地数据库文件名，默认值为 appendonly.aof</span><br><span class="line"><span class="meta">#</span> appendfsync always</span><br><span class="line">appendfsync everysec                       #出厂默认推荐，每秒异步记录一次（默认值）     </span><br><span class="line"><span class="meta">#</span> appendfsync no</span><br><span class="line"><span class="meta">#</span>配置重写触发机制</span><br><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">appendonly yes                             #开启需要手动把no改为yes</span><br><span class="line">appendfilename "appendonly.aof"            #指定本地数据库文件名，默认值为 appendonly.aof</span><br><span class="line"><span class="meta">#</span><span class="bash"> appendfsync always</span></span><br><span class="line">appendfsync everysec                       #出厂默认推荐，每秒异步记录一次（默认值）     </span><br><span class="line"><span class="meta">#</span><span class="bash"> appendfsync no</span></span><br><span class="line"><span class="meta">#</span><span class="bash">配置重写触发机制</span></span><br><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br></pre></td></tr></table></figure>
 <p><em>根据配置文件触发，可以是每次执行触发，可以是每秒触发，可以不同步。</em></p>
 <p><strong>数据恢复</strong></p>
 <p>将appendonly.aof 文件拷贝到redis的安装目录的bin目录下，重启redis服务即可。但在实际开发中，可能因为某些原因导致appendonly.aof 文件格式异常，从而导致数据还原失败，可以通过命令redis-check-aof –fix appendonly.aof 进行修复</p>
@@ -623,7 +623,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">82</span>
+                <span class="site-state-item-count">88</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -634,7 +634,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -645,7 +645,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -710,7 +710,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
