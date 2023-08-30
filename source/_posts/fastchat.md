@@ -14,6 +14,10 @@ conda create --name fastchat python=3.10
 pip install fschat
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
+pip install protobuf==3.20.0
+git clone https://github.com/huggingface/transformers.git
+cd transformers
+python setup.py install
 ```
 
 *源码*
@@ -22,7 +26,27 @@ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.o
 
 
 
-## 合并模型
+## 转换llaMA模型
+
+```
+pip install protobuf==3.20.0
+git clone https://github.com/huggingface/transformers.git
+cd transformers
+python setup.py install
+
+# 转成hf
+# 7b 下载 https://huggingface.co/nyanko7/LLaMA-7B/tree/main
+python transformers/src/transformers/models/llama/convert_llama_weights_to_hf.py  --input_dir LLaMA/  --model_size 7B  --output_dir ./output/llama-7b
+
+# 13b 下载 https://huggingface.co/huggyllama/llama-13b/tree/main
+python transformers/src/transformers/models/llama/convert_llama_weights_to_hf.py  --input_dir LLaMA/  --model_size 13B  --output_dir ./output/llama-13b
+```
+
+
+
+
+
+## 合并生成Vicuna模型
 
 首先需要下载 Vicuna模型的 delta 参数。
 
@@ -32,10 +56,7 @@ git clone https://huggingface.co/lmsys/vicuna-7b-delta-v1.1
 
 注意git默认没有lfs支持，clone下来是没有二进制的模型文件的，所以要从[https://huggingface.co/lmsys/vicuna-7b-delta-v1.1/tree/main](https://link.zhihu.com/?target=https%3A//huggingface.co/lmsys/vicuna-7b-delta-v1.1/tree/main)下载那两个bin文件，放到vicuna-7b-delta-v1.1目录下。
 
-```bash
-git lfs pull
-git lfs install
-```
+
 
 
 
