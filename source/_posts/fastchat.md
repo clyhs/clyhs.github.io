@@ -26,7 +26,7 @@ python setup.py install
 
 
 
-## 转换llaMA模型
+## 转换llaMA模型（hf）
 
 ```
 pip install protobuf==3.20.0
@@ -121,27 +121,41 @@ FastChat还提供了web界面可以使用，具体流程如下
 #### **启动控制器**
 
 ```
-python3 -m fastchat.serve.controller
+python -m fastchat.serve.controller --host 0.0.0.0
 
 ```
+
+![img](https://clyhs.github.io/images/ai/fastchat01.png)
 
 #### **启动模型工作者**
 
 ```javascript
-python3 -m fastchat.serve.model_worker --model-path lmsys/vicuna-7b-v1.3
+python -m fastchat.serve.model_worker --model-path lmsys/vicuna-7b-v1.3 --host 0.0.0.0 --device cpu --load-8bit
 ```
+
+![img](https://clyhs.github.io/images/ai/fastchat02.png)
+
+
 
 为确保您的模型工作者已正确连接到控制器，请使用以下命令发送测试消息：
 
 ```javascript
-python3 -m fastchat.serve.test_message --model-name vicuna-7b-v1.3
+python -m fastchat.serve.test_message --model-name vicuna-7b-v1.3 
 ```
+
+![img](https://clyhs.github.io/images/ai/fastchat03.png)
 
 #### **启动Gradio Web服务器**
 
 ```javascript
-python3 -m fastchat.serve.gradio_web_server
+python -m fastchat.serve.gradio_web_server --port 8809
 ```
+
+
+
+![img](https://clyhs.github.io/images/ai/fastchat04.png)
+
+![img](https://clyhs.github.io/images/ai/fastchat05.png)
 
 
 
