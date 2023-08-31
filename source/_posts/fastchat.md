@@ -24,7 +24,10 @@ python setup.py install
  git clone https://github.com/lm-sys/FastChat.git
  cd FastChat
 
-
+```
+pip3 install --upgrade pip  # enable PEP 660 support
+pip3 install -e .
+```
 
 ## 转换llaMA模型（hf）
 
