@@ -1,0 +1,1189 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="hbase,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="大鱼的博客" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="1、概述 第一次看HBase, 可能看到以下描述会懵。“基于列存储”、“稀疏MAP”、“RowKey”、“ColumnFamily”。 其实没那么高深，我们需要分两步来理解HBase, 就能够理解为什么HBase能够“快速地”“分布式地”处理“大量数据”了。  1.内存结构 2.文件存储结构    2、名词概念以及内存结构假设我们有一张表（其中只有一条数据）： RowKeyColumnFamily">
+<meta name="keywords" content="hbase">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hbase概念及表格设计">
+<meta property="og:url" content="http://abigfish.net/2018/03/27/Hbase概念及表格设计/index.html">
+<meta property="og:site_name" content="大鱼的博客">
+<meta property="og:description" content="1、概述 第一次看HBase, 可能看到以下描述会懵。“基于列存储”、“稀疏MAP”、“RowKey”、“ColumnFamily”。 其实没那么高深，我们需要分两步来理解HBase, 就能够理解为什么HBase能够“快速地”“分布式地”处理“大量数据”了。  1.内存结构 2.文件存储结构    2、名词概念以及内存结构假设我们有一张表（其中只有一条数据）： RowKeyColumnFamily">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://clyhs.github.io/images/hbase/hbase01.jpg">
+<meta property="og:image" content="https://clyhs.github.io/images/hbase/hbase02.jpg">
+<meta property="og:updated_time" content="2022-04-01T01:35:16.899Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hbase概念及表格设计">
+<meta name="twitter:description" content="1、概述 第一次看HBase, 可能看到以下描述会懵。“基于列存储”、“稀疏MAP”、“RowKey”、“ColumnFamily”。 其实没那么高深，我们需要分两步来理解HBase, 就能够理解为什么HBase能够“快速地”“分布式地”处理“大量数据”了。  1.内存结构 2.文件存储结构    2、名词概念以及内存结构假设我们有一张表（其中只有一条数据）： RowKeyColumnFamily">
+<meta name="twitter:image" content="https://clyhs.github.io/images/hbase/hbase01.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://abigfish.net/2018/03/27/Hbase概念及表格设计/">
+
+
+
+
+
+  <title> Hbase概念及表格设计 | 大鱼的博客 </title>
+</head>
+
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大鱼的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">bigfish's blog</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://abigfish.net/2018/03/27/Hbase概念及表格设计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="bigfish">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大鱼的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Hbase概念及表格设计
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-27T10:50:55+08:00">
+                2018-03-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/03/27/Hbase概念及表格设计/#SOHUCS" itemprop="discussionUrl">
+                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/03/27/Hbase概念及表格设计/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/03/27/Hbase概念及表格设计/" class="leancloud_visitors" data-flag-title="Hbase概念及表格设计">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </span></div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="1、概述"><a href="/2018/03/27/Hbase概念及表格设计/#1、概述" class="headerlink" title="1、概述"></a>1、概述</h3><ul>
+<li>第一次看HBase, 可能看到以下描述会懵。“基于列存储”、“稀疏MAP”、“RowKey”、“ColumnFamily”。</li>
+<li><p>其实没那么高深，我们需要分两步来理解HBase, 就能够理解为什么HBase能够“快速地”“分布式地”处理“大量数据”了。</p>
+<ul>
+<li>1.内存结构</li>
+<li>2.文件存储结构</li>
+</ul>
+</li>
+</ul>
+<h3 id="2、名词概念以及内存结构"><a href="/2018/03/27/Hbase概念及表格设计/#2、名词概念以及内存结构" class="headerlink" title="2、名词概念以及内存结构"></a>2、名词概念以及内存结构</h3><p>假设我们有一张表（其中只有一条数据）：</p>
+<table border="1" cellspacing="0" cellpadding="0" align="left"><tbody><tr><td rowspan="2" valign="top" width="86"><p class="c2"><span class="c1">RowKey</span></p></td><td colspan="2" valign="top" width="164"><p class="c2"><span class="c1">ColumnFamily : CF1</span></p></td><td colspan="2" valign="top" width="191"><p class="c2"><span class="c1">ColumnFamily : CF2</span></p></td><td rowspan="2" valign="top" width="87"><p class="c2"><span class="c1">TimeStamp</span></p></td></tr><tr><td valign="top" width="82"><p class="c2"><span class="c1">Column: C11</span></p></td><td valign="top" width="82"><p class="c2"><span class="c1">Column: C12</span></p></td><td valign="top" width="92"><p class="c2"><span class="c1">Column: C21</span></p></td><td valign="top" width="99"><p class="c2"><span class="c1">Column: C22</span></p></td></tr><tr><td valign="top" width="86"><p>“com.google”</p></td><td valign="top" width="82"><p>“C11 good”</p></td><td valign="top" width="82"><p>“C12 good”</p></td><td valign="top" width="92"><p>“C12 bad”</p></td><td valign="top" width="99"><p>“C12 bad”</p></td><td valign="top" width="87"><p>T1</p></td></tr></tbody></table>
+
+<p><br></p>
+<ul>
+<li>1) RowKey: 行键，可理解成MySQL中的主键列。</li>
+<li>2) Column: 列，可理解成MySQL列。</li>
+<li>3) ColumnFamily: 列族, HBase引入的概念：</li>
+</ul>
+<p>将多个列聚合成一个列族。<br>可以理解成MySQL的垂直分区（将一张宽表，切分成几张不那么宽的表）。<br>此机制引入的原因，是因为HBase相信，查询可能并不需要将一整行的所有列数据全部返回。（就像我们往往在写SQL时不太会写select all一样）<br>对应到文件存储结构（不同的ColumnFamily会写入不同的文件）。</p>
+<ul>
+<li>4) TimeStamp：在每次跟新数据时，用以标识一行数据的不同版本（事实上，TimeStamp是与列绑定的。）<br>那我们为何会得到HBase的读写高性能呢？其实所有数据库操作如何得到高性能，答案几乎都是一致的，就是做索引。</li>
+</ul>
+<p>HBase的设计抛弃了传统RDBMS的行式数据模型，把索引和数据模型原生的集成在了一起。</p>
+<p>以上图的表为例，表数据在HBase内部用Map实现，我们把它写成JSon的Object表述，即：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;com.google&quot;: &#123;</span><br><span class="line">    CF1: &#123;</span><br><span class="line">      C11:&#123;</span><br><span class="line">      T1: good</span><br><span class="line">      &#125;</span><br><span class="line">      C12:&#123;</span><br><span class="line">      T1: good</span><br><span class="line">      &#125;</span><br><span class="line">    CF2: &#123;</span><br><span class="line">      C21:&#123;</span><br><span class="line">      T1: bad</span><br><span class="line">      &#125;</span><br><span class="line">      C22:&#123;</span><br><span class="line">      T1: bad</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于Map本身可以通过B+树来实现，所以随机访问的速度大大加快（我们需要想象一下，表中有很多行的情况）。</p>
+<p>现在我们在原来的表上修改一下（将Column: C22改为”good”）：</p>
+<table border="1" cellspacing="0" cellpadding="0" align="left"><tbody><tr><td rowspan="2" valign="top" width="86"><p class="c2"><span class="c1">RowKey</span></p></td><td colspan="2" valign="top" width="164"><p class="c2"><span class="c1">ColumnFamily : CF1</span></p></td><td colspan="2" valign="top" width="191"><p class="c2"><span class="c1">ColumnFamily : CF2</span></p></td><td rowspan="2" valign="top" width="87"><p class="c2"><span class="c1">TimeStamp</span></p></td></tr><tr><td valign="top" width="82"><p class="c2"><span class="c1">Column: C11</span></p></td><td valign="top" width="82"><p class="c2"><span class="c1">Column: C12</span></p></td><td valign="top" width="92"><p class="c2"><span class="c1">Column: C21</span></p></td><td valign="top" width="99"><p class="c2"><span class="c1">Column: C22</span></p></td></tr><tr><td valign="top" width="86"><p>“com.google”</p></td><td valign="top" width="82"><p>“C11 good”</p></td><td valign="top" width="82"><p>“C12 good”</p></td><td valign="top" width="92"><p>“C12 bad”</p></td><td valign="top" width="99"><p>“C12 bad”</p></td><td valign="top" width="87"><p>T1</p></td></tr><tr><td valign="top" width="86"><p>“com.google”</p></td><td valign="top" width="82"><p>“C11 good”</p></td><td valign="top" width="82"><p>“C12 good”</p></td><td valign="top" width="92"><p>“C12 bad”</p></td><td valign="top" width="99"><p>“C12 good”</p></td><td valign="top" width="87"><p>T2</p></td></tr></tbody></table>
+
+<p>于是MAP变为了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;com.google&quot;: &#123;</span><br><span class="line">    CF1: &#123;</span><br><span class="line">      C11:&#123;</span><br><span class="line">      T1: good</span><br><span class="line">      &#125;</span><br><span class="line">      C12:&#123;</span><br><span class="line">      T1: good</span><br><span class="line">      &#125;</span><br><span class="line">    CF2: &#123;</span><br><span class="line">      C21:&#123;</span><br><span class="line">      T1: bad</span><br><span class="line">      &#125;</span><br><span class="line">      C22:&#123;</span><br><span class="line">      T1: bad</span><br><span class="line">           T2:good</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>事实上，我们只需要在C22的object再加一个属性即可。如果我们把这个MAP翻译成表形状，也可以表示为：</p>
+<table border="1" cellspacing="0" cellpadding="0" align="left"><tbody><tr><td rowspan="2" valign="top" width="86"><p class="c2"><span class="c1">RowKey</span></p></td><td colspan="2" valign="top" width="164"><p class="c2"><span class="c1">ColumnFamily : CF1</span></p></td><td colspan="2" valign="top" width="191"><p class="c2"><span class="c1">ColumnFamily : CF2</span></p></td><td rowspan="2" valign="top" width="87"><p class="c2"><span class="c1">TimeStamp</span></p></td></tr><tr><td valign="top" width="82"><p class="c2"><span class="c1">Column: C11</span></p></td><td valign="top" width="82"><p class="c2"><span class="c1">Column: C12</span></p></td><td valign="top" width="92"><p class="c2"><span class="c1">Column: C21</span></p></td><td valign="top" width="99"><p class="c2"><span class="c1">Column: C22</span></p></td></tr><tr><td valign="top" width="86"><p>“com.google”</p></td><td valign="top" width="82"><p>“C11 good”</p></td><td valign="top" width="82"><p>“C12 good”</p></td><td valign="top" width="92"><p>“C12 bad”</p></td><td valign="top" width="99"><p>“C12 bad”</p></td><td valign="top" width="87"><p>T1</p></td></tr><tr><td valign="top" width="86"><p>&nbsp;</p></td><td valign="top" width="82"><p>&nbsp;</p></td><td valign="top" width="82"><p>&nbsp;</p></td><td valign="top" width="92"><p>&nbsp;</p></td><td valign="top" width="99"><p>“C12 good”</p></td><td valign="top" width="87"><p>T2</p></td></tr></tbody></table>
+
+<p>我们发现，这个表里很多列是没有value的。想象一下，如果再加入一行RowKey不同的数据，其中Column:C11内容为空，就可以在Json中省略该属性了。说明HBase是“稀疏的高阶MAP”。</p>
+<p>为了查询效率，HBase内部对RowKey做了排序，以保证类似的或者相同的RowKey都集中在一起，于是HBase就变成了一张“稀疏的，有序的，高阶的MAP”。</p>
+<h3 id="3-文件存储结构与进程模型"><a href="/2018/03/27/Hbase概念及表格设计/#3-文件存储结构与进程模型" class="headerlink" title="3.文件存储结构与进程模型"></a>3.文件存储结构与进程模型</h3><p>如上所述，HBase是一张“稀疏的，有序的，高阶的MAP”。</p>
+<p>通常来说，MAP可以用B+树来实现。B+树对查询性能而言表现良好，但是对插入数据有些力不从心，尤其对于插入的数据需要持久化到磁盘的情况而言。</p>
+<p>我们对RowKey做了排序，为了保证查询效率，我们希望将连续RowKey的数值保存在连续的磁道上，以避免大量的磁盘随机寻道。所以在插入数据时，对于B+树而言，就面临着大量的文件搬移工作。</p>
+<p>HBase使用了LSM树实现了MAP，简单说来，就是将插入/修改操作缓存在内存中，当内存中积累足够的数据后，再以块的形式刷入到磁盘上。</p>
+<p><img src="https://clyhs.github.io/images/hbase/hbase01.jpg" alt="img"></p>
+<p>Region: 基于RowKey的分区，可理解成MySQL的水平切分。</p>
+<p>每个Region Server就是Hadoop集群中一台机器上的一个进程。</p>
+<p>比如我们的有1-300号的RowKey, 那么1-100号RowKey的行被分配到Region Server 1上，同样，101-200号分配到Region Server 2上， 201-300号分配到Region Server 3上。</p>
+<p>在内存模型中，我们说RowKey保证了相邻RowKey的记录被连续地写入了磁盘。在这里，我们发现，RowKey决定了行操作（增，删，改，查）会被交与哪台Region Server操作。</p>
+<p>让我们假设一下，如果我们的RowKey以记录的TimeStamp起始，从内存模型上说，这很合理，因为我们可能面临大量的用户流水记录查询，查询的条件会设置一个时间片段，我们希望一次性从磁盘中读取这些流水记录，从而避免频繁的磁盘寻道操作。</p>
+<p>但是再另一方面，用户的流水记录查询会很频繁的出现“截至到至今”的查询条件，依照我们上面的进程模型，Region Server 3一定会被分配到（因为最近的记录排在最后），这样就可能造成Region Server 3的“过热”，而Region Server 1“过冷”的情况。</p>
+<p>文件存储模型：<br><img src="https://clyhs.github.io/images/hbase/hbase02.jpg" alt="img"></p>
+<p>在HDFS中，每张表对应一个目录，在表目录下，每个Region对应一个目录，在Region目录下，每个Store对应一个目录（一个Store对应一个ColumFamily）。结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">HBase</span><br><span class="line">  |</span><br><span class="line">  ---Table</span><br><span class="line">       |</span><br><span class="line">       ---XXXX(Region的hash)</span><br><span class="line">       |    |</span><br><span class="line">       |    ----ColumnFamily</span><br><span class="line">       |              |</span><br><span class="line">       |              ---文件</span><br><span class="line">       |</span><br><span class="line">       ---YYYYY(另一个Region的hash)</span><br></pre></td></tr></table></figure></p>
+<p>我们的新发现是，不同的ColumnFamily对应不同的Store, 并且被写入了不同的目录, 这意味着：</p>
+<ol>
+<li><p>通过将一张表分解成了不同的ColumnFamily，HBase可以从磁盘一次读取更少的内容（IO操作往往是计算机系统中最慢的一环）。</p>
+</li>
+<li><p>我们不应该将需要一次查询出的列，分解在不同的ColumnFamily中，否则以为着HBase不得不读取两个文件来满足查询要求。</p>
+</li>
+</ol>
+<p>另外，一个ColumnFamily中的每一列是连续存储的。即如果一个ColumnFamily中存在C1,C2两列，一段具有100行记录的存储格式是：</p>
+<p>C1(1),C2(1),C1(2),C2(2),C1(3),C2(3)………….C1(100),C2(100)</p>
+<p>与其说HBase是基于列的数据库，更不如说HBase是基于“列族”的数据库。</p>
+<h3 id="4-理解"><a href="/2018/03/27/Hbase概念及表格设计/#4-理解" class="headerlink" title="4 理解:"></a>4 理解:</h3><p>基于以上的模型，大致的理解是：</p>
+<ol>
+<li><p>RowKey决定了行操作任务进入RegionServer的数量，我们应该尽量的让一次操作调用更多的Region Server，已达到分布式的目的。</p>
+</li>
+<li><p>RowKey决定了查询读取连续磁盘块的数量，最理想的情况是一次查询，在每个Region Server上，只读取一个磁盘块。</p>
+</li>
+<li><p>ColumnFamily决定了一次查询需要读取的文件数（不同的文件不仅意味着分散的磁盘块，还意味着多次的文件打开关闭操作）。我们应尽量将希望查询的结果集合并到一个ColumnFamily中。同时尽量去除该ColumnFamily中不需要的列。</p>
+</li>
+<li><p>HBase官方建议尽量的减少ColumnFamily的数量。</p>
+</li>
+</ol>
+<p>再瞎总结一下：</p>
+<ol>
+<li><p>RowKey由查询条件决定。</p>
+</li>
+<li><p>ColumnFamily由查询结果决定。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      bigfish
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://abigfish.net/2018/03/27/Hbase概念及表格设计/" title="Hbase概念及表格设计">http://abigfish.net/2018/03/27/Hbase概念及表格设计/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/hbase/" rel="tag"># hbase</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/15/前端提高并发量的优化过程/" rel="next" title="前端提高并发量的优化过程">
+                <i class="fa fa-chevron-left"></i> 前端提高并发量的优化过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/27/Hbase建表例子/" rel="prev" title="Hbase建表例子">
+                Hbase建表例子 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=1ccac48aa5a00"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/photo.jpg" alt="bigfish">
+          <p class="site-author-name" itemprop="name">bigfish</p>
+           
+              <p class="site-description motion-element" itemprop="description">record my life</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">90</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">51</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、概述"><span class="nav-number">1.</span> <span class="nav-text">1、概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、名词概念以及内存结构"><span class="nav-number">2.</span> <span class="nav-text">2、名词概念以及内存结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-文件存储结构与进程模型"><span class="nav-number">3.</span> <span class="nav-text">3.文件存储结构与进程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-理解"><span class="nav-number">4.</span> <span class="nav-text">4 理解:</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bigfish</span>
+  <span id="busuanzi_container_site_uv">
+  本站访问次数：<span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+  </span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cyu62R7Sk';
+      var conf = '1ddb5cdb2e688908ef5cc060ea346a6b';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("K6CpIXEyvcJ8rtkxMu0gBjmR-gzGzoHsz", "Cre2YXPrOsbcFrloqDEYr7F0");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+
+
+</body>
+</html>

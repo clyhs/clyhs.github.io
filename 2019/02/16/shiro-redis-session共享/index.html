@@ -1,0 +1,1116 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="redis,shiro,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="大鱼的博客" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="引入依赖包在pom文件引入如下 12345678910111213141516171819202122232425262728293031323334353637&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;redis.clients&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;jedis&amp;lt;/artifactId&amp;gt;	&amp;lt;version&amp;">
+<meta name="keywords" content="redis,shiro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shiro redis session共享">
+<meta property="og:url" content="http://abigfish.net/2019/02/16/shiro-redis-session共享/index.html">
+<meta property="og:site_name" content="大鱼的博客">
+<meta property="og:description" content="引入依赖包在pom文件引入如下 12345678910111213141516171819202122232425262728293031323334353637&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;redis.clients&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;jedis&amp;lt;/artifactId&amp;gt;	&amp;lt;version&amp;">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-04-01T01:35:16.909Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="shiro redis session共享">
+<meta name="twitter:description" content="引入依赖包在pom文件引入如下 12345678910111213141516171819202122232425262728293031323334353637&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;redis.clients&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;jedis&amp;lt;/artifactId&amp;gt;	&amp;lt;version&amp;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://abigfish.net/2019/02/16/shiro-redis-session共享/">
+
+
+
+
+
+  <title> shiro redis session共享 | 大鱼的博客 </title>
+</head>
+
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大鱼的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">bigfish's blog</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://abigfish.net/2019/02/16/shiro-redis-session共享/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="bigfish">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大鱼的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                shiro redis session共享
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-16T10:56:57+08:00">
+                2019-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/shiro/" itemprop="url" rel="index">
+                    <span itemprop="name">shiro</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2019/02/16/shiro-redis-session共享/#SOHUCS" itemprop="discussionUrl">
+                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2019/02/16/shiro-redis-session共享/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2019/02/16/shiro-redis-session共享/" class="leancloud_visitors" data-flag-title="shiro redis session共享">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </span></div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="引入依赖包"><a href="/2019/02/16/shiro-redis-session共享/#引入依赖包" class="headerlink" title="引入依赖包"></a>引入依赖包</h3><p>在pom文件引入如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;redis.clients&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;jedis&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;2.9.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.data&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-data-redis&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;1.6.0.RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.session&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-session&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;1.0.2.RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;shiro-core&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;1.2.3&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;shiro-web&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;1.2.3&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;shiro-spring&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;1.2.3&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.crazycake&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;shiro-redis&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;3.2.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="配置spring-context-xml"><a href="/2019/02/16/shiro-redis-session共享/#配置spring-context-xml" class="headerlink" title="配置spring-context.xml"></a>配置spring-context.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--单机版--&gt;</span><br><span class="line">&lt;!--</span><br><span class="line">&lt;bean id=&quot;redisManager&quot; class=&quot;org.crazycake.shiro.RedisManager&quot;&gt;</span><br><span class="line">    &lt;property name=&quot;host&quot; value=&quot;192.168.0.7:6379&quot;/&gt;</span><br><span class="line">    &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">--&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--分布式--&gt;</span><br><span class="line">&lt;!--</span><br><span class="line">&lt;bean id=&quot;redisManager&quot; class=&quot;org.crazycake.shiro.RedisClusterManager&quot;&gt;</span><br><span class="line">    &lt;property name=&quot;host&quot; value=&quot;192.168.0.16:8001,192.168.0.16:8002,192.168.0.16:8003,192.168.0.7:8004,192.168.0.7:8005,192.168.0.7:8006&quot;/&gt;</span><br><span class="line">    &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">--&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--高可用--&gt;</span><br><span class="line">&lt;bean id=&quot;redisManager&quot; class=&quot;org.crazycake.shiro.RedisSentinelManager&quot;&gt;</span><br><span class="line">    &lt;property name=&quot;host&quot; value=&quot;192.168.0.7:26000,192.168.0.16:26001,192.168.0.16:26002&quot;/&gt;</span><br><span class="line">    &lt;!--  &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;--&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">    </span><br><span class="line">&lt;bean id=&quot;redisCacheManager&quot; class=&quot;org.crazycake.shiro.RedisCacheManager&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;redisManager&quot; ref=&quot;redisManager&quot; /&gt;</span><br><span class="line">	&lt;!-- optional properties</span><br><span class="line">	&lt;property name=&quot;expire&quot; value=&quot;1800&quot;/&gt;</span><br><span class="line">	&lt;property name=&quot;keyPrefix&quot; value=&quot;shiro:cache:&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;principalIdFieldName&quot; value=&quot;id&quot; /&gt;</span><br><span class="line">	--&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id=&quot;credentialsMatcher&quot; class=&quot;org.apache.shiro.authc.credential.HashedCredentialsMatcher&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;hashAlgorithmName&quot; value=&quot;md5&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;hashIterations&quot; value=&quot;2&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;storedCredentialsHexEncoded&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;bean id=&quot;customRealm&quot; class=&quot;com.pas.cloud.module.shiro.CustomRealm&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;cachingEnabled&quot; value=&quot;false&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;authenticationCachingEnabled&quot; value=&quot;false&quot; /&gt;</span><br><span class="line">	&lt;!-- </span><br><span class="line">	&lt;property name=&quot;credentialsMatcher&quot; ref=&quot;credentialsMatcher&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;cachingEnabled&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;authenticationCachingEnabled&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;authenticationCacheName&quot; value=&quot;authenticationCache&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;authorizationCachingEnabled&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;authorizationCacheName&quot; value=&quot;authorizationCache&quot; /&gt; --&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id=&quot;redisSessionDAO&quot; class=&quot;org.crazycake.shiro.RedisSessionDAO&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;redisManager&quot; ref=&quot;redisManager&quot; /&gt;</span><br><span class="line">	&lt;!-- optional properties</span><br><span class="line">	&lt;property name=&quot;expire&quot; value=&quot;-2&quot;/&gt;</span><br><span class="line">	&lt;property name=&quot;keyPrefix&quot; value=&quot;shiro:session:&quot; /&gt;</span><br><span class="line">	--&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;!-- sessionIdCookie的实现,用于重写覆盖容器默认的JSESSIONID --&gt;</span><br><span class="line">&lt;bean id=&quot;sessionIdCookie&quot; class=&quot;org.apache.shiro.web.servlet.SimpleCookie&quot;&gt;</span><br><span class="line">	&lt;!-- cookie的name,对应的默认是 JSESSIONID --&gt;</span><br><span class="line">	&lt;constructor-arg name=&quot;name&quot; value=&quot;SHAREJSESSIONID&quot; /&gt;</span><br><span class="line">	&lt;!-- jsessionId的path为 / 用于多个系统共享jsessionId --&gt;</span><br><span class="line">	&lt;property name=&quot;path&quot; value=&quot;/&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;httpOnly&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;!-- sessionManager --&gt;</span><br><span class="line">&lt;!-- session管理器 --&gt;</span><br><span class="line">&lt;bean id=&quot;sessionManager&quot;</span><br><span class="line">	class=&quot;org.apache.shiro.web.session.mgt.DefaultWebSessionManager&quot;&gt;</span><br><span class="line">	&lt;!-- 设置全局会话超时时间，默认30分钟(1800000) --&gt;</span><br><span class="line">	&lt;property name=&quot;globalSessionTimeout&quot; value=&quot;1800000&quot; /&gt;</span><br><span class="line">	&lt;!-- 是否在会话过期后会调用SessionDAO的delete方法删除会话 默认true --&gt;</span><br><span class="line">	&lt;property name=&quot;deleteInvalidSessions&quot; value=&quot;true&quot; /&gt;</span><br><span class="line"></span><br><span class="line">	&lt;!-- 会话验证器调度时间 --&gt;</span><br><span class="line">	&lt;property name=&quot;sessionValidationInterval&quot; value=&quot;1800000&quot; /&gt;</span><br><span class="line"></span><br><span class="line">	&lt;!-- session存储的实现 --&gt;</span><br><span class="line">	&lt;property name=&quot;sessionDAO&quot; ref=&quot;redisSessionDAO&quot; /&gt;</span><br><span class="line">	&lt;!-- sessionIdCookie的实现,用于重写覆盖容器默认的JSESSIONID --&gt;</span><br><span class="line">	&lt;property name=&quot;sessionIdCookie&quot; ref=&quot;sessionIdCookie&quot; /&gt;</span><br><span class="line">	&lt;!-- 定时检查失效的session --&gt;</span><br><span class="line">	&lt;property name=&quot;sessionValidationSchedulerEnabled&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- securityManager安全管理器 --&gt;</span><br><span class="line">&lt;bean id=&quot;securityManager&quot; class=&quot;org.apache.shiro.web.mgt.DefaultWebSecurityManager&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;realm&quot; ref=&quot;customRealm&quot; /&gt;</span><br><span class="line">	&lt;!-- ehcahe缓存shiro自带 &lt;property name=&quot;cacheManager&quot; ref=&quot;shiroEhcacheManager&quot;&gt;&lt;/property&gt; --&gt;</span><br><span class="line"></span><br><span class="line">	&lt;!-- redis缓存 --&gt;</span><br><span class="line">	&lt;property name=&quot;cacheManager&quot; ref=&quot;redisCacheManager&quot; /&gt;</span><br><span class="line"></span><br><span class="line">	&lt;!-- sessionManager --&gt;</span><br><span class="line">	&lt;property name=&quot;sessionManager&quot; ref=&quot;sessionManager&quot;&gt;&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean</span><br><span class="line">class=&quot;org.springframework.beans.factory.config.MethodInvokingFactoryBean&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;staticMethod&quot;</span><br><span class="line">			value=&quot;org.apache.shiro.SecurityUtils.setSecurityManager&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;arguments&quot; ref=&quot;securityManager&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 记住我cookie --&gt;</span><br><span class="line">&lt;bean id=&quot;rememberMeCookie&quot; class=&quot;org.apache.shiro.web.servlet.SimpleCookie&quot;&gt;</span><br><span class="line">	&lt;!-- rememberMe是cookie的名字 --&gt;</span><br><span class="line">	&lt;constructor-arg value=&quot;rememberMe&quot; /&gt;</span><br><span class="line">	&lt;!-- 记住我cookie生效时间30天 --&gt;</span><br><span class="line">	&lt;property name=&quot;maxAge&quot; value=&quot;2592000&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- rememberMeManager管理器，写cookie，取出cookie生成用户信息 --&gt;</span><br><span class="line">&lt;bean id=&quot;rememberMeManager&quot; class=&quot;org.apache.shiro.web.mgt.CookieRememberMeManager&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;cookie&quot; ref=&quot;rememberMeCookie&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;bean id=&quot;shiroManager&quot; class=&quot;com.pas.cloud.module.shiro.ShiroManagerImpl&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;xtcdService&quot; ref=&quot;xtcdService&quot;&gt;&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id=&quot;logoutFilter&quot; class=&quot;org.apache.shiro.web.filter.authc.LogoutFilter&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;redirectUrl&quot; value=&quot;/system/loginPage.html&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 配置shiro的过滤器工厂类，id- shiroFilter要和我们在web.xml中配置的过滤器一致 --&gt;</span><br><span class="line">&lt;!--  </span><br><span class="line">&lt;bean id=&quot;shiroFilter&quot; class=&quot;org.apache.shiro.spring.web.ShiroFilterFactoryBean&quot;&gt;--&gt;</span><br><span class="line">&lt;bean id=&quot;shiroFilter&quot; class=&quot;com.pas.cloud.module.shiro.PasShiroFilterFactoryBean&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;securityManager&quot; ref=&quot;securityManager&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;loginUrl&quot; value=&quot;/system/loginPage.html&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;successUrl&quot; value=&quot;/system/index.html&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;unauthorizedUrl&quot; value=&quot;/unauth.jsp&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;filterChainDefinitions&quot; value=&quot;#&#123;shiroManager.loadFilterChainDefinitions()&#125;&quot; /&gt;</span><br><span class="line">&lt;!-- &lt;property name=&quot;filterChainDefinitions&quot;&gt; &lt;value&gt; /system/loginPage= </span><br><span class="line">anon /system/login = anon /system/loginout= logout /system/index=authc,perms[system:index] </span><br><span class="line">/module/user/add =authc,perms[module:user:add] /module/user/index = authc,perms[module:user:index] </span><br><span class="line">/module/user/del =authc,perms[module:user:del] /module/xtcd/index = authc, </span><br><span class="line">perms[module:xtcd:index] /module/** = authc &lt;/value&gt; &lt;/property&gt; --&gt;</span><br><span class="line">	&lt;property name=&quot;filters&quot;&gt;</span><br><span class="line">		&lt;map&gt;</span><br><span class="line">			&lt;entry key=&quot;logout&quot; value-ref=&quot;logoutFilter&quot; /&gt;</span><br><span class="line">		&lt;/map&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;bean id=&quot;lifecycleBeanPostProcessor&quot; class=&quot;org.apache.shiro.spring.LifecycleBeanPostProcessor&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      bigfish
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://abigfish.net/2019/02/16/shiro-redis-session共享/" title="shiro redis session共享">http://abigfish.net/2019/02/16/shiro-redis-session共享/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/redis/" rel="tag"># redis</a>
+          
+            <a href="/tags/shiro/" rel="tag"># shiro</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/16/docker-redis-sentinel高可用部署/" rel="next" title="docker redis sentinel高可用部署">
+                <i class="fa fa-chevron-left"></i> docker redis sentinel高可用部署
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/18/docker-redis-cluster集群部署/" rel="prev" title="docker redis cluster集群部署">
+                docker redis cluster集群部署 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=1ccac48aa5a00"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/photo.jpg" alt="bigfish">
+          <p class="site-author-name" itemprop="name">bigfish</p>
+           
+              <p class="site-description motion-element" itemprop="description">record my life</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">90</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">51</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#引入依赖包"><span class="nav-number">1.</span> <span class="nav-text">引入依赖包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置spring-context-xml"><span class="nav-number">2.</span> <span class="nav-text">配置spring-context.xml</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bigfish</span>
+  <span id="busuanzi_container_site_uv">
+  本站访问次数：<span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+  </span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cyu62R7Sk';
+      var conf = '1ddb5cdb2e688908ef5cc060ea346a6b';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("K6CpIXEyvcJ8rtkxMu0gBjmR-gzGzoHsz", "Cre2YXPrOsbcFrloqDEYr7F0");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+
+
+</body>
+</html>

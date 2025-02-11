@@ -1,0 +1,1116 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="go,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="大鱼的博客" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="value.go中的函数func Append(s Value, x …Value) Valuefunc AppendSlice(s, t Value) Valuefunc Indirect(v Value) Valuefunc MakeChan(typ Type, buffer int) Valuefunc MakeFunc(typ Type, fn func(args []Value) (re">
+<meta name="keywords" content="go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GO编程学习九-反射">
+<meta property="og:url" content="http://abigfish.net/2017/08/10/GO编程学习九-反射/index.html">
+<meta property="og:site_name" content="大鱼的博客">
+<meta property="og:description" content="value.go中的函数func Append(s Value, x …Value) Valuefunc AppendSlice(s, t Value) Valuefunc Indirect(v Value) Valuefunc MakeChan(typ Type, buffer int) Valuefunc MakeFunc(typ Type, fn func(args []Value) (re">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-04-01T01:35:16.895Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GO编程学习九-反射">
+<meta name="twitter:description" content="value.go中的函数func Append(s Value, x …Value) Valuefunc AppendSlice(s, t Value) Valuefunc Indirect(v Value) Valuefunc MakeChan(typ Type, buffer int) Valuefunc MakeFunc(typ Type, fn func(args []Value) (re">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://abigfish.net/2017/08/10/GO编程学习九-反射/">
+
+
+
+
+
+  <title> GO编程学习九-反射 | 大鱼的博客 </title>
+</head>
+
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大鱼的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">bigfish's blog</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://abigfish.net/2017/08/10/GO编程学习九-反射/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="bigfish">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大鱼的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                GO编程学习九-反射
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T22:45:25+08:00">
+                2017-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/08/10/GO编程学习九-反射/#SOHUCS" itemprop="discussionUrl">
+                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/08/10/GO编程学习九-反射/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/08/10/GO编程学习九-反射/" class="leancloud_visitors" data-flag-title="GO编程学习九-反射">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </span></div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="value-go中的函数"><a href="/2017/08/10/GO编程学习九-反射/#value-go中的函数" class="headerlink" title="value.go中的函数"></a>value.go中的函数</h3><p>func Append(s Value, x …Value) Value<br>func AppendSlice(s, t Value) Value<br>func Indirect(v Value) Value<br>func MakeChan(typ Type, buffer int) Value<br>func MakeFunc(typ Type, fn func(args []Value) (results []Value)) Value<br>func MakeMap(typ Type) Value<br>func MakeSlice(typ Type, len, cap int) Value<br>func New(typ Type) Value<br>func NewAt(typ Type, p unsafe.Pointer) Value<br>func ValueOf(i interface{}) Value<br>func Zero(typ Type) Value</p>
+<h3 id="value结构的方法"><a href="/2017/08/10/GO编程学习九-反射/#value结构的方法" class="headerlink" title="value结构的方法"></a>value结构的方法</h3><p><strong>Addr() Value</strong><br>    通常用于获取一个指向结构体字段或slice元素为了调用一个方法,需要一个指针接收机。<br><strong>Bool() bool</strong><br>    返回底层的值,如果v的kind不是bool则会产生恐慌<br><strong>Bytes() []byte</strong><br>    返回底层的值,如果v的底层值不是一个字节切片,则会产生恐慌<br><strong>CanAddr() bool</strong><br>    检查v是否是可寻址的<br><strong>CanSet() bool</strong><br>    检查值是否可被设置,只有可寻址的才能被设置<br><strong>Call(in []Value) []Value</strong><br>    反射函数的值.并调用<br><strong>CallSlice(in []Value) []Value</strong><br>    同上<br><strong>Close()</strong><br>    关闭channel,如果不是chan则产生恐慌<br><strong>Complex() complex128</strong><br>    返回底层的值,如果值不是一个复数,则产生一个恐慌<br><strong>Elem() Value</strong><br>    返回v包含的值,多被用于设置值时的寻址操作<br><strong>Field(i int) Value</strong><br>    返回结构中索引字段的Value<br><strong>FieldByIndex(index []int) Value</strong><br>    同上不过.提供的是一个切片<br><strong>FieldByName(name string) Value</strong><br>    通过字段名查找<br><strong>FieldByNameFunc(match func(string) bool) Value</strong><br>    通过函数名查找<br><strong>Float() float64</strong><br>    返回底层的值,如果值不是一个float,则产生一个恐慌<br><strong>Index(i int) Value</strong><br>    如果kind不是array或者sliece则差生恐慌,将其中的元素返回为Value<br><strong>Int() int64</strong><br>    返回底层的值,如果值不是一个int,则产生一个恐慌<br><strong>CanInterface() bool</strong><br>    如果接口能被使用,则返回true<br><strong>Interface() (i interface{})</strong><br>    返回V作为interface{}的当前值<br><strong>InterfaceData() [2]uintptr</strong><br>    如果kind不是一个接口则会产生恐慌<br><strong>IsNil() bool</strong><br>    如果v是一个nil,则返回true<br><strong>IsValid() bool</strong><br>    如果v代表一个值,则返回true<br><strong>Kind() Kind</strong><br>    返回v的种类<br><strong>Len() int**</strong><br>    返回v的长度<br><strong>MapIndex(key Value) Value</strong><br>    如果是一个map,根据key反射其键值的Value<br><strong>MapKeys() []Value</strong><br>    返回map的所有key<br><strong>Method(i int) Value</strong><br>    按索引反射结构某个方法的值<br><strong>NumMethod() int</strong><br>    统计结构方法数量<br><strong>MethodByName(name string) Value</strong><br>    反射方法的值根据方法名<br><strong>NumField() int</strong><br>    反射一个结构的字段数<br><strong>OverflowComplex(x complex128) bool</strong><br>    覆盖复数<br><strong>OverflowFloat(x float64) bool**</strong><br>    覆盖浮点数<br><strong>overflowFloat32(x float64) bool</strong><br><strong>OverflowInt(x int64) bool</strong><br><strong>OverflowUint(x uint64) bool**</strong><br><strong>Pointer() uintptr</strong><br>    反射一个指针的值.返回一个指针的整型值<br><strong>Recv() (x Value, ok bool)</strong><br>    用于channel<br><strong>Send(x Value)</strong><br>    用于channel<br><strong>Set(x Value)</strong><br>    如果v可设置,则设置一个v的值<br><strong>SetBool(x bool)</strong><br>    如果v可设置,且是bool,则设置一个v的值<br><strong>SetBytes(x []byte)</strong><br><strong>SetComplex(x complex128)</strong><br><strong>SetFloat(x float64)</strong><br><strong>SetInt(x int64)</strong><br><strong>SetLen(n int)</strong><br><strong>SetMapIndex(key, val Value)</strong><br><strong>SetUint(x uint64)</strong><br><strong>SetPointer(x unsafe.Pointer)</strong><br><strong>SetString(x string)</strong><br><strong>Slice(beg, end int) Value</strong><br>    如果底层是slice.则返回值.<br><strong>String() string</strong><br>    如果狄成是字符窜.则返回字符窜<br><strong>TryRecv() (x Value, ok bool)</strong><br>    用于channel,接受<br><strong>TrySend(x Value) bool</strong><br>    用于channel,发送<br><strong>Type() Type</strong><br>    返回type<br><strong>Uint() uint64</strong><br>    如果狄成是Uint.则返回uint<br><strong>UnsafeAddr() uintptr</strong></p>
+<h3 id="例子"><a href="/2017/08/10/GO编程学习九-反射/#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">)</span><br><span class="line"> </span><br><span class="line"><span class="keyword">type</span> MyStruct <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *MyStruct)</span> <span class="title">GetName</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> this.name</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">type</span> IStruct <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetName() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// TypeOf</span></span><br><span class="line">    s := <span class="string">"this is string"</span></span><br><span class="line">    fmt.Println(reflect.TypeOf(s)) <span class="comment">// output: "string"</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">// object TypeOf</span></span><br><span class="line">    a := <span class="built_in">new</span>(MyStruct)</span><br><span class="line">    a.name = <span class="string">"yejianfeng"</span></span><br><span class="line">    typ := reflect.TypeOf(a)</span><br><span class="line">    fmt.Println(typ)        <span class="comment">// output: "*main.MyStruct"</span></span><br><span class="line">    fmt.Println(typ.Elem()) <span class="comment">// output: "main.MyStruct"</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">// reflect.Type Base struct</span></span><br><span class="line">    fmt.Println(typ.NumMethod())                   <span class="comment">// 1</span></span><br><span class="line">    fmt.Println(typ.Method(<span class="number">0</span>))                     <span class="comment">// &#123;GetName  func(*main.MyStruct) string &lt;func(*main.MyStruct) string Value&gt; 0&#125;</span></span><br><span class="line">    fmt.Println(typ.Name())                        <span class="comment">// ""</span></span><br><span class="line">    fmt.Println(typ.PkgPath())                     <span class="comment">// ""</span></span><br><span class="line">    fmt.Println(typ.Size())                        <span class="comment">// 8</span></span><br><span class="line">    fmt.Println(typ.String())                      <span class="comment">// *main.MyStruct</span></span><br><span class="line">    fmt.Println(typ.Elem().String())               <span class="comment">// main.MyStruct</span></span><br><span class="line">    fmt.Println(typ.Elem().FieldByIndex([]<span class="keyword">int</span>&#123;<span class="number">0</span>&#125;)) <span class="comment">// &#123;name main string  0 [0] false&#125;</span></span><br><span class="line">    fmt.Println(typ.Elem().FieldByName(<span class="string">"name"</span>))    <span class="comment">// &#123;name main string  0 [0] false&#125; true</span></span><br><span class="line"> </span><br><span class="line">    fmt.Println(typ.Kind() == reflect.Ptr)                              <span class="comment">// true</span></span><br><span class="line">    fmt.Println(typ.Elem().Kind() == reflect.Struct)                    <span class="comment">// true</span></span><br><span class="line">    fmt.Println(typ.Implements(reflect.TypeOf((*IStruct)(<span class="literal">nil</span>)).Elem())) <span class="comment">// true</span></span><br><span class="line"> </span><br><span class="line">    fmt.Println(reflect.TypeOf(<span class="number">12.12</span>).Bits()) <span class="comment">// 64, 因为是float64</span></span><br><span class="line"> </span><br><span class="line">    cha := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    fmt.Println(reflect.TypeOf(cha).ChanDir()) <span class="comment">// chan</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">var</span> fun <span class="function"><span class="keyword">func</span><span class="params">(x <span class="keyword">int</span>, y ...<span class="keyword">float64</span>)</span> <span class="title">string</span></span></span><br><span class="line"><span class="function">    <span class="title">var</span> <span class="title">fun2</span> <span class="title">func</span><span class="params">(x <span class="keyword">int</span>, y <span class="keyword">float64</span>)</span> <span class="title">string</span></span></span><br><span class="line"><span class="function">    <span class="title">fmt</span>.<span class="title">Println</span><span class="params">(reflect.TypeOf(fun)</span>.<span class="title">IsVariadic</span><span class="params">()</span>)  // <span class="title">true</span></span></span><br><span class="line"><span class="function">    <span class="title">fmt</span>.<span class="title">Println</span><span class="params">(reflect.TypeOf(fun2)</span>.<span class="title">IsVariadic</span><span class="params">()</span>) // <span class="title">false</span></span></span><br><span class="line"><span class="function">    <span class="title">fmt</span>.<span class="title">Println</span><span class="params">(reflect.TypeOf(fun)</span>.<span class="title">In</span><span class="params">(0)</span>)         // <span class="title">int</span></span></span><br><span class="line"><span class="function">    <span class="title">fmt</span>.<span class="title">Println</span><span class="params">(reflect.TypeOf(fun)</span>.<span class="title">In</span><span class="params">(1)</span>)         // []<span class="title">float64</span></span></span><br><span class="line"><span class="function">    <span class="title">fmt</span>.<span class="title">Println</span><span class="params">(reflect.TypeOf(fun)</span>.<span class="title">NumIn</span><span class="params">()</span>)       // 2</span></span><br><span class="line"><span class="function">    <span class="title">fmt</span>.<span class="title">Println</span><span class="params">(reflect.TypeOf(fun)</span>.<span class="title">NumOut</span><span class="params">()</span>)      // 1</span></span><br><span class="line"><span class="function">    <span class="title">fmt</span>.<span class="title">Println</span><span class="params">(reflect.TypeOf(fun)</span>.<span class="title">Out</span><span class="params">(0)</span>)        // <span class="title">string</span></span></span><br><span class="line"><span class="function"> </span></span><br><span class="line"><span class="function">    <span class="title">mp</span> := <span class="title">make</span><span class="params">(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">    <span class="title">mp</span>["<span class="title">test1</span>"] = 1</span></span><br><span class="line"><span class="function">    <span class="title">fmt</span>.<span class="title">Println</span><span class="params">(reflect.TypeOf(mp)</span>.<span class="title">Key</span><span class="params">()</span>) //<span class="title">string</span></span></span><br><span class="line"><span class="function"> </span></span><br><span class="line"><span class="function">    <span class="title">arr</span> := [1]<span class="title">string</span></span>&#123;<span class="string">"test"</span>&#125;</span><br><span class="line">    fmt.Println(reflect.TypeOf(arr).Len()) <span class="comment">// 1</span></span><br><span class="line"> </span><br><span class="line">    fmt.Println(typ.Elem().NumField()) <span class="comment">// 1</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">// MethodByName, Call</span></span><br><span class="line">    b := reflect.ValueOf(a).MethodByName(<span class="string">"GetName"</span>).Call([]reflect.Value&#123;&#125;)</span><br><span class="line">    fmt.Println(b[<span class="number">0</span>]) <span class="comment">// output: "yejianfeng"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">   b := <span class="number">555</span></span><br><span class="line">   p:=reflect.ValueOf(&amp;b)</span><br><span class="line">v := p.Elem()  <span class="comment">//反射对象 p并不是可寻址的，但是并不希望设置p，（实际上）是 *p。为了获得 p 指向的内容，调用值上的 Elem 方法，从指针间接指向，然后保存反射值的结果叫做 v</span></span><br><span class="line">v.SetInt(<span class="number">666</span>)</span><br><span class="line">fmt.Println(b)</span><br><span class="line">   ------------------------------------</span><br><span class="line">   <span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">(a <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> a</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := <span class="string">"sssssss"</span></span><br><span class="line">	args := []reflect.Value&#123;reflect.ValueOf(a)&#125;</span><br><span class="line">	c := reflect.ValueOf(test).Call(args)</span><br><span class="line">	fmt.Println(c)</span><br><span class="line">&#125;</span><br><span class="line">   ------------------------------------</span><br><span class="line">   <span class="keyword">type</span> A <span class="keyword">struct</span> &#123;</span><br><span class="line">	a <span class="keyword">int</span></span><br><span class="line">	b <span class="keyword">byte</span></span><br><span class="line">	c <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := A&#123;&#125;</span><br><span class="line">	fmt.Println(reflect.ValueOf(a).Field(<span class="number">0</span>).Int())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"reflect"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> a <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name <span class="keyword">string</span></span><br><span class="line">	Age  <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this a)</span> <span class="title">Test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"test ok."</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *a)</span> <span class="title">Get</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"get ok."</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *a)</span> <span class="title">Print</span><span class="params">(id <span class="keyword">int</span>, name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"id is "</span>, id)</span><br><span class="line">	fmt.Println(<span class="string">"name is "</span>, name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"func test is ok."</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	d := &amp;a&#123;Name: <span class="string">"aaa"</span>, Age: <span class="string">"bbb"</span>&#125;</span><br><span class="line">	v := reflect.ValueOf(d)</span><br><span class="line">	ele := v.Elem()</span><br><span class="line">	t := ele.Type()</span><br><span class="line">	fmt.Println(<span class="string">"\n读取对象的所有属性"</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; t.NumField(); i++ &#123;</span><br><span class="line">		fmt.Println(t.Field(i).Name, ele.Field(i).Interface())</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="string">"\n读取对象的所有方法"</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; t.NumMethod(); i++ &#123;</span><br><span class="line">		fmt.Println(t.Method(i).Name)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//反射调用方法</span></span><br><span class="line">	fmt.Println(<span class="string">"\n测试函数调用，看来还是e保险一些，不会出错"</span>)</span><br><span class="line">	v.MethodByName(<span class="string">"Get"</span>).Call(<span class="literal">nil</span>)</span><br><span class="line">	v.MethodByName(<span class="string">"Test"</span>).Call(<span class="literal">nil</span>)</span><br><span class="line">	<span class="comment">//使用ele.MethodByName("GET").Call(nil)会抛出异常</span></span><br><span class="line">	<span class="comment">//但是使用ele.MethodByName("Test").Call(nil)却是正常？因为Test没有用指针</span></span><br><span class="line">	ele.MethodByName(<span class="string">"Test"</span>).Call(<span class="literal">nil</span>)</span><br><span class="line">	<span class="comment">//调用有参数的反射</span></span><br><span class="line">	fmt.Println(<span class="string">"\n测试传值调用函数"</span>)</span><br><span class="line">	vId := reflect.ValueOf(<span class="number">88</span>)</span><br><span class="line">	vName := reflect.ValueOf(<span class="string">"小汪"</span>)</span><br><span class="line">	v.MethodByName(<span class="string">"Print"</span>).Call([]reflect.Value&#123;vId, vName&#125;)</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">"\n测试参数赋值，必须要用ele"</span>)</span><br><span class="line">	ele.FieldByName(<span class="string">"Name"</span>).SetString(<span class="string">"哈哈"</span>)</span><br><span class="line">	fmt.Println(d)</span><br><span class="line"></span><br><span class="line">	c := <span class="number">123</span></span><br><span class="line">	tc := reflect.ValueOf(&amp;c).Elem()</span><br><span class="line">	tc.SetInt(<span class="number">333</span>)</span><br><span class="line">	fmt.Println(tc, reflect.TypeOf(&amp;c).Elem().Name())</span><br><span class="line">	fmt.Println(c)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      bigfish
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://abigfish.net/2017/08/10/GO编程学习九-反射/" title="GO编程学习九-反射">http://abigfish.net/2017/08/10/GO编程学习九-反射/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/go/" rel="tag"># go</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/23/GO编程学习八-使用MySQL数据库/" rel="next" title="GO编程学习八-使用MySQL数据库">
+                <i class="fa fa-chevron-left"></i> GO编程学习八-使用MySQL数据库
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/11/tomcat使用keytool配置https/" rel="prev" title="tomcat使用keytool配置https">
+                tomcat使用keytool配置https <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=1ccac48aa5a00"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/photo.jpg" alt="bigfish">
+          <p class="site-author-name" itemprop="name">bigfish</p>
+           
+              <p class="site-description motion-element" itemprop="description">record my life</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">90</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">51</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#value-go中的函数"><span class="nav-number">1.</span> <span class="nav-text">value.go中的函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#value结构的方法"><span class="nav-number">2.</span> <span class="nav-text">value结构的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">3.</span> <span class="nav-text">例子</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bigfish</span>
+  <span id="busuanzi_container_site_uv">
+  本站访问次数：<span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+  </span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cyu62R7Sk';
+      var conf = '1ddb5cdb2e688908ef5cc060ea346a6b';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("K6CpIXEyvcJ8rtkxMu0gBjmR-gzGzoHsz", "Cre2YXPrOsbcFrloqDEYr7F0");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+
+
+</body>
+</html>
