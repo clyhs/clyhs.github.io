@@ -71,6 +71,10 @@ subjects:
     namespace: kube-system
 ```
 
+kubectl create -f tiller.yaml
+
+
+
 初始化helm服务端
 
 ```
@@ -98,6 +102,19 @@ tiller-deploy-7bf45f97c7-c2978             1/1     Running   0          3m37s
 [root@master ~]# helm repo add stable http://mirror.azure.cn/kubernetes/charts
 "stable" has been added to your repositories
 ```
+
+*注*：出错 如下：
+
+kuberuntime_image.go:51] Pull image "gcr.io/kubernetes-helm/tiller:v2.16.3" failed: rpc error.
+
+找不到镜像
+
+```
+docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/tiller:v2.16.3
+docker tag registry.cn-hangzhou.aliyuncs.com/google_containers/tiller:v2.16.3 gcr.io/kubernetes-helm/tiller:v2.16.3
+```
+
+
 
 
 
@@ -133,6 +150,26 @@ use one of the default storage classes provided by OpenEBS.
 Use `kubectl get sc` to see the list of installed OpenEBS StorageClasses. A sample
 PVC spec using `openebs-jiva-default` StorageClass is given below:
 ```
+
+如果出错：
+
+```
+Error: release openebs failed: namespaces "openebs" is forbidden: User "system:serviceaccount:kube-system:default" cannot get resource "namespaces" in API group "" in th
+e namespace "openebs"
+```
+
+应该是tiller安装出问题，没有先kubectl create -f tiller.yaml
+
+可以补：
+
+```
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+```
+
+
+
+
 
 等几份钟，安装 OpenEBS 后将自动创建 4 个 StorageClass，查看创建的 StorageClass：
 
