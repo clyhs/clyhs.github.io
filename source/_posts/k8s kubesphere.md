@@ -105,7 +105,7 @@ tiller-deploy-7bf45f97c7-c2978             1/1     Running   0          3m37s
 
 *注*：出错 如下：
 
-kuberuntime_image.go:51] Pull image "gcr.io/kubernetes-helm/tiller:v2.16.3" failed: rpc error.
+（1）、kuberuntime_image.go:51] Pull image "gcr.io/kubernetes-helm/tiller:v2.16.3" failed: rpc error.
 
 找不到镜像
 
@@ -114,7 +114,23 @@ docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/tiller:v2.16.3
 docker tag registry.cn-hangzhou.aliyuncs.com/google_containers/tiller:v2.16.3 gcr.io/kubernetes-helm/tiller:v2.16.3
 ```
 
+（2）unexpected error getting claim reference: selfLink was empty, can‘t make reference
 
+在Kubernetes v1.20之后，selfLink特性被移除，导致Provision过程出现错误。为修复这个问题，需要在kube-apiserver.yaml配置中添加参数`--feature-gates=RemoveSelfLink=false`，然后应用更新到kube-apiserver.yaml以恢复功能。
+elfLink was empty 在k8s集群 v1.20之前都存在，在v1.20之后被删除，需要在/etc/kubernetes/manifests/kube-apiserver.yaml 添加参数
+增加 - --feature-gates=RemoveSelfLink=false
+
+```
+
+spec:
+containers:
+- command:
+    - kube-apiserver
+    - --feature-gates=RemoveSelfLink=false
+
+```
+
+[kubectl](https://so.csdn.net/so/search?q=kubectl&spm=1001.2101.3001.7020) apply -f /etc/kubernetes/manifests/kube-apiserver.yaml
 
 
 
